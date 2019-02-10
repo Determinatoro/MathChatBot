@@ -1,17 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MathChatBot
 {
@@ -23,6 +13,44 @@ namespace MathChatBot
         public MainWindow()
         {
             InitializeComponent();
+
+            btnSend.Click += button_Click;
+            tbChat.KeyDown += textBox_KeyDown;
+
+            SetupChat();
         }
+
+        private void textBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            var tb = sender as TextBox;
+            switch (tb.Name)
+            {
+                case nameof(tbChat):
+                    {
+                        if (e.Key == System.Windows.Input.Key.Enter)
+                        {
+                            AddChatObject(tb.Text);
+                            tb.Text = string.Empty;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+
+            switch (btn.Name)
+            {
+                case nameof(btnSend):
+                    {
+
+
+                    }
+                    break;
+            }
+        }
+
     }
 }
