@@ -12,24 +12,26 @@ namespace MathChatBot
     using System;
     using System.Collections.Generic;
     
-    public partial class Users
+    public partial class Message
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Users()
+        public Message()
         {
             this.MessageLog = new HashSet<MessageLog>();
-            this.Messages = new HashSet<Messages>();
+            this.MessageLog1 = new HashSet<MessageLog>();
         }
     
         public int Id { get; set; }
-        public string Password { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Username { get; set; }
+        public int UserId { get; set; }
+        public int MessageTypeId { get; set; }
+        public System.DateTime SendDate { get; set; }
+        public string MessageText { get; set; }
     
+        public virtual MessageType MessageType { get; set; }
+        public virtual User User { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MessageLog> MessageLog { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Messages> Messages { get; set; }
+        public virtual ICollection<MessageLog> MessageLog1 { get; set; }
     }
 }

@@ -20,8 +20,8 @@ namespace MathChatBot
         public int ResponseOnMessageId { get; set; }
         public System.DateTime SendDate { get; set; }
     
-        public virtual Messages Messages { get; set; }
-        public virtual Messages Messages1 { get; set; }
-        public virtual Users Users { get; set; }
+        public virtual Message Message { get; set; }
+        public virtual Message Message1 { get; set; }
+        public virtual User User { get; set; }
     }
 }

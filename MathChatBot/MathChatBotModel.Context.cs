@@ -25,9 +25,9 @@ namespace MathChatBot
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<Message> Message { get; set; }
+        public virtual DbSet<MessageType> MessageType { get; set; }
+        public virtual DbSet<User> User { get; set; }
         public virtual DbSet<MessageLog> MessageLog { get; set; }
-        public virtual DbSet<Messages> Messages { get; set; }
-        public virtual DbSet<MessageTypes> MessageTypes { get; set; }
-        public virtual DbSet<Users> Users { get; set; }
     }
 }

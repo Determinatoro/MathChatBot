@@ -69,16 +69,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MathChatBotModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Message.cs">
+      <DependentUpon>MathChatBotModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="MessageLog.cs">
       <DependentUpon>MathChatBotModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Messages.cs">
+    <Compile Include="MessageType.cs">
       <DependentUpon>MathChatBotModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="MessageTypes.cs">
-      <DependentUpon>MathChatBotModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Users.cs">
+    <Compile Include="User.cs">
       <DependentUpon>MathChatBotModel.tt</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">

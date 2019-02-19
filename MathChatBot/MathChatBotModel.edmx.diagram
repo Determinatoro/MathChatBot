@@ -5,16 +5,16 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="0726c7450778473db8d596e542db600f" Name="Diagram1" ZoomLevel="86">
-        <EntityTypeShape EntityType="MathChatBotModel.MessageLog" Width="1.5" PointX="3" PointY="3.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="MathChatBotModel.Messages" Width="1.5" PointX="6" PointY="3.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="MathChatBotModel.MessageTypes" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="MathChatBotModel.Users" Width="1.5" PointX="0.75" PointY="3.375" IsExpanded="true" />
-        <AssociationConnector Association="MathChatBotModel.FK__MessageLo__Messa__68487DD7" ManuallyRouted="false" />
-        <AssociationConnector Association="MathChatBotModel.FK__MessageLo__Respo__693CA210" ManuallyRouted="false" />
-        <AssociationConnector Association="MathChatBotModel.FK__MessageLo__UserI__6754599E" ManuallyRouted="false" />
-        <AssociationConnector Association="MathChatBotModel.FK__Messages__Messag__6383C8BA" ManuallyRouted="false" />
-        <AssociationConnector Association="MathChatBotModel.FK__Messages__UserId__628FA481" ManuallyRouted="false" />
-      </Diagram>
+        <EntityTypeShape EntityType="MathChatBotModel.Message" Width="1.5" PointX="2.75" PointY="1.625" />
+        <EntityTypeShape EntityType="MathChatBotModel.MessageType" Width="1.5" PointX="6.375" PointY="2.125" />
+        <EntityTypeShape EntityType="MathChatBotModel.User" Width="1.5" PointX="2.625" PointY="4.875" />
+        <AssociationConnector Association="MathChatBotModel.FK__Message__Message__0C85DE4D" />
+        <AssociationConnector Association="MathChatBotModel.FK__Message__UserId__0B91BA14" />
+        <EntityTypeShape EntityType="MathChatBotModel.MessageLog" Width="1.5" PointX="5" PointY="5" />
+        <AssociationConnector Association="MathChatBotModel.FK__MessageLo__Messa__114A936A" />
+        <AssociationConnector Association="MathChatBotModel.FK__MessageLo__Respo__123EB7A3" />
+        <AssociationConnector Association="MathChatBotModel.FK__MessageLo__UserI__10566F31" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>
