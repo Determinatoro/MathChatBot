@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="MathChatBotModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="MessageLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="MessageId" Type="int" Nullable="false" />
+          <Property Name="ResponseOnMessageId" Type="int" Nullable="false" />
+          <Property Name="SendDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Messages">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="MessageTypeId" Type="int" Nullable="false" />
+          <Property Name="SendDate" Type="datetime" Nullable="false" />
+          <Property Name="MessageText" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MessageTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="40" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Password" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Username" Type="varchar" MaxLength="255" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__MessageLo__Messa__68487DD7">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
+          <End Role="MessageLog" Type="Self.MessageLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MessageLog">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MessageLo__Respo__693CA210">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
+          <End Role="MessageLog" Type="Self.MessageLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MessageLog">
+              <PropertyRef Name="ResponseOnMessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MessageLo__UserI__6754599E">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="MessageLog" Type="Self.MessageLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MessageLog">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Messages__Messag__6383C8BA">
+          <End Role="MessageTypes" Type="Self.MessageTypes" Multiplicity="1" />
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MessageTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="MessageTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Messages__UserId__628FA481">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="MathChatBotModelStoreContainer">
+          <EntitySet Name="MessageLog" EntityType="Self.MessageLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MessageTypes" EntityType="Self.MessageTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__MessageLo__Messa__68487DD7" Association="Self.FK__MessageLo__Messa__68487DD7">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="MessageLog" EntitySet="MessageLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MessageLo__Respo__693CA210" Association="Self.FK__MessageLo__Respo__693CA210">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="MessageLog" EntitySet="MessageLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MessageLo__UserI__6754599E" Association="Self.FK__MessageLo__UserI__6754599E">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="MessageLog" EntitySet="MessageLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Messages__Messag__6383C8BA" Association="Self.FK__Messages__Messag__6383C8BA">
+            <End Role="MessageTypes" EntitySet="MessageTypes" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Messages__UserId__628FA481" Association="Self.FK__Messages__UserId__628FA481">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="MathChatBotModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="MessageLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="MessageId" Type="Int32" Nullable="false" />
+          <Property Name="ResponseOnMessageId" Type="Int32" Nullable="false" />
+          <Property Name="SendDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Messages" Relationship="Self.FK__MessageLo__Messa__68487DD7" FromRole="MessageLog" ToRole="Messages" />
+          <NavigationProperty Name="Messages1" Relationship="Self.FK__MessageLo__Respo__693CA210" FromRole="MessageLog" ToRole="Messages" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__MessageLo__UserI__6754599E" FromRole="MessageLog" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Messages">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="MessageTypeId" Type="Int32" Nullable="false" />
+          <Property Name="SendDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="MessageText" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="MessageLog" Relationship="Self.FK__MessageLo__Messa__68487DD7" FromRole="Messages" ToRole="MessageLog" />
+          <NavigationProperty Name="MessageLog1" Relationship="Self.FK__MessageLo__Respo__693CA210" FromRole="Messages" ToRole="MessageLog" />
+          <NavigationProperty Name="MessageTypes" Relationship="Self.FK__Messages__Messag__6383C8BA" FromRole="Messages" ToRole="MessageTypes" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Messages__UserId__628FA481" FromRole="Messages" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="MessageTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Messages" Relationship="Self.FK__Messages__Messag__6383C8BA" FromRole="MessageTypes" ToRole="Messages" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="MessageLog" Relationship="Self.FK__MessageLo__UserI__6754599E" FromRole="Users" ToRole="MessageLog" />
+          <NavigationProperty Name="Messages" Relationship="Self.FK__Messages__UserId__628FA481" FromRole="Users" ToRole="Messages" />
+        </EntityType>
+        <Association Name="FK__MessageLo__Messa__68487DD7">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
+          <End Role="MessageLog" Type="Self.MessageLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MessageLog">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MessageLo__Respo__693CA210">
+          <End Role="Messages" Type="Self.Messages" Multiplicity="1" />
+          <End Role="MessageLog" Type="Self.MessageLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Messages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MessageLog">
+              <PropertyRef Name="ResponseOnMessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MessageLo__UserI__6754599E">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="MessageLog" Type="Self.MessageLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MessageLog">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Messages__Messag__6383C8BA">
+          <End Role="MessageTypes" Type="Self.MessageTypes" Multiplicity="1" />
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MessageTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="MessageTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Messages__UserId__628FA481">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="MathChatBotEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="MessageLog" EntityType="Self.MessageLog" />
+          <EntitySet Name="Messages" EntityType="Self.Messages" />
+          <EntitySet Name="MessageTypes" EntityType="Self.MessageTypes" />
+          <EntitySet Name="Users" EntityType="Self.Users" />
+          <AssociationSet Name="FK__MessageLo__Messa__68487DD7" Association="Self.FK__MessageLo__Messa__68487DD7">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="MessageLog" EntitySet="MessageLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MessageLo__Respo__693CA210" Association="Self.FK__MessageLo__Respo__693CA210">
+            <End Role="Messages" EntitySet="Messages" />
+            <End Role="MessageLog" EntitySet="MessageLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MessageLo__UserI__6754599E" Association="Self.FK__MessageLo__UserI__6754599E">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="MessageLog" EntitySet="MessageLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Messages__Messag__6383C8BA" Association="Self.FK__Messages__Messag__6383C8BA">
+            <End Role="MessageTypes" EntitySet="MessageTypes" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Messages__UserId__628FA481" Association="Self.FK__Messages__UserId__628FA481">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="MathChatBotModelStoreContainer" CdmEntityContainer="MathChatBotEntities">
+          <EntitySetMapping Name="MessageLog">
+            <EntityTypeMapping TypeName="MathChatBotModel.MessageLog">
+              <MappingFragment StoreEntitySet="MessageLog">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="ResponseOnMessageId" ColumnName="ResponseOnMessageId" />
+                <ScalarProperty Name="SendDate" ColumnName="SendDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Messages">
+            <EntityTypeMapping TypeName="MathChatBotModel.Messages">
+              <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="MessageTypeId" ColumnName="MessageTypeId" />
+                <ScalarProperty Name="SendDate" ColumnName="SendDate" />
+                <ScalarProperty Name="MessageText" ColumnName="MessageText" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MessageTypes">
+            <EntityTypeMapping TypeName="MathChatBotModel.MessageTypes">
+              <MappingFragment StoreEntitySet="MessageTypes">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="MathChatBotModel.Users">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

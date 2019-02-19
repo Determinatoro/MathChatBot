@@ -16,7 +16,7 @@ namespace MathChatBot
 
             btnSend.Click += button_Click;
             tbChat.KeyDown += textBox_KeyDown;
-
+            
             SetupChat();
         }
 

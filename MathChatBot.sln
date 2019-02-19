@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathChatBot", "MathChatBot\MathChatBot.csproj", "{6553DB0F-8E37-4C86-B802-A1DAB5308BC7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathChatBot.Test", "MathChatBot.Test\MathChatBot.Test.csproj", "{38C729DD-5A12-4868-95D9-559634421AFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{6553DB0F-8E37-4C86-B802-A1DAB5308BC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6553DB0F-8E37-4C86-B802-A1DAB5308BC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6553DB0F-8E37-4C86-B802-A1DAB5308BC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38C729DD-5A12-4868-95D9-559634421AFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38C729DD-5A12-4868-95D9-559634421AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38C729DD-5A12-4868-95D9-559634421AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38C729DD-5A12-4868-95D9-559634421AFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

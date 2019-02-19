@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 
@@ -22,7 +23,7 @@ namespace MathChatBot
         public enum ChatMessageType
         {
             User,
-            Bot
+            Bot                
         }
 
         public ChatObject(string message, ChatMessageType messageType)
@@ -36,6 +37,11 @@ namespace MathChatBot
             get { return message; }
             set
             {
+                if (value == null)
+                    throw new NullReferenceException("Message cannot be null");
+                if (value == string.Empty)
+                    throw new Exception("Message cannot be empty");
+                    
                 message = value;
                 NotifyPropertyChanged(nameof(Message));
             }
