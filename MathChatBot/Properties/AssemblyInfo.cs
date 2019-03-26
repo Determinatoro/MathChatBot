@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("MathChatBot")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Ingeniorfirmaet Poul Tarp")]
+[assembly: AssemblyCompany("B2-20")]
 [assembly: AssemblyProduct("MathChatBot")]
-[assembly: AssemblyCopyright("Copyright © Ingeniorfirmaet Poul Tarp 2019")]
+[assembly: AssemblyCopyright("Copyright © B2-20")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

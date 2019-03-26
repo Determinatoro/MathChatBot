@@ -7,28 +7,23 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MathChatBot
+namespace MathChatBot.Models
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class User
+    public partial class MessageType
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public User()
+        public MessageType()
         {
-            this.Message = new HashSet<Message>();
-            this.MessageLog = new HashSet<MessageLog>();
+            this.Messages = new HashSet<Message>();
         }
     
         public int Id { get; set; }
-        public string Password { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Name { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Message> Message { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MessageLog> MessageLog { get; set; }
+        public virtual ICollection<Message> Messages { get; set; }
     }
 }

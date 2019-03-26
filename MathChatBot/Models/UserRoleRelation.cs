@@ -7,21 +7,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MathChatBot
+namespace MathChatBot.Models
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class MessageLog
+    public partial class UserRoleRelation
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public int MessageId { get; set; }
-        public int ResponseOnMessageId { get; set; }
-        public System.DateTime SendDate { get; set; }
+        public int RoleId { get; set; }
     
-        public virtual Message Message { get; set; }
-        public virtual Message Message1 { get; set; }
+        public virtual Role Role { get; set; }
         public virtual User User { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 
@@ -8,9 +9,9 @@ namespace MathChatBot
     public class ChatObject : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(string info)
+        private void NotifyPropertyChanged([CallerMemberName] string caller = "")
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(caller));
         }
 
         private string message;
@@ -43,7 +44,7 @@ namespace MathChatBot
                     throw new Exception("Message cannot be empty");
                     
                 message = value;
-                NotifyPropertyChanged(nameof(Message));
+                NotifyPropertyChanged();
             }
         }
 
@@ -74,7 +75,7 @@ namespace MathChatBot
                         break;
                 }
 
-                NotifyPropertyChanged(nameof(MessageType));
+                NotifyPropertyChanged();
             }
         }
 
@@ -84,7 +85,7 @@ namespace MathChatBot
             private set
             {
                 messageHorizontalAlignment = value;
-                NotifyPropertyChanged(nameof(MessageHorizontalAlignment));
+                NotifyPropertyChanged();
             }
         }
 
@@ -94,7 +95,7 @@ namespace MathChatBot
             private set
             {
                 messageBackground = value;
-                NotifyPropertyChanged(nameof(MessageBackground));
+                NotifyPropertyChanged();
             }
         }
 
@@ -104,10 +105,8 @@ namespace MathChatBot
             private set
             {
                 messageForeground = value;
-                NotifyPropertyChanged(nameof(MessageForeground));
+                NotifyPropertyChanged();
             }
         }
-
-
     }
 }

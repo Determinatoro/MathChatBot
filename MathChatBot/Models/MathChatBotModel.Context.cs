@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MathChatBot
+namespace MathChatBot.Models
 {
     using System;
     using System.Data.Entity;
@@ -25,9 +25,12 @@ namespace MathChatBot
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Message> Message { get; set; }
-        public virtual DbSet<MessageType> MessageType { get; set; }
-        public virtual DbSet<User> User { get; set; }
-        public virtual DbSet<MessageLog> MessageLog { get; set; }
+        public virtual DbSet<Class> Classes { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
+        public virtual DbSet<MessageType> MessageTypes { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<UserClassRelation> UserClassRelations { get; set; }
+        public virtual DbSet<UserRoleRelation> UserRoleRelations { get; set; }
+        public virtual DbSet<User> Users { get; set; }
     }
 }

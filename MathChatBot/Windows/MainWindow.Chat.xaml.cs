@@ -10,8 +10,8 @@ namespace MathChatBot
         private void SetupChat()
         {
             ChatObjectList = new List<ChatObject>();
-            ChatObjectList.Add(new ChatObject("Hi, how does it go with building a really good chatbot that works perfectly and helps everybody with math", ChatObject.ChatMessageType.Bot));
-            ChatObjectList.Add(new ChatObject("It goes fine because programming is so fun", ChatObject.ChatMessageType.User));
+            ChatObjectList.Add(new ChatObject("Hi, how are you?", ChatObject.ChatMessageType.Bot));
+            ChatObjectList.Add(new ChatObject("I am well thank you", ChatObject.ChatMessageType.User));
             lbChat.ItemsSource = ChatObjectList;
         }
 

@@ -1,0 +1,183 @@
+﻿<Window x:Class="MathChatBot.CustomDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MathChatBot"
+        xmlns:p = "clr-namespace:MathChatBot.Properties"
+        mc:Ignorable="d"
+        Title="CustomDialog" 
+        Height="auto" 
+        MinWidth="400"
+        MaxWidth="400"
+        SizeToContent="WidthAndHeight"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize"
+        AllowsTransparency="True" 
+        WindowStyle="None" 
+        >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Border 
+            Name="borderHeader"
+            Background="{StaticResource AUU_Blue}"
+            CornerRadius="1, 0.5, 0, 0"
+            BorderBrush="{StaticResource BorderColor}"
+            BorderThickness="1, 1, 1, 0.5"
+            >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="33"/>
+                    <ColumnDefinition Width="33"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Margin="1,0,1,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="33"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Image 
+                        Name="imgIcon"
+                        Source="/Resources\mathchatbot.ico"
+                        Margin="4"
+                        />
+
+                    <Label
+                        Name="lblTitle"
+                        Grid.Column="1"
+                        Padding="6, 0, 0, 0"
+                        Content="MathChatBot"
+                        Foreground="#FFFFFF"
+                        FontFamily="Roboto"
+                        VerticalContentAlignment="Center"
+                        />
+                </Grid>
+
+                <Button Name="btnClose" 
+                        BorderThickness="0" 
+                        Grid.Column="2" 
+                        Foreground="#FFFFFF"
+                        Background="#00000000"
+                        Style="{StaticResource styleButtonClose}"
+                        />
+
+                <Button                    
+                    Style="{StaticResource styleButtonMinimize}"
+                    Background="#00000000"
+                    Foreground="#FFFFFF"
+                    Name="btnMinimize"
+                    Grid.Column="1"
+                    />
+            </Grid>
+
+        </Border>
+
+        <Border 
+            Grid.Row="1"
+            BorderBrush="{StaticResource BorderColor}"
+            CornerRadius="0, 0, 1, 1"
+            Background="#FFFFFF"
+            BorderThickness="1, 0, 1, 1"
+            >
+
+            <Grid Height="auto">
+
+                <Grid Name="gridMessageDialog"
+                      Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="80"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox
+                    Name="tbMessage"
+                    BorderThickness="0"
+                    TextWrapping="Wrap"
+                    Margin="50, 10, 50, 10"
+                    Grid.Row="1"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Text="Something went wrong when saving data to the database."
+                    FontFamily="Roboto"
+                    FontSize="14"
+                    />
+
+                    <Button
+                    Name="btnMessageCancel"  
+                    Background="{StaticResource AUU_Blue}"
+                    Style="{StaticResource styleButtonHover}"
+                    Foreground="#FFFFFF"
+                    BorderBrush="{StaticResource BorderColor}"
+                    FontSize="14"
+                    Grid.Column="0" 
+                    Height="33"
+                    Grid.Row="3"
+                    Content="OK"
+                    Width="100"
+                    />
+
+                </Grid>
+            
+                <Grid Name="gridProgressDialog"
+                      Visibility="Visible">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="80"/>
+                </Grid.RowDefinitions>
+
+                <TextBox
+                    Name="tbProgressMessage"
+                    BorderThickness="0"
+                    TextWrapping="Wrap"
+                    Margin="50, 10, 50, 10"
+                    Grid.Row="1"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Text="Testing something. Please wait..."
+                    FontFamily="Roboto"
+                    FontSize="14"
+                    />
+
+                <ProgressBar 
+                    Name="pbProgress"
+                    Foreground="{StaticResource AUU_Blue}" 
+                    Value="100" 
+                    IsIndeterminate="True"
+                    Grid.Row="2"
+                    Background="White" 
+                    Margin="50, 0 , 50, 0"
+                    BorderBrush="{StaticResource BorderColor}" 
+                    BorderThickness="1"
+                    />
+
+                <Button
+                    Name="btnProgressCancel"  
+                    Background="{StaticResource AUU_Blue}"
+                    Style="{StaticResource styleButtonHover}"
+                    Foreground="#FFFFFF"
+                    BorderBrush="{StaticResource BorderColor}"
+                    FontSize="14"
+                    Grid.Column="0" 
+                    Height="33"
+                    Grid.Row="3"
+                    Content="Cancel"
+                    Width="100"
+                    />
+
+            </Grid>
+
+            </Grid>
+
+        </Border>
+    </Grid>
+</Window>
