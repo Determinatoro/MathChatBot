@@ -42,14 +42,17 @@ namespace MathChatBot
             btnLogOut.Click += button_Click;
 
             tbChat.KeyDown += textBox_KeyDown;
-            borderHeader.MouseLeftButtonDown += BorderHeader_MouseDown;
+            
             SetupChat();
+
+            this.SetupBorderHeader(Properties.Resources.main);
         }
 
         #endregion
 
         #region Events
 
+        // TextBox - KeyDown
         private void textBox_KeyDown(object sender, KeyEventArgs e)
         {
             var tb = sender as TextBox;
@@ -67,24 +70,28 @@ namespace MathChatBot
             }
         }
 
+        // Button - Click
         private void button_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;
 
             switch (btn.Name)
             {
+                // Send
                 case nameof(btnSend):
                     {
 
 
                     }
                     break;
+                // Admin controls
                 case nameof(btnAdminControls):
                     {
                         var adminControlsWindow = new AdminControlsWindow(User);
                         adminControlsWindow.ShowDialog();
                     }
                     break;
+                // Log out
                 case nameof(btnLogOut):
                     {
                         var loginWindow = new LoginWindow();
@@ -93,11 +100,6 @@ namespace MathChatBot
                     }
                     break;
             }
-        }
-
-        private void BorderHeader_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
         }
 
         #endregion

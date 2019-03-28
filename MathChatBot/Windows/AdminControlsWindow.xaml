@@ -137,10 +137,10 @@
                     CanUserReorderColumns="False"    
                     CanUserResizeColumns="False"    
                     CanUserResizeRows="False"    
-                    CanUserSortColumns="False"   
+                    CanUserSortColumns="True"   
                     CanUserAddRows="False"
                     RowHeaderWidth="0"
-                    SelectionMode="Single"
+                    SelectionMode="Extended"
                     RowEditEnding="dataGrid_RowEditEnding"  
                     CellEditEnding="dataGrid_CellEditEnding"
                     >
@@ -158,27 +158,60 @@
                                 </Style>
                             </DataGrid.CellStyle>
                             <DataGrid.Columns>
-                                <DataGridTextColumn 
-                                    Binding="{Binding Username}" 
-                                    Header="Username"
-                                    IsReadOnly="True" 
-                                    x:Name="dgrUsername"
-                                    />
-                                <DataGridTextColumn 
-                                    Binding="{Binding FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    Header="First name" 
-                                    x:Name="dgrFirstName" 
-                                    />
-                                <DataGridTextColumn 
-                                    Binding="{Binding LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    Header="Last name" 
-                                    x:Name="dgrLastName"                     
-                                    />
-                                <DataGridCheckBoxColumn 
-                                    Binding="{Binding IsActivated, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    Header="Activated" 
-                                    x:Name="dgrIsActivated"                     
-                                    />
+                                <DataGridTemplateColumn  SortMemberPath="Username" Header="{x:Static p:Resources.username}" CanUserSort="true">
+                                    <DataGridTemplateColumn.CellTemplate >
+                                        <DataTemplate>
+                                            <TextBlock 
+                                                Padding="2, 0, 2, 0"
+                                                Background="Transparent"
+                                                Text="{Binding Username}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn  SortMemberPath="FirstName" Header="{x:Static p:Resources.first_name}" CanUserSort="true">
+                                    <DataGridTemplateColumn.CellTemplate >
+                                        <DataTemplate>
+                                            <TextBlock 
+                                                Padding="2, 0, 2, 0"
+                                                Background="Transparent"
+                                                Text="{Binding FirstName}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                    <DataGridTemplateColumn.CellEditingTemplate >
+                                        <DataTemplate>
+                                            <TextBox 
+                                                BorderBrush="Transparent"
+                                                Padding="2, 0, 2, 0"
+                                                BorderThickness="0"
+                                                Background="Transparent"
+                                                Text="{Binding FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn  SortMemberPath="LastName" Header="{x:Static p:Resources.last_name}" CanUserSort="true">
+                                    <DataGridTemplateColumn.CellTemplate >
+                                        <DataTemplate>
+                                            <TextBlock 
+                                                Padding="2, 0, 2, 0"
+                                                Background="Transparent"
+                                                Text="{Binding LastName}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                    <DataGridTemplateColumn.CellEditingTemplate >
+                                        <DataTemplate>
+                                            <TextBox 
+                                                BorderBrush="Transparent"
+                                                BorderThickness="0"
+                                                Background="Transparent"
+                                                Text="{Binding LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn>
                                 <DataGridTemplateColumn Header="{x:Static p:Resources.more}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
@@ -201,8 +234,21 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="35"/>
                                 <RowDefinition Height="35"/>
+                                <RowDefinition Height="35"/>
                             </Grid.RowDefinitions>
 
+                            <TextBox
+                                Name="tbSearchForUsers"  
+                                Style="{StaticResource styleWaterMark}"
+                                Tag="{x:Static p:Resources.search_for_user}"
+                                VerticalContentAlignment="Center"
+                                Padding="5,2.5,5,2.5"
+                                BorderBrush="#000000"
+                                BorderThickness="1"
+                                Margin="1"
+                                TextWrapping="Wrap"                
+                                />
+                            
                             <Button
                                 Name="btnNewUser"  
                                 Background="{StaticResource AUU_Blue}"
@@ -210,8 +256,9 @@
                                 Foreground="#FFFFFF"
                                 FontSize="14"
                                 Margin="1"
+                                Grid.Row="1"
                                 BorderBrush="{StaticResource BorderColor}"
-                                Content="New user"
+                                Content="{x:Static p:Resources.new_user}"
                                 />
 
                             <Button
@@ -221,7 +268,7 @@
                                 Foreground="#FFFFFF"
                                 FontSize="13"
                                 Margin="1"
-                                Grid.Row="1"
+                                Grid.Row="2"
                                 BorderBrush="{StaticResource BorderColor}"
                                 Content="{x:Static p:Resources.add_users_from_file}"
                                 />
@@ -256,6 +303,109 @@
                                    Margin="-25,0,-25,0"/>
                         </StackPanel>
                     </TabItem.Header>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <DataGrid 
+                            Name="dgClasses" 
+                            VerticalScrollBarVisibility="Visible"
+                            ColumnWidth="*"
+                            Margin="1"
+                            Background="#FFFFFF"
+                            BorderBrush="{StaticResource BorderColor}"
+                            BorderThickness="1"
+                            AutoGenerateColumns="False"    
+                            CanUserReorderColumns="False"    
+                            CanUserResizeColumns="False"    
+                            CanUserResizeRows="False"    
+                            CanUserSortColumns="True"   
+                            CanUserAddRows="False"
+                            RowHeaderWidth="0"
+                            SelectionMode="Single"
+                            RowEditEnding="dataGrid_RowEditEnding"  
+                            CellEditEnding="dataGrid_CellEditEnding"
+                            >
+                            <DataGrid.CellStyle>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                                <Grid Background="{TemplateBinding Background}">
+                                                    <ContentPresenter VerticalAlignment="Center" />
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGrid.CellStyle>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn  SortMemberPath="Name" Header="{x:Static p:Resources.name}" CanUserSort="true">
+                                    <DataGridTemplateColumn.CellTemplate >
+                                        <DataTemplate>
+                                            <TextBlock 
+                                                Padding="2, 0, 2, 0"
+                                                Background="Transparent"
+                                                Text="{Binding Name}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="{x:Static p:Resources.see_users}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button
+                                                Name="btnSeeUsers"
+                                                Content="{x:Static p:Resources.see_users}"
+                                                Style="{StaticResource styleButtonHover}"
+                                                Background="{StaticResource AUU_Blue}"
+                                                Foreground="White"
+                                                FontFamily="Roboto"
+                                                Click="button_Click"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="35"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBox
+                                Name="tbSearchForClasses"  
+                                Style="{StaticResource styleWaterMark}"
+                                Tag="{x:Static p:Resources.search_for_class}"
+                                VerticalContentAlignment="Center"
+                                Padding="5,2.5,5,2.5"
+                                BorderBrush="#000000"
+                                BorderThickness="1"
+                                Margin="1"
+                                TextWrapping="Wrap"                
+                                />
+
+                            <Button
+                                Name="btnNewClass"  
+                                Background="{StaticResource AUU_Blue}"
+                                Style="{StaticResource styleButtonHover}"
+                                Foreground="#FFFFFF"
+                                FontSize="14"
+                                Margin="1"
+                                Grid.Row="1"
+                                BorderBrush="{StaticResource BorderColor}"
+                                Content="{x:Static p:Resources.new_class}"
+                                />
+
+                        </Grid>
+                    </Grid>
+
                 </TabItem>
 
             </TabControl>

@@ -1,4 +1,5 @@
 ﻿using MathChatBot.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,7 +17,7 @@ namespace MathChatBot.Utilities
         }
     }
 
-    public class DatabaseUtility
+    public static class DatabaseUtility
     {
         #region Constants
 
@@ -24,7 +25,36 @@ namespace MathChatBot.Utilities
 
         #endregion
 
-        #region User functions              
+        #region User functions
+
+        public static string GenerateUsername(string firstName, string lastName)
+        {
+            if (firstName.Length < 2 || lastName.Length < 2)
+                return null;
+
+            using (MathChatBotEntities entities = new MathChatBotEntities())
+            {
+                Random random = new Random();
+                var number = 0;
+                var username = string.Empty;
+
+                do
+                {
+                    number = random.Next(1, 100);
+                    username = firstName.ToLower().Substring(0, 2) + lastName.ToLower().Substring(0, 2) + number.ToString();
+                }
+                while (entities.Users.Any(x => x.Username == username));
+
+                return username;
+            }
+        }
+
+        private static User GetUserFromUsername(this MathChatBotEntities entities, string username)
+        {
+            // Get user
+            var user = entities.Users.Where(x => x.Username == username).FirstOrDefault();
+            return user;
+        }
 
         /// <summary>
         /// Check login for an user
@@ -78,6 +108,14 @@ namespace MathChatBot.Utilities
             }
         }
 
+        public static List<Role> GetRolesList()
+        {
+            using (MathChatBotEntities entities = new MathChatBotEntities())
+            {
+                return entities.Roles.ToList();
+            }
+        }
+
         public static List<Role> GetRolesListForUser(string username)
         {
             using (MathChatBotEntities entities = new MathChatBotEntities())
@@ -123,7 +161,8 @@ namespace MathChatBot.Utilities
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Username = user.Username,
-                    Password = EncryptUtility.Encrypt(user.Password, PassPhrase)
+                    Password = EncryptUtility.Encrypt(user.Password, PassPhrase),
+                    IsActivated = true
                 });
 
                 // Check if everything went ok
@@ -140,6 +179,54 @@ namespace MathChatBot.Utilities
             }
         }
 
+        public static bool AddToClassesByName(User user, string[] classes)
+        {
+            return AddToClassesByName(user.Username, classes);
+        }
+
+        public static bool AddToClassesByName(string username, string[] classes)
+        {
+            using (MathChatBotEntities entities = new MathChatBotEntities())
+            {
+                // Get user
+                var user = entities.GetUserFromUsername(username);
+
+                // If the user is null return false
+                if (user == null)
+                    return false;
+
+                foreach (var clas in classes)
+                {
+                    var databaseClass = entities.Classes.Where(x => x.Name == clas).FirstOrDefault();
+
+                    if (databaseClass == null)
+                    {
+                        databaseClass = entities.Classes.Add(new Class()
+                        {
+                            Name = clas
+                        });
+
+                        var flag = entities.SaveChanges();
+                        if (flag != 1)
+                            return false;
+                    }
+
+                    if (databaseClass != null && !entities.UserClassRelations.Any(x => x.UserId == user.Id && x.ClassId == databaseClass.Id))
+                    {
+                        entities.UserClassRelations.Add(new UserClassRelation()
+                        {
+                            UserId = user.Id,
+                            ClassId = databaseClass.Id
+                        });
+                    }
+                }
+
+                entities.SaveChanges();
+
+                return true;
+            }
+        }
+
         public static bool AddRolesByName(User user, string[] roles)
         {
             return AddRolesByName(user.Username, roles);
@@ -149,12 +236,8 @@ namespace MathChatBot.Utilities
         {
             using (MathChatBotEntities entities = new MathChatBotEntities())
             {
-                // Check if user exist in the database
-                if (!entities.Users.Any(x => x.Username == username))
-                    return false;
-
                 // Get user
-                var user = entities.Users.Where(x => x.Username == username).FirstOrDefault();
+                var user = entities.GetUserFromUsername(username);
 
                 // If the user is null return false
                 if (user == null)
@@ -190,12 +273,8 @@ namespace MathChatBot.Utilities
         {
             using (MathChatBotEntities entities = new MathChatBotEntities())
             {
-                // Check if user exist in the database
-                if (!entities.Users.Any(x => x.Username == username))
-                    return false;
-
                 // Get the user
-                var user = entities.Users.Where(x => x.Username == username).FirstOrDefault();
+                var user = entities.GetUserFromUsername(username);
 
                 // If the user is null return false
                 if (user == null)

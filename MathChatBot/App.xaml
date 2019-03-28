@@ -5,6 +5,8 @@
              xmlns:core="clr-namespace:System;assembly=mscorlib"
              StartupUri="Windows\LoginWindow.xaml">
     <Application.Resources>
+        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#33002456"/>
+
         <SolidColorBrush x:Key="AUU_Blue" Color="#002456"/>
         <SolidColorBrush x:Key="AAU_DarkBlue" Color="#FF001636"/>
         <SolidColorBrush x:Key="UserMessageColor" Color="#002456"/>
@@ -41,9 +43,9 @@
                             Name="background"
                             Margin="0"
                             CornerRadius="1"
-                            Background="{TemplateBinding Background}"
+                            Background="Transparent"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderThickness="0"
                             >
                             <!--ARROW-->
                             <Path 
@@ -74,7 +76,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type RepeatButton}">
-                        <Border Background="#FFF0F0F0" />
+                        <Border Background="#00F0F0F0" />
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -805,6 +807,11 @@
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter TargetName="background" Property="Fill" Value="{StaticResource ResourceKey=BotMessageColor}"/>
                             </Trigger>
+                            <!--IsFocused true-->
+                            <!--<Trigger Property="IsFocused" Value="true">
+                                <Setter TargetName="background" Property="Fill" Value="White"/>
+                                <Setter TargetName="myContentPresenter" Property="TextBlock.Foreground" Value="Black"/>
+                            </Trigger>-->
                             <!--IsMouseOver-->
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Trigger.EnterActions>
@@ -1003,6 +1010,7 @@
                 <Trigger Property="Orientation" Value="Horizontal">
                     <Setter Property="Width" Value="Auto"/>
                     <Setter Property="Height" Value="30" />
+                    <Setter Property="Foreground" Value="Black"/>
                     <Setter Property="BorderThickness" Value="1" />
                     <Setter Property="BorderBrush" Value="{StaticResource BorderColor}" />
                     <Setter Property="Background" Value="{StaticResource AUU_Blue}" />
@@ -1011,7 +1019,7 @@
                 <!--Orientation Vertical-->
                 <Trigger Property="Orientation" Value="Vertical">
                     <Setter Property="Margin" Value="1"/>
-                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Foreground" Value="Black"/>
                     <Setter Property="Width" Value="30"/>
                     <Setter Property="Height" Value="Auto" />
                     <Setter Property="BorderThickness" Value="1" />
@@ -1020,6 +1028,10 @@
                     <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
                 </Trigger>
             </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontFamily" Value="Roboto"/>
         </Style>
 
         <!--#endregion-->

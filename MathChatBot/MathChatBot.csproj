@@ -14,6 +14,8 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -178,6 +180,7 @@
       <DependentUpon>MathChatBotModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Objects\Role.cs" />
+    <Compile Include="Models\Objects\User.cs" />
     <Compile Include="Models\Role.cs">
       <DependentUpon>MathChatBotModel.tt</DependentUpon>
     </Compile>

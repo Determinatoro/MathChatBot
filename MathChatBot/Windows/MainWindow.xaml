@@ -16,28 +16,6 @@
         >
     <Window.Resources>
 
-        <!-- STYLE SCROLLBAR -->
-        <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Setter Property="OverridesDefaultStyle" Value="true"/>
-            <Style.Triggers>
-                <!--Orientation Horizontal-->
-                <Trigger Property="Orientation" Value="Horizontal">
-                    <Setter Property="Width" Value="Auto"/>
-                    <Setter Property="Height" Value="30" />
-                    <Setter Property="Background" Value="{StaticResource AUU_Blue}" />
-                    <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
-                </Trigger>
-                <!--Orientation Vertical-->
-                <Trigger Property="Orientation" Value="Vertical">
-                    <Setter Property="Width" Value="30"/>
-                    <Setter Property="Height" Value="Auto" />
-                    <Setter Property="Background" Value="{StaticResource AUU_Blue}" />
-                    <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
         <!-- Chat object -->
         <DataTemplate DataType="{x:Type local:ChatObject}">
             <Grid HorizontalAlignment="Stretch" Margin="2, 5, 2, 5">
@@ -214,16 +192,16 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBox
-                Name="tbChat"  
-                Style="{StaticResource styleWaterMark}"
-                Tag="Write a message..."
-                VerticalContentAlignment="Center"
-                Padding="5,2.5,5,2.5"
-                BorderBrush="#000000"
-                BorderThickness="1"
-                Margin="1"
-                TextWrapping="Wrap"                
-            />
+                        Name="tbChat"  
+                        Style="{StaticResource styleWaterMark}"
+                        Tag="Write a message..."
+                        VerticalContentAlignment="Center"
+                        Padding="5,2.5,5,2.5"
+                        BorderBrush="#000000"
+                        BorderThickness="1"
+                        Margin="1"
+                        TextWrapping="Wrap"                
+                        />
 
                     <Button
                         Name="btnSend" 

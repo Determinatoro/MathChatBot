@@ -151,8 +151,9 @@
                 <ProgressBar 
                     Name="pbProgress"
                     Foreground="{StaticResource AUU_Blue}" 
-                    Value="100" 
-                    IsIndeterminate="True"
+                    Value="1"
+                    Maximum="5"
+                    IsIndeterminate="false"
                     Grid.Row="2"
                     Background="White" 
                     Margin="50, 0 , 50, 0"

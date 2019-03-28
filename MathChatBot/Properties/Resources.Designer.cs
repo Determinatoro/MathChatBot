@@ -61,6 +61,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Activated.
+        /// </summary>
+        public static string activated {
+            get {
+                return ResourceManager.GetString("activated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add users from file.
         /// </summary>
         public static string add_users_from_file {
@@ -70,7 +79,7 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adding users from file.\r\nPlease wait....
+        ///   Looks up a localized string similar to Adding users from file. Please wait....
         /// </summary>
         public static string adding_users_from_file_please_wait {
             get {
@@ -115,6 +124,33 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string create {
+            get {
+                return ResourceManager.GetString("create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the following problems has occured:\n\n1. You have given a name that is not at least 2 letters long.\n2. You have given a password that is not at least 8 characters long..
+        /// </summary>
+        public static string create_user_error {
+            get {
+                return ResourceManager.GetString("create_user_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to First name.
+        /// </summary>
+        public static string first_name {
+            get {
+                return ResourceManager.GetString("first_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap icon_classes {
@@ -131,6 +167,15 @@ namespace MathChatBot.Properties {
             get {
                 object obj = ResourceManager.GetObject("icon_users", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last name.
+        /// </summary>
+        public static string last_name {
+            get {
+                return ResourceManager.GetString("last_name", resourceCulture);
             }
         }
         
@@ -192,6 +237,51 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string name {
+            get {
+                return ResourceManager.GetString("name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New class.
+        /// </summary>
+        public static string new_class {
+            get {
+                return ResourceManager.GetString("new_class", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New password.
+        /// </summary>
+        public static string new_password {
+            get {
+                return ResourceManager.GetString("new_password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New password again.
+        /// </summary>
+        public static string new_password_again {
+            get {
+                return ResourceManager.GetString("new_password_again", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New user.
+        /// </summary>
+        public static string new_user {
+            get {
+                return ResourceManager.GetString("new_user", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
         public static string ok {
@@ -206,6 +296,24 @@ namespace MathChatBot.Properties {
         public static string password {
             get {
                 return ResourceManager.GetString("password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset.
+        /// </summary>
+        public static string reset {
+            get {
+                return ResourceManager.GetString("reset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset password.
+        /// </summary>
+        public static string reset_password {
+            get {
+                return ResourceManager.GetString("reset_password", resourceCulture);
             }
         }
         
@@ -237,11 +345,38 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search for class....
+        /// </summary>
+        public static string search_for_class {
+            get {
+                return ResourceManager.GetString("search_for_class", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search for user....
+        /// </summary>
+        public static string search_for_user {
+            get {
+                return ResourceManager.GetString("search_for_user", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to See roles.
         /// </summary>
         public static string see_roles {
             get {
                 return ResourceManager.GetString("see_roles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See users.
+        /// </summary>
+        public static string see_users {
+            get {
+                return ResourceManager.GetString("see_users", resourceCulture);
             }
         }
         
@@ -260,6 +395,24 @@ namespace MathChatBot.Properties {
         public static string successfully_gone_through_file {
             get {
                 return ResourceManager.GetString("successfully_gone_through_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The password needs to be at least 8 characters long.
+        /// </summary>
+        public static string the_password_has_to_be_at_least_eight_characters_long {
+            get {
+                return ResourceManager.GetString("the_password_has_to_be_at_least_eight_characters_long", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The passwords need to match.
+        /// </summary>
+        public static string the_passwords_need_to_match {
+            get {
+                return ResourceManager.GetString("the_passwords_need_to_match", resourceCulture);
             }
         }
         

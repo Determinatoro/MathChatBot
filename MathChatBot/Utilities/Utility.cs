@@ -1,9 +1,8 @@
-﻿using System;
+﻿using MathChatBot.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -17,6 +16,53 @@ namespace MathChatBot.Utilities
 
         #region Methods
 
+        public static void SetStringRolesForUsers(this List<User> list)
+        {
+            foreach (var user in list)
+            {
+                var roles = user.UserRoleRelations.Select(x => x.Role).ToList();
+
+                if (roles == null)
+                {
+                    user.Roles = "";
+                    continue;
+                }
+
+                var names = roles.OrderBy(x => x.Name).Select(x => x.Name).ToList();
+
+                var strRoles = string.Join(", ", names);
+                user.Roles = strRoles;
+            }
+        }
+
+        /// <summary>
+        /// Copy properties with the same names from one object to another
+        /// </summary>
+        /// <typeparam name="T">Source type</typeparam>
+        /// <typeparam name="U">Dest type</typeparam>
+        /// <param name="source">The source object</param>
+        /// <param name="dest">The destination object</param>
+        public static void CopyPropertiesTo<T, U>(this T source, U dest)
+        {
+            var sourceProps = typeof(T).GetProperties().Where(x => x.CanRead).ToList();
+            var destProps = typeof(U).GetProperties()
+                    .Where(x => x.CanWrite)
+                    .ToList();
+
+            foreach (var sourceProp in sourceProps)
+            {
+                if (destProps.Any(x => x.Name == sourceProp.Name))
+                {
+                    try
+                    {
+                        var p = destProps.FirstOrDefault(x => x.Name == sourceProp.Name);
+                        if (p != null)
+                            p.SetValue(dest, sourceProp.GetValue(source, null), null);
+                    } catch { }
+                }
+            }
+        }
+
         /// <summary>
         /// Parse enum from string value
         /// </summary>
@@ -25,6 +71,8 @@ namespace MathChatBot.Utilities
         /// <returns>Enum for the string</returns>
         public static T ParseEnum<T>(string value)
         {
+            if (typeof(T) != typeof(Enum))
+                return default(T);
             return (T)Enum.Parse(typeof(T), value, true);
         }
 

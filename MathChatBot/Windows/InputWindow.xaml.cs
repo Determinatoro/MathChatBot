@@ -1,27 +1,14 @@
 ﻿using MathChatBot.Models;
 using MathChatBot.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using static MathChatBot.InputWindow;
 
 namespace MathChatBot
 {
-    public interface IWindowDataTransfer
-    {
-        void ReceivedData(WindowTypes windowType, object data);
-    }
-
     /// <summary>
     /// Interaction logic for InputWindow.xaml
     /// </summary>
@@ -31,32 +18,57 @@ namespace MathChatBot
         {
             NewUser,
             ResetPassword,
-            UserInformation
+            UserInformation,
+            ClassOverview
         }
 
         private WindowTypes WindowType { get; set; }
         public User User { get; set; }
         public List<Role> RolesListForUser { get; set; }
-        private IWindowDataTransfer WindowDataTransfer { get; set; }
         private MathChatBotEntities MathChatBotEntities { get; set; }
 
-        public InputWindow(MathChatBotEntities mathChatBotEntities, IWindowDataTransfer windowDataTransfer, User user, WindowTypes windowType = WindowTypes.UserInformation) : this()
+        private InputWindow()
         {
-            MathChatBotEntities = mathChatBotEntities;
-            WindowDataTransfer = windowDataTransfer;
-            User = user;
+            InitializeComponent();
+
+            MathChatBotEntities = new MathChatBotEntities();
+
+            spResetPassword.Visibility = Visibility.Collapsed;
+            spUser.Visibility = Visibility.Collapsed;
+            spClassOverview.Visibility = Visibility.Collapsed;
+
+            btnOk.Click += button_Click;
+            btnCancel.Click += button_Click;
+        }
+
+        public InputWindow(User user, WindowTypes windowType) : this()
+        {
             WindowType = windowType;
+            User = MathChatBotEntities.Users.FirstOrDefault(x => x.Id == user.Id);
 
             switch (WindowType)
             {
-                case WindowTypes.NewUser:
-                    break;
                 case WindowTypes.ResetPassword:
-                    break;
+                    {
+                        spResetPassword.Visibility = Visibility.Visible;
+
+                        btnOk.Content = Properties.Resources.reset;
+
+                        this.SetupBorderHeader(Properties.Resources.reset_password);
+
+                        break;
+                    }
                 case WindowTypes.UserInformation:
                     {
+                        spUser.Visibility = Visibility.Visible;
+
+                        lblUserPassword.Visibility = Visibility.Collapsed;
+                        tbUserPassword.Visibility = Visibility.Collapsed;
+
                         RolesListForUser = DatabaseUtility.GetRolesListForUser(user.Username);
                         lbRoles.ItemsSource = RolesListForUser;
+
+                        btnUserResetPassword.Click += button_Click;
 
                         btnOk.Content = Properties.Resources.save;
 
@@ -64,44 +76,174 @@ namespace MathChatBot
                         break;
                     }
             }
-            
         }
 
-        public InputWindow()
+        public InputWindow(WindowTypes windowType) : this()
         {
-            InitializeComponent();
+            WindowType = windowType;
 
-            btnOk.Click += button_Click;
-            btnCancel.Click += button_Click;
+            switch (WindowType)
+            {
+                case WindowTypes.NewUser:
+                    {
+                        spUser.Visibility = Visibility.Visible;
+
+                        User = new User();
+
+                        cbUserIsActivated.Visibility = Visibility.Collapsed;
+                        btnUserResetPassword.Visibility = Visibility.Collapsed;
+                        tbUserPassword.Visibility = Visibility.Visible;
+
+                        // TextChanged events
+                        tbUserFirstName.TextChanged += textBox_TextChanged;
+                        tbUserLastName.TextChanged += textBox_TextChanged;
+
+                        // PreviewTextInput events
+                        tbUserFirstName.PreviewTextInput += textBox_PreviewTextInput;
+                        tbUserLastName.PreviewTextInput += textBox_PreviewTextInput;
+
+                        RolesListForUser = DatabaseUtility.GetRolesList();
+                        lbRoles.ItemsSource = RolesListForUser;
+
+                        btnOk.Content = Properties.Resources.create;
+
+                        this.SetupBorderHeader(Properties.Resources.new_user);
+                        break;
+                    }
+                case WindowTypes.ClassOverview:
+                    {
+
+
+                        break;
+                    }
+            }
+
         }
 
+        public InputWindow(Class clas) : this()
+        {
+            spClassOverview.Visibility = Visibility.Visible;
+
+            WindowType = WindowTypes.ClassOverview;
+
+            var users = MathChatBotEntities.UserClassRelations.Where(x => x.ClassId == clas.Id).Select(x => x.User).ToList();
+            users.SetStringRolesForUsers();
+
+            dgUsers.ItemsSource = users;
+
+            btnOk.Visibility = Visibility.Collapsed;
+
+            this.SetupBorderHeader(clas.Name);
+        }
+
+        // TextBox - PreviewTextInput
+        private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^a-zA-Z]");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        // TextBox - TextChanged
+        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var tb = sender as TextBox;
+
+            switch (tb.Name)
+            {
+                case nameof(tbUserFirstName):
+                case nameof(tbUserLastName):
+                    {
+                        if (User.FirstName == null || User.FirstName.Length < 2 || User.LastName == null || User.LastName.Length < 2)
+                            tbUserUsername.Text = string.Empty;
+                        else
+                        {
+                            if (User.Username == null || User.Username == string.Empty)
+                                tbUserUsername.Text = DatabaseUtility.GenerateUsername(User.FirstName, User.LastName);
+                        }
+
+                        break;
+                    }
+            }
+        }
+
+        // Button - Click
         private void button_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;
             switch (btn.Name)
             {
+                case nameof(btnUserResetPassword):
+                    {
+                        InputWindow inputWindow = new InputWindow(User, WindowTypes.ResetPassword);
+                        inputWindow.ShowDialog();
+                        return;
+                    }
                 case nameof(btnOk):
                     {
                         switch (WindowType)
                         {
                             case WindowTypes.NewUser:
-                                break;
+                                {
+                                    if (User.FirstName == null || User.FirstName.Length < 2 || User.LastName == null || User.LastName.Length < 2 || User.Password == null || User.Password.Length < 8)
+                                    {
+                                        CustomDialog.Show(Properties.Resources.create_user_error);
+                                        return;
+                                    }
+
+                                    User = DatabaseUtility.CreateUser(User);
+                                    if (User is User)
+                                    {
+                                        foreach (var role in RolesListForUser)
+                                        {
+                                            if (role.IsAssigned)
+                                            {
+                                                MathChatBotEntities.UserRoleRelations.Add(new UserRoleRelation()
+                                                {
+                                                    UserId = User.Id,
+                                                    RoleId = role.Id
+                                                });
+                                            }
+                                        }
+
+                                        MathChatBotEntities.SaveChanges();
+                                    }
+
+                                    break;
+                                }
                             case WindowTypes.ResetPassword:
-                                break;
+                                {
+                                    var newPassword = pbResetPasswordPassword.Password;
+                                    var newPasswordAgain = pbResetPasswordPasswordAgain.Password;
+
+                                    if (newPassword != newPasswordAgain)
+                                    {
+                                        CustomDialog.Show(Properties.Resources.the_passwords_need_to_match);
+                                        return;
+                                    }
+                                    else if (newPassword.Length < 8)
+                                    {
+                                        CustomDialog.Show(Properties.Resources.the_password_has_to_be_at_least_eight_characters_long);
+                                        return;
+                                    }
+
+                                    DatabaseUtility.ResetUserPassword(newPassword, User.Username);
+
+                                    break;
+                                }
                             case WindowTypes.UserInformation:
                                 {
                                     var userRoleRelations = User.UserRoleRelations;
 
                                     foreach (var role in RolesListForUser)
                                     {
-                                        var userRoleRelation = userRoleRelations.Where(x => x.RoleId == role.Id).FirstOrDefault();
+                                        var userRoleRelation = userRoleRelations.FirstOrDefault(x => x.RoleId == role.Id);
 
                                         if ((role.IsAssigned && userRoleRelation != null) || (!role.IsAssigned && userRoleRelation == null))
                                             continue;
 
                                         if (role.IsAssigned)
                                         {
-                                            User.UserRoleRelations.Add(new UserRoleRelation()
+                                            MathChatBotEntities.UserRoleRelations.Add(new UserRoleRelation()
                                             {
                                                 UserId = User.Id,
                                                 RoleId = role.Id
@@ -111,8 +253,7 @@ namespace MathChatBot
                                             MathChatBotEntities.Entry(userRoleRelation).State = System.Data.Entity.EntityState.Deleted;
                                     }
 
-                                    if (WindowDataTransfer != null)
-                                        WindowDataTransfer.ReceivedData(WindowType, User);
+                                    MathChatBotEntities.SaveChanges();
 
                                     break;
                                 }
@@ -124,10 +265,27 @@ namespace MathChatBot
                     }
                 case nameof(btnCancel):
                     {
+                        switch (WindowType)
+                        {
+                            case WindowTypes.NewUser:
+                                {
+                                    break;
+                                }
+                            case WindowTypes.ResetPassword:
+                                {
+                                    break;
+                                }
+                            case WindowTypes.UserInformation:
+                                {
+                                    break;
+                                }
+                        }
+
                         Close();
                         break;
                     }
             }
         }
+
     }
 }
