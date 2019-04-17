@@ -1,18 +1,17 @@
 ﻿using MathChatBot.Models;
 using MathChatBot.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using NCalc;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Resources;
+using System.Collections;
+using System.Globalization;
+using System.Linq;
 
 namespace MathChatBot
 {
@@ -21,12 +20,15 @@ namespace MathChatBot
     /// </summary>
     public partial class LoginWindow : Window
     {
+        public User User { get; private set; }
+
         #region Constructor
 
         public LoginWindow()
         {
             InitializeComponent();
 
+            // Get saved login information
             GetSavedLogin();
 
             // Click events
@@ -34,6 +36,7 @@ namespace MathChatBot
             // KeyDown events
             tbPassword.KeyDown += textBox_KeyDown;
 
+            // Set border
             this.SetupBorderHeader(Properties.Resources.login);
         }
 
@@ -48,10 +51,9 @@ namespace MathChatBot
         {
             var username = Properties.Settings.Default.Username;
             var password = Properties.Settings.Default.Password;
-            
+
             tbUsername.Text = username;
             tbPassword.Password = password;
-            
 
             if (username != string.Empty && password != string.Empty)
             {
@@ -67,26 +69,53 @@ namespace MathChatBot
         /// <param name="password">The given password</param>
         private void CheckLogin(string username, string password)
         {
-            var response = DatabaseUtility.CheckLogin(username, password);
-            if (response.Success)
+            new Thread(() =>
             {
-                if (cbSaveCredentials.IsChecked.Value)                
-                    // Save the login credentials for later use
-                    SettingsUtility.SaveLoginCredentials(username, password);
-                else
-                    SettingsUtility.SaveLoginCredentials(null, null);
-                // Open the main window
-                MainWindow mainWindow = new MainWindow((User)response.Object);
-                mainWindow.Show();
-                // Close this window
-                Close();
-            }
+                bool saveCredentials = false;
+
+                this.RunOnUIThread(() =>
+                {
+                    saveCredentials = cbSaveCredentials.IsChecked.Value;
+                    CustomDialog.ShowProgress(Properties.Resources.logging_in_please_wait);
+                });
+
+                try
+                {
+                    var response = DatabaseUtility.CheckLogin(username, password);
+                    if (response.Success)
+                    {
+                        if (saveCredentials)
+                            // Save the login credentials for later use
+                            SettingsUtility.SaveLoginCredentials(username, password);
+                        else
+                            SettingsUtility.SaveLoginCredentials(null, null);
+
+                        this.RunOnUIThread(() =>
+                        {
+                            CustomDialog.Dismiss();
+                            DialogResult = true;
+                            User = response.User;
+                            // Close this window
+                            Close();
+                        });
+                    }
+                }
+                catch (Exception mes)
+                {
+                    this.RunOnUIThread(() =>
+                    {
+                        // Show error to the user
+                        CustomDialog.Show(mes.Message);
+                    });
+                }
+            }).Start();
         }
 
         #endregion
 
         #region Events
 
+        // Button - Click
         private void button_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;
@@ -101,16 +130,12 @@ namespace MathChatBot
             }
         }
 
+        // PasswordBox, TextBox - KeyDown
         private void textBox_KeyDown(object sender, KeyEventArgs e)
         {
-            var name = "";
+            FrameworkElement element = sender as FrameworkElement;
 
-            if (sender is TextBox)
-                name = ((TextBox)sender).Name;
-            else if (sender is PasswordBox)
-                name = ((PasswordBox)sender).Name;
-
-            switch (name)
+            switch (element.Name)
             {
                 case nameof(tbPassword):
                     {

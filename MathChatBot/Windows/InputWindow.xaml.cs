@@ -31,7 +31,7 @@ namespace MathChatBot
         {
             InitializeComponent();
 
-            MathChatBotEntities = new MathChatBotEntities();
+            MathChatBotEntities = DatabaseUtility.GetEntity();
 
             spResetPassword.Visibility = Visibility.Collapsed;
             spUser.Visibility = Visibility.Collapsed;
@@ -108,12 +108,6 @@ namespace MathChatBot
                         btnOk.Content = Properties.Resources.create;
 
                         this.SetupBorderHeader(Properties.Resources.new_user);
-                        break;
-                    }
-                case WindowTypes.ClassOverview:
-                    {
-
-
                         break;
                     }
             }

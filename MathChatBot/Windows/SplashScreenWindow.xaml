@@ -1,0 +1,65 @@
+﻿<Window x:Class="MathChatBot.SplashScreenWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MathChatBot"
+        mc:Ignorable="d"
+        xmlns:p = "clr-namespace:MathChatBot.Properties"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize"
+        AllowsTransparency="True" 
+        WindowStyle="None" 
+        Title="SplashScreenWindow" Height="450" Width="450">
+    <Border Background="White"
+            CornerRadius="5"
+            BorderBrush="{StaticResource BorderColor}"
+            BorderThickness="1">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.75*"/>
+            <RowDefinition Height="200"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+
+        <Image 
+           Name="imgLogo"
+           Grid.Row="1"
+            HorizontalAlignment="Center"
+            RenderTransformOrigin=".5,.6"
+           Source="/Resources\mathchatbot_logo.png"
+           >
+            <Image.RenderTransform>
+                <RotateTransform x:Name="TransRotate" CenterX="0" CenterY="0" Angle="0" />
+            </Image.RenderTransform>
+            <Image.Resources>
+                <Storyboard x:Key="spin">
+                    <DoubleAnimation x:Name="da" 
+                                     Storyboard.TargetName="TransRotate" 
+                                     Storyboard.TargetProperty="Angle"
+                                     By="360" 
+                                     Duration="0:0:3"  
+                                     AutoReverse="False" 
+                                     DecelerationRatio="0.8" 
+                                     AccelerationRatio="0.2"
+                                     RepeatBehavior="Forever" />
+                </Storyboard>
+            </Image.Resources>
+        </Image>
+
+        <Label 
+            Name="lblStartingUp"
+            Content="{x:Static p:Resources.preparing_mathchatbot}"
+            FontFamily="Roboto"
+            FontWeight="Bold"
+            Grid.Row="4"  
+            TextBlock.TextAlignment="Center"
+            VerticalContentAlignment="Center"
+            HorizontalContentAlignment="Center"
+            FontSize="20"
+            />
+
+    </Grid>
+    </Border>
+</Window>

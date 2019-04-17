@@ -1,13 +1,20 @@
 ﻿using MathChatBot.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Resources;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace MathChatBot.Utilities
 {
@@ -16,23 +23,32 @@ namespace MathChatBot.Utilities
 
         #region Methods
 
-        public static void SetStringRolesForUsers(this List<User> list)
+        /// <summary>
+        /// Convert base64 string to bitmap image
+        /// </summary>
+        /// <param name="base64String">The base64 string</param>
+        /// <returns></returns>
+        public static BitmapImage Base64ToImage(string base64String)
         {
-            foreach (var user in list)
-            {
-                var roles = user.UserRoleRelations.Select(x => x.Role).ToList();
+            // Convert base 64 string to byte[]
+            byte[] binaryData = Convert.FromBase64String(base64String);
 
-                if (roles == null)
-                {
-                    user.Roles = "";
-                    continue;
-                }
+            BitmapImage bi = new BitmapImage();
+            bi.BeginInit();
+            bi.StreamSource = new MemoryStream(binaryData);
+            bi.EndInit();
+            return bi;
+        }
 
-                var names = roles.OrderBy(x => x.Name).Select(x => x.Name).ToList();
-
-                var strRoles = string.Join(", ", names);
-                user.Roles = strRoles;
-            }
+        /// <summary>
+        /// Convert image to base64 string 
+        /// </summary>
+        /// <param name="filePath">File path to the image</param>
+        /// <returns></returns>
+        public static string ImageToBase64(string filePath)
+        {
+            byte[] imageArray = File.ReadAllBytes(filePath);
+            return Convert.ToBase64String(imageArray);
         }
 
         /// <summary>
@@ -71,9 +87,46 @@ namespace MathChatBot.Utilities
         /// <returns>Enum for the string</returns>
         public static T ParseEnum<T>(string value)
         {
-            if (typeof(T) != typeof(Enum))
+            if (!typeof(T).IsEnum || !Enum.IsDefined(typeof(T), value))
                 return default(T);
             return (T)Enum.Parse(typeof(T), value, true);
+        }
+
+        public static string RegexReplace(this string source, string pattern, string replacement)
+        {
+            return Regex.Replace(source, pattern, replacement);
+        }
+
+        public static string ReplaceLastOccurence(this string source, string value, string replacement)
+        {
+            return RegexReplace(source, $"{value}$", replacement);
+        }
+
+        public static Dictionary<string, string> GetLocaleResources()
+        {
+            ResourceManager rm = Properties.Resources.ResourceManager;
+
+            ResourceSet rs = rm.GetResourceSet(CultureInfo.CurrentCulture, true, true);
+
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+            foreach (var entry in rs.Cast<DictionaryEntry>())
+            {
+                properties[entry.Key.ToString()] = entry.Value.ToString();
+            }
+
+            return properties;
+        }
+
+        /// <summary>
+        /// A methpod that replaces words with other words, this function ignores case.
+        /// </summary>
+        /// <param name="str">The input string that is to be changed</param>
+        /// <param name="pattern">The specific word that has to be changed in the string</param>
+        /// <param name="replaceStr">The word that replaces the pattern input</param>
+        /// <returns>Returns the modified string</returns>
+        public static string ReplaceIgnoreCase(this string str, string pattern, string replaceStr)
+        {
+            return Regex.Replace(str, pattern, replaceStr, RegexOptions.IgnoreCase);
         }
 
         /// <summary>
@@ -105,9 +158,17 @@ namespace MathChatBot.Utilities
                 element.RemoveHandler(routedEvent, routedEventHandler.Handler);
         }
 
+        /// <summary>
+        /// Run code on UI thread
+        /// </summary>
+        /// <param name="window">The window who has to run something on the UI thread</param>
+        /// <param name="action"></param>
         public static void RunOnUIThread(this Window window, Action action)
         {
-            Application.Current.Dispatcher.Invoke(action);
+            if (Thread.CurrentThread == Application.Current.Dispatcher.Thread)
+                action(); 
+            else
+                Application.Current.Dispatcher.Invoke(action);
         }
 
         /// <summary>

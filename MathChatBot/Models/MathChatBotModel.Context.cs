@@ -26,11 +26,14 @@ namespace MathChatBot.Models
         }
     
         public virtual DbSet<Class> Classes { get; set; }
-        public virtual DbSet<Message> Messages { get; set; }
-        public virtual DbSet<MessageType> MessageTypes { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<UserClassRelation> UserClassRelations { get; set; }
         public virtual DbSet<UserRoleRelation> UserRoleRelations { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<MaterialExample> MaterialExamples { get; set; }
+        public virtual DbSet<Material> Materials { get; set; }
+        public virtual DbSet<Term> Terms { get; set; }
+        public virtual DbSet<Topic> Topics { get; set; }
+        public virtual DbSet<HelpRequest> HelpRequests { get; set; }
     }
 }

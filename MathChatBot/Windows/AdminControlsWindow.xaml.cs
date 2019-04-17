@@ -3,6 +3,7 @@ using MathChatBot.Utilities;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -39,7 +40,7 @@ namespace MathChatBot
             InitializeComponent();
 
             // Get entity
-            MathChatBotEntities = new MathChatBotEntities();
+            MathChatBotEntities = DatabaseUtility.GetEntity();
             // Get users
             GetUsers();
             // Get classes
@@ -48,9 +49,11 @@ namespace MathChatBot
             // Click events
             btnNewUser.Click += button_Click;
             btnAddUsersFromFile.Click += button_Click;
+            btnConvertMaterial.Click += button_Click;
 
             // TextChanged events
             tbSearchForUsers.TextChanged += textBox_TextChanged;
+            tbSearchForClasses.TextChanged += textBox_TextChanged;
 
             // Setup top border header
             this.SetupBorderHeader(Properties.Resources.admin_controls_title);
@@ -130,8 +133,12 @@ namespace MathChatBot
 
                     // Set values from file
                     var tempUser = new User();
+                    // Generate username
+                    var username = DatabaseUtility.GenerateUsername(tempUser.FirstName, tempUser.LastName);
                     // Set properties from file entry through reflection
                     CSVUtility.SetObjectValues(dictionary, tempUser);
+                    // Set username
+                    tempUser.Username = username;
                     // Create the user and get the user
                     var user = DatabaseUtility.CreateUser(tempUser);
 
@@ -210,11 +217,24 @@ namespace MathChatBot
                         // Shows only the users which first name, last name or username 
                         // contains the search string
                         else
-                            dgUsers.ItemsSource = Users.Where(x => 
+                            dgUsers.ItemsSource = Users.Where(x =>
                             x.FirstName.ToLower().Contains(searchStr) ||
                             x.LastName.ToLower().Contains(searchStr) ||
                             x.Username.ToLower().Contains(searchStr)
                             ).ToList();
+
+                        break;
+                    }
+                case nameof(tbSearchForClasses):
+                    {
+                        var searchStr = tb.Text.ToLower();
+
+                        // Show all classes if the search string is empty
+                        if (searchStr == string.Empty)
+                            dgClasses.ItemsSource = Classes;
+                        // Show only classes which name contains the search string
+                        else
+                            dgClasses.ItemsSource = Classes.Where(x => x.Name.Contains(searchStr)).ToList();
 
                         break;
                     }
@@ -253,6 +273,28 @@ namespace MathChatBot
 
                         break;
                     }
+                case nameof(btnConvertMaterial):
+                    {
+                        OpenFileDialog openFileDialog = new OpenFileDialog();
+                        openFileDialog.Filter = "PNG files (*.png)|*.png";
+                        openFileDialog.Multiselect = true;
+
+                        if (openFileDialog.ShowDialog() == true)
+                        {
+                            var fileNames = openFileDialog.FileNames;
+
+                            foreach (var fileName in fileNames)
+                            {
+                                var dir = Path.GetDirectoryName(fileName);
+                                var tempFileName = Path.GetFileNameWithoutExtension(fileName) + ".txt";
+                                var tempFullPath = Path.Combine(dir, tempFileName);
+
+                                File.WriteAllText(tempFullPath, Utility.ImageToBase64(fileName));
+                            }
+                        }
+
+                        break;
+                    }
                 // More button for each user object in the datagrid
                 case "btnMore":
                     {
@@ -284,7 +326,8 @@ namespace MathChatBot
         // Window - Closing
         private void window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            GetUsers();   
+            GetUsers();
+            GetClasses();
         }
 
         // DataGrid - RowEditEnding

@@ -15,7 +15,7 @@ namespace MathChatBot
             Error
         }
 
-        private static CustomDialog customDialog;
+        public static CustomDialog customDialog;
 
         public static void Show(string message, RoutedEventHandler clickEvent = null)
         {
@@ -24,10 +24,10 @@ namespace MathChatBot
             customDialog.Show();
         }
 
-        public static void ShowProgress(string message, RoutedEventHandler clickEvent = null)
+        public static void ShowProgress(string message, RoutedEventHandler clickEvent = null, bool hideCancelButton = false)
         {
             Dismiss();
-            customDialog = new CustomDialog(CustomDialogTypes.Progress, message, true, clickEvent: clickEvent);
+            customDialog = new CustomDialog(CustomDialogTypes.Progress, message, true, clickEvent: clickEvent, hideCancelButton: hideCancelButton);
             customDialog.Show();
         }
 
@@ -62,7 +62,7 @@ namespace MathChatBot
         public CustomDialogTypes DialogType { get; set; }
         public bool ClosedInCode { get; set; }
 
-        private CustomDialog(CustomDialogTypes customDialogTypes, string message, bool isIndeterminate = true, double maximum = 100, RoutedEventHandler clickEvent = null)
+        private CustomDialog(CustomDialogTypes customDialogTypes, string message, bool isIndeterminate = true, double maximum = 100, RoutedEventHandler clickEvent = null, bool hideCancelButton = false)
         {
             InitializeComponent();
 
@@ -90,6 +90,8 @@ namespace MathChatBot
                         btnProgressCancel.Click += button_Click;
                         if (clickEvent != null)
                             btnProgressCancel.Click += clickEvent;
+
+                        btnProgressCancel.Visibility = hideCancelButton ? Visibility.Hidden : Visibility.Visible;
 
                         btnProgressCancel.Content = Properties.Resources.cancel;
 

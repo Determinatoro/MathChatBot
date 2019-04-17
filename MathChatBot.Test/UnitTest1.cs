@@ -13,21 +13,6 @@ namespace MathChatBot.Test
             app.InitializeComponent();
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public void MessageObjectConstructor_MessageIsNull_NullException()
-        {
-            ChatObject chatObject = new ChatObject(null, ChatObject.ChatMessageType.User);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(Exception))]
-        public void MessageObjectConstructor_MessageIsEmpty_Exception()
-        {
-            InitializeComponent();
-            ChatObject chatObject = new ChatObject(string.Empty, ChatObject.ChatMessageType.User);
-        }
-
         #region EncryptionUtility
 
         [TestMethod]       

@@ -61,6 +61,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Acos can only contain numbers between -1 and 1..
+        /// </summary>
+        public static string acos_can_only_contain_numbers_between_minus1_and_1 {
+            get {
+                return ResourceManager.GetString("acos_can_only_contain_numbers_between_minus1_and_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Activated.
         /// </summary>
         public static string activated {
@@ -97,11 +106,38 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Any news.
+        /// </summary>
+        public static string any_news {
+            get {
+                return ResourceManager.GetString("any_news", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Two students were arrested this morning for trying to smuggle 20 Gb of memes into Sweden. Both students are claiming they were only for “personal use”..
+        /// </summary>
+        public static string any_news_response {
+            get {
+                return ResourceManager.GetString("any_news_response", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} - MathChatBot.
         /// </summary>
         public static string application_title {
             get {
                 return ResourceManager.GetString("application_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Asin can only contain numbers between -1 and 1..
+        /// </summary>
+        public static string asin_can_only_contain_numbers_between_minus1_and_1 {
+            get {
+                return ResourceManager.GetString("asin_can_only_contain_numbers_between_minus1_and_1", resourceCulture);
             }
         }
         
@@ -124,6 +160,24 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        public static string clear {
+            get {
+                return ResourceManager.GetString("clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Convert material.
+        /// </summary>
+        public static string convert_material {
+            get {
+                return ResourceManager.GetString("convert_material", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create.
         /// </summary>
         public static string create {
@@ -133,11 +187,41 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to One of the following problems has occured:\n\n1. You have given a name that is not at least 2 letters long.\n2. You have given a password that is not at least 8 characters long..
+        ///   Looks up a localized string similar to One of the following problems has occured:
+        ///
+        ///1. You have given a name that is not at least 2 letters long.
+        ///2. You have given a password that is not at least 8 characters long..
         /// </summary>
         public static string create_user_error {
             get {
                 return ResourceManager.GetString("create_user_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Did not help?.
+        /// </summary>
+        public static string did_not_help {
+            get {
+                return ResourceManager.GetString("did_not_help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Does god exist.
+        /// </summary>
+        public static string does_god_exist {
+            get {
+                return ResourceManager.GetString("does_god_exist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kurt Nørmark is one of many gods..
+        /// </summary>
+        public static string does_god_exist_response {
+            get {
+                return ResourceManager.GetString("does_god_exist_response", resourceCulture);
             }
         }
         
@@ -147,6 +231,90 @@ namespace MathChatBot.Properties {
         public static string first_name {
             get {
                 return ResourceManager.GetString("first_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hello.
+        /// </summary>
+        public static string hello {
+            get {
+                return ResourceManager.GetString("hello", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hello world..
+        /// </summary>
+        public static string hello_response {
+            get {
+                return ResourceManager.GetString("hello_response", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help.
+        /// </summary>
+        public static string help {
+            get {
+                return ResourceManager.GetString("help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help:
+        ///
+        ///Formulating a question:
+        ///1. Your question needs to consist of a wh-question word, such as what, for the chatbot to understand what to search for.
+        ///2. You can ask “What topics do you know?” to get a list of all the topics available.
+        ///
+        ///How to use the calculator:
+        ///1. Ask the chatbot what numbers you want to add(+), substract(-), divide(/) or multiply(*) with each other for example “What is 5 * 5 / 5”.
+        ///2. The mathbot will use the result of the previous calculation unless you write “clear result”..
+        /// </summary>
+        public static string help_message {
+            get {
+                return ResourceManager.GetString("help_message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I cannot process more than one sentence at a time..
+        /// </summary>
+        public static string i_cannot_process_more_than_one_sentence {
+            get {
+                return ResourceManager.GetString("i_cannot_process_more_than_one_sentence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I did not understand that sentence. Write “help” for more information..
+        /// </summary>
+        public static string i_did_not_understand_that_sentence {
+            get {
+                return ResourceManager.GetString("i_did_not_understand_that_sentence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I do not know anything about {0}. These are the topics that I know about:
+        ///
+        ///{1}.
+        /// </summary>
+        public static string i_do_not_know_anything_about_that_noun {
+            get {
+                return ResourceManager.GetString("i_do_not_know_anything_about_that_noun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I do not have any knowledge about those things. These are the topics that I currently know about:
+        ///
+        ///{0}.
+        /// </summary>
+        public static string i_do_not_know_anything_about_those_nouns {
+            get {
+                return ResourceManager.GetString("i_do_not_know_anything_about_those_nouns", resourceCulture);
             }
         }
         
@@ -176,6 +344,15 @@ namespace MathChatBot.Properties {
         public static string last_name {
             get {
                 return ResourceManager.GetString("last_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging in. Please wait....
+        /// </summary>
+        public static string logging_in_please_wait {
+            get {
+                return ResourceManager.GetString("logging_in_please_wait", resourceCulture);
             }
         }
         
@@ -300,6 +477,99 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please enter proper math function..
+        /// </summary>
+        public static string please_enter_proper_math_function {
+            get {
+                return ResourceManager.GetString("please_enter_proper_math_function", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please enter valid input in functions..
+        /// </summary>
+        public static string please_enter_valid_input_in_functions {
+            get {
+                return ResourceManager.GetString("please_enter_valid_input_in_functions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please perform a correct and legal math operation..
+        /// </summary>
+        public static string please_perform_a_correct_and_legal_math_operation {
+            get {
+                return ResourceManager.GetString("please_perform_a_correct_and_legal_math_operation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select a term first before using this command..
+        /// </summary>
+        public static string please_select_a_term_first_before_using_this_command {
+            get {
+                return ResourceManager.GetString("please_select_a_term_first_before_using_this_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select a topic first before using this command..
+        /// </summary>
+        public static string please_select_a_topic_first_before_using_this_command {
+            get {
+                return ResourceManager.GetString("please_select_a_topic_first_before_using_this_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select an example first before using this command..
+        /// </summary>
+        public static string please_select_an_example_first_before_using_this_command {
+            get {
+                return ResourceManager.GetString("please_select_an_example_first_before_using_this_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select one of these topics first:
+        ///
+        ///{0}.
+        /// </summary>
+        public static string please_select_one_of_these_topics_first {
+            get {
+                return ResourceManager.GetString("please_select_one_of_these_topics_first", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please write a proper list representation of nouns..
+        /// </summary>
+        public static string please_write_a_proper_list_representation_of_nouns {
+            get {
+                return ResourceManager.GetString("please_write_a_proper_list_representation_of_nouns", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please write a proper sentence. .
+        /// </summary>
+        public static string please_write_a_proper_sentence {
+            get {
+                return ResourceManager.GetString("please_write_a_proper_sentence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preparing MathChatBot.
+        ///Please wait....
+        /// </summary>
+        public static string preparing_mathchatbot {
+            get {
+                return ResourceManager.GetString("preparing_mathchatbot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reset.
         /// </summary>
         public static string reset {
@@ -363,11 +633,56 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to See definition.
+        /// </summary>
+        public static string see_definition {
+            get {
+                return ResourceManager.GetString("see_definition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See example.
+        /// </summary>
+        public static string see_example {
+            get {
+                return ResourceManager.GetString("see_example", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See examples.
+        /// </summary>
+        public static string see_examples {
+            get {
+                return ResourceManager.GetString("see_examples", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to See roles.
         /// </summary>
         public static string see_roles {
             get {
                 return ResourceManager.GetString("see_roles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See term.
+        /// </summary>
+        public static string see_term {
+            get {
+                return ResourceManager.GetString("see_term", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See terms.
+        /// </summary>
+        public static string see_terms {
+            get {
+                return ResourceManager.GetString("see_terms", resourceCulture);
             }
         }
         
@@ -381,7 +696,7 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Something went when saving changes to the database.
+        ///   Looks up a localized string similar to Something went wrong when saving changes to the database..
         /// </summary>
         public static string something_went_wrong_when_saving_changes_to_the_database {
             get {
@@ -399,7 +714,43 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The password needs to be at least 8 characters long.
+        ///   Looks up a localized string similar to Tell me a joke.
+        /// </summary>
+        public static string tell_me_a_joke {
+            get {
+                return ResourceManager.GetString("tell_me_a_joke", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Have you heard the one about the statistician? Probably..
+        /// </summary>
+        public static string tell_me_a_joke_response {
+            get {
+                return ResourceManager.GetString("tell_me_a_joke_response", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Term.
+        /// </summary>
+        public static string term {
+            get {
+                return ResourceManager.GetString("term", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Terms.
+        /// </summary>
+        public static string terms {
+            get {
+                return ResourceManager.GetString("terms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The password needs to be at least 8 characters long..
         /// </summary>
         public static string the_password_has_to_be_at_least_eight_characters_long {
             get {
@@ -408,11 +759,78 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The passwords need to match.
+        ///   Looks up a localized string similar to The passwords need to match..
         /// </summary>
         public static string the_passwords_need_to_match {
             get {
                 return ResourceManager.GetString("the_passwords_need_to_match", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to These are terms under {0}:
+        ///
+        ///{1}.
+        /// </summary>
+        public static string these_are_the_terms_under {
+            get {
+                return ResourceManager.GetString("these_are_the_terms_under", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to These are the topics that I know about:
+        ///
+        ///{0}.
+        /// </summary>
+        public static string these_are_the_topics_i_know_about {
+            get {
+                return ResourceManager.GetString("these_are_the_topics_i_know_about", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is the example(s) I found for {0}..
+        /// </summary>
+        public static string this_is_the_examples_i_found_for {
+            get {
+                return ResourceManager.GetString("this_is_the_examples_i_found_for", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is the definition I found for {0}..
+        /// </summary>
+        public static string this_is_what_i_found_about {
+            get {
+                return ResourceManager.GetString("this_is_what_i_found_about", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This term has no examples..
+        /// </summary>
+        public static string this_term_has_no_examples {
+            get {
+                return ResourceManager.GetString("this_term_has_no_examples", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Topic.
+        /// </summary>
+        public static string topic {
+            get {
+                return ResourceManager.GetString("topic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Topics.
+        /// </summary>
+        public static string topics {
+            get {
+                return ResourceManager.GetString("topics", resourceCulture);
             }
         }
         
@@ -440,6 +858,98 @@ namespace MathChatBot.Properties {
         public static string users {
             get {
                 return ResourceManager.GetString("users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Welcome to MathChatBot.
+        ///Ask me anything math-related and I might be able to help you.
+        ///Write “help” to get more information..
+        /// </summary>
+        public static string welcome_to_mathchatbot {
+            get {
+                return ResourceManager.GetString("welcome_to_mathchatbot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What is the meaning of life.
+        /// </summary>
+        public static string what_is_the_meaning_of_life {
+            get {
+                return ResourceManager.GetString("what_is_the_meaning_of_life", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 42.
+        /// </summary>
+        public static string what_is_the_meaning_of_life_response {
+            get {
+                return ResourceManager.GetString("what_is_the_meaning_of_life_response", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What is your name.
+        /// </summary>
+        public static string what_is_your_name {
+            get {
+                return ResourceManager.GetString("what_is_your_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My name is Kurt..
+        /// </summary>
+        public static string what_is_your_name_response {
+            get {
+                return ResourceManager.GetString("what_is_your_name_response", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Who is your creator.
+        /// </summary>
+        public static string who_is_your_creator {
+            get {
+                return ResourceManager.GetString("who_is_your_creator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My creators are a group og people from Aalborg University..
+        /// </summary>
+        public static string who_is_your_creator_response {
+            get {
+                return ResourceManager.GetString("who_is_your_creator_response", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot divide by zero..
+        /// </summary>
+        public static string you_cannot_divide_by_zero {
+            get {
+                return ResourceManager.GetString("you_cannot_divide_by_zero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot take square root of a negative number..
+        /// </summary>
+        public static string you_cannot_take_square_root_of_negative_number {
+            get {
+                return ResourceManager.GetString("you_cannot_take_square_root_of_negative_number", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your total value has been set to 0..
+        /// </summary>
+        public static string your_total_value_has_been_set_to_0 {
+            get {
+                return ResourceManager.GetString("your_total_value_has_been_set_to_0", resourceCulture);
             }
         }
     }

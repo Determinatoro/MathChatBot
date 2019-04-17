@@ -235,6 +235,7 @@
                                 <RowDefinition Height="35"/>
                                 <RowDefinition Height="35"/>
                                 <RowDefinition Height="35"/>
+                                <RowDefinition Height="35"/>
                             </Grid.RowDefinitions>
 
                             <TextBox
@@ -271,6 +272,18 @@
                                 Grid.Row="2"
                                 BorderBrush="{StaticResource BorderColor}"
                                 Content="{x:Static p:Resources.add_users_from_file}"
+                                />
+
+                            <Button
+                                Name="btnConvertMaterial"  
+                                Background="{StaticResource AUU_Blue}"
+                                Style="{StaticResource styleButtonHover}"
+                                Foreground="#FFFFFF"
+                                FontSize="13"
+                                Margin="1"
+                                Grid.Row="3"
+                                BorderBrush="{StaticResource BorderColor}"
+                                Content="{x:Static p:Resources.convert_material}"
                                 />
 
                         </Grid>

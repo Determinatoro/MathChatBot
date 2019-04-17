@@ -197,7 +197,7 @@
     <value>See roles</value>
   </data>
   <data name="something_went_wrong_when_saving_changes_to_the_database" xml:space="preserve">
-    <value>Something went when saving changes to the database</value>
+    <value>Something went wrong when saving changes to the database.</value>
   </data>
   <data name="successfully_gone_through_file" xml:space="preserve">
     <value>Successfully gone through file</value>
@@ -212,7 +212,10 @@
     <value>User Information</value>
   </data>
   <data name="create_user_error" xml:space="preserve">
-    <value>One of the following problems has occured:\n\n1. You have given a name that is not at least 2 letters long.\n2. You have given a password that is not at least 8 characters long.</value>
+    <value>One of the following problems has occured:
+
+1. You have given a name that is not at least 2 letters long.
+2. You have given a password that is not at least 8 characters long.</value>
   </data>
   <data name="name" xml:space="preserve">
     <value>Name</value>
@@ -239,9 +242,192 @@
     <value>See users</value>
   </data>
   <data name="the_passwords_need_to_match" xml:space="preserve">
-    <value>The passwords need to match</value>
+    <value>The passwords need to match.</value>
   </data>
   <data name="the_password_has_to_be_at_least_eight_characters_long" xml:space="preserve">
-    <value>The password needs to be at least 8 characters long</value>
+    <value>The password needs to be at least 8 characters long.</value>
+  </data>
+  <data name="convert_material" xml:space="preserve">
+    <value>Convert material</value>
+  </data>
+  <data name="i_cannot_process_more_than_one_sentence" xml:space="preserve">
+    <value>I cannot process more than one sentence at a time.</value>
+  </data>
+  <data name="i_did_not_understand_that_sentence" xml:space="preserve">
+    <value>I did not understand that sentence. Write “help” for more information.</value>
+  </data>
+  <data name="i_do_not_know_anything_about_that_noun" xml:space="preserve">
+    <value>I do not know anything about {0}. These are the topics that I know about:
+
+{1}</value>
+  </data>
+  <data name="i_do_not_know_anything_about_those_nouns" xml:space="preserve">
+    <value>I do not have any knowledge about those things. These are the topics that I currently know about:
+
+{0}</value>
+  </data>
+  <data name="please_select_one_of_these_topics_first" xml:space="preserve">
+    <value>Please select one of these topics first:
+
+{0}</value>
+  </data>
+  <data name="please_write_a_proper_sentence" xml:space="preserve">
+    <value>Please write a proper sentence. </value>
+  </data>
+  <data name="preparing_mathchatbot" xml:space="preserve">
+    <value>Preparing MathChatBot.
+Please wait...</value>
+  </data>
+  <data name="these_are_the_terms_under" xml:space="preserve">
+    <value>These are terms under {0}:
+
+{1}</value>
+  </data>
+  <data name="these_are_the_topics_i_know_about" xml:space="preserve">
+    <value>These are the topics that I know about:
+
+{0}</value>
+  </data>
+  <data name="welcome_to_mathchatbot" xml:space="preserve">
+    <value>Welcome to MathChatBot.
+Ask me anything math-related and I might be able to help you.
+Write “help” to get more information.</value>
+  </data>
+  <data name="please_write_a_proper_list_representation_of_nouns" xml:space="preserve">
+    <value>Please write a proper list representation of nouns.</value>
+  </data>
+  <data name="did_not_help" xml:space="preserve">
+    <value>Did not help?</value>
+  </data>
+  <data name="see_example" xml:space="preserve">
+    <value>See example</value>
+  </data>
+  <data name="this_is_what_i_found_about" xml:space="preserve">
+    <value>This is the definition I found for {0}.</value>
+  </data>
+  <data name="acos_can_only_contain_numbers_between_minus1_and_1" xml:space="preserve">
+    <value>Acos can only contain numbers between -1 and 1.</value>
+  </data>
+  <data name="asin_can_only_contain_numbers_between_minus1_and_1" xml:space="preserve">
+    <value>Asin can only contain numbers between -1 and 1.</value>
+  </data>
+  <data name="logging_in_please_wait" xml:space="preserve">
+    <value>Logging in. Please wait...</value>
+  </data>
+  <data name="please_enter_proper_math_function" xml:space="preserve">
+    <value>Please enter proper math function.</value>
+  </data>
+  <data name="please_enter_valid_input_in_functions" xml:space="preserve">
+    <value>Please enter valid input in functions.</value>
+  </data>
+  <data name="please_perform_a_correct_and_legal_math_operation" xml:space="preserve">
+    <value>Please perform a correct and legal math operation.</value>
+  </data>
+  <data name="your_total_value_has_been_set_to_0" xml:space="preserve">
+    <value>Your total value has been set to 0.</value>
+  </data>
+  <data name="you_cannot_divide_by_zero" xml:space="preserve">
+    <value>You cannot divide by zero.</value>
+  </data>
+  <data name="you_cannot_take_square_root_of_negative_number" xml:space="preserve">
+    <value>You cannot take square root of a negative number.</value>
+  </data>
+  <data name="help_message" xml:space="preserve">
+    <value>Help:
+
+Formulating a question:
+1. Your question needs to consist of a wh-question word, such as what, for the chatbot to understand what to search for.
+2. You can ask “What topics do you know?” to get a list of all the topics available.
+
+How to use the calculator:
+1. Ask the chatbot what numbers you want to add(+), substract(-), divide(/) or multiply(*) with each other for example “What is 5 * 5 / 5”.
+2. The mathbot will use the result of the previous calculation unless you write “clear result”.</value>
+  </data>
+  <data name="see_terms" xml:space="preserve">
+    <value>See terms</value>
+  </data>
+  <data name="any_news" xml:space="preserve">
+    <value>Any news</value>
+  </data>
+  <data name="any_news_response" xml:space="preserve">
+    <value>Two students were arrested this morning for trying to smuggle 20 Gb of memes into Sweden. Both students are claiming they were only for “personal use”.</value>
+  </data>
+  <data name="clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="does_god_exist" xml:space="preserve">
+    <value>Does god exist</value>
+  </data>
+  <data name="does_god_exist_response" xml:space="preserve">
+    <value>Kurt Nørmark is one of many gods.</value>
+  </data>
+  <data name="hello" xml:space="preserve">
+    <value>Hello</value>
+  </data>
+  <data name="hello_response" xml:space="preserve">
+    <value>Hello world.</value>
+  </data>
+  <data name="help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="please_select_an_example_first_before_using_this_command" xml:space="preserve">
+    <value>Please select an example first before using this command.</value>
+  </data>
+  <data name="please_select_a_term_first_before_using_this_command" xml:space="preserve">
+    <value>Please select a term first before using this command.</value>
+  </data>
+  <data name="please_select_a_topic_first_before_using_this_command" xml:space="preserve">
+    <value>Please select a topic first before using this command.</value>
+  </data>
+  <data name="see_definition" xml:space="preserve">
+    <value>See definition</value>
+  </data>
+  <data name="see_examples" xml:space="preserve">
+    <value>See examples</value>
+  </data>
+  <data name="see_term" xml:space="preserve">
+    <value>See term</value>
+  </data>
+  <data name="tell_me_a_joke" xml:space="preserve">
+    <value>Tell me a joke</value>
+  </data>
+  <data name="tell_me_a_joke_response" xml:space="preserve">
+    <value>Have you heard the one about the statistician? Probably.</value>
+  </data>
+  <data name="term" xml:space="preserve">
+    <value>Term</value>
+  </data>
+  <data name="terms" xml:space="preserve">
+    <value>Terms</value>
+  </data>
+  <data name="this_is_the_examples_i_found_for" xml:space="preserve">
+    <value>This is the example(s) I found for {0}.</value>
+  </data>
+  <data name="this_term_has_no_examples" xml:space="preserve">
+    <value>This term has no examples.</value>
+  </data>
+  <data name="topic" xml:space="preserve">
+    <value>Topic</value>
+  </data>
+  <data name="topics" xml:space="preserve">
+    <value>Topics</value>
+  </data>
+  <data name="what_is_the_meaning_of_life" xml:space="preserve">
+    <value>What is the meaning of life</value>
+  </data>
+  <data name="what_is_the_meaning_of_life_response" xml:space="preserve">
+    <value>42</value>
+  </data>
+  <data name="what_is_your_name" xml:space="preserve">
+    <value>What is your name</value>
+  </data>
+  <data name="what_is_your_name_response" xml:space="preserve">
+    <value>My name is Kurt.</value>
+  </data>
+  <data name="who_is_your_creator" xml:space="preserve">
+    <value>Who is your creator</value>
+  </data>
+  <data name="who_is_your_creator_response" xml:space="preserve">
+    <value>My creators are a group og people from Aalborg University.</value>
   </data>
 </root>

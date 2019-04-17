@@ -4,20 +4,27 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="0726c7450778473db8d596e542db600f" Name="Diagram1" ZoomLevel="95">
+      <Diagram DiagramId="0726c7450778473db8d596e542db600f" Name="Diagram1" ZoomLevel="78">
         <EntityTypeShape EntityType="MathChatBotModel.Class" Width="1.5" PointX="0.75" PointY="7.375" />
-        <EntityTypeShape EntityType="MathChatBotModel.Message" Width="1.5" PointX="3" PointY="7" />
-        <EntityTypeShape EntityType="MathChatBotModel.MessageType" Width="1.5" PointX="0.75" PointY="10.375" />
         <EntityTypeShape EntityType="MathChatBotModel.Role" Width="1.5" PointX="0.75" PointY="1.375" />
         <EntityTypeShape EntityType="MathChatBotModel.UserClassRelation" Width="1.5" PointX="3" PointY="4.125" />
         <EntityTypeShape EntityType="MathChatBotModel.UserRoleRelation" Width="1.5" PointX="3" PointY="1.125" />
         <EntityTypeShape EntityType="MathChatBotModel.User" Width="1.5" PointX="0.75" PointY="3.75" />
         <AssociationConnector Association="MathChatBotModel.FK__UserClass__Class__43D61337" />
-        <AssociationConnector Association="MathChatBotModel.FK__Message__Message__0C85DE4D" />
-        <AssociationConnector Association="MathChatBotModel.FK__Message__UserId__0B91BA14" />
         <AssociationConnector Association="MathChatBotModel.FK__UserRoleR__RoleI__498EEC8D" />
         <AssociationConnector Association="MathChatBotModel.FK__UserClass__UserI__42E1EEFE" />
         <AssociationConnector Association="MathChatBotModel.FK__UserRoleR__UserI__489AC854" />
+        <EntityTypeShape EntityType="MathChatBotModel.MaterialExample" Width="1.5" PointX="13.375" PointY="6.875" />
+        <EntityTypeShape EntityType="MathChatBotModel.Material" Width="1.5" PointX="10" PointY="6.875" />
+        <EntityTypeShape EntityType="MathChatBotModel.Term" Width="1.5" PointX="7.5" PointY="6.875" />
+        <EntityTypeShape EntityType="MathChatBotModel.Topic" Width="1.5" PointX="5.25" PointY="7" />
+        <AssociationConnector Association="MathChatBotModel.FK__MaterialE__Mater__01D345B0" />
+        <AssociationConnector Association="MathChatBotModel.FK__Materials__TermI__7755B73D" />
+        <AssociationConnector Association="MathChatBotModel.FK__Materials__Topic__76619304" />
+        <AssociationConnector Association="MathChatBotModel.FK__Terms__TopicId__73852659" />
+        <EntityTypeShape EntityType="MathChatBotModel.HelpRequest" Width="1.5" PointX="9.75" PointY="3.5" />
+        <AssociationConnector Association="MathChatBotModel.FK__HelpReque__TermI__1F63A897" />
+        <AssociationConnector Association="MathChatBotModel.FK__HelpReque__UserI__1E6F845E" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
