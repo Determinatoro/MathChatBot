@@ -11,31 +11,39 @@
         ResizeMode="CanMinimize"
         AllowsTransparency="True" 
         WindowStyle="None" 
-        Title="SplashScreenWindow" Height="450" Width="450">
-    <Border Background="White"
-            CornerRadius="5"
+        Title="SplashScreenWindow" Height="250" Width="500">
+    <Border Background="{StaticResource AUU_Blue}"
             BorderBrush="{StaticResource BorderColor}"
-            BorderThickness="1">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="0.75*"/>
-            <RowDefinition Height="200"/>
-            <RowDefinition Height="2*"/>
-        </Grid.RowDefinitions>
+            BorderThickness="0">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="1.25*"/>
+                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="0.5*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="150"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <Image 
-           Name="imgLogo"
-           Grid.Row="1"
-            HorizontalAlignment="Center"
-            RenderTransformOrigin=".5,.6"
-           Source="/Resources\mathchatbot_logo.png"
-           >
-            <Image.RenderTransform>
-                <RotateTransform x:Name="TransRotate" CenterX="0" CenterY="0" Angle="0" />
-            </Image.RenderTransform>
-            <Image.Resources>
-                <Storyboard x:Key="spin">
-                    <DoubleAnimation x:Name="da" 
+            <Image 
+                Name="imgLogo"
+                Grid.Row="1"
+                HorizontalAlignment="Center"
+                RenderTransformOrigin=".5,.6"
+                Grid.Column="1"
+                Margin="0, 0, 0, 25"
+                Source="/Resources\mathchatbot_logo_white.png"
+                >
+                <Image.RenderTransform>
+                    <RotateTransform x:Name="TransRotate" CenterX="0" CenterY="0" Angle="0" />
+                </Image.RenderTransform>
+                <Image.Resources>
+                    <Storyboard x:Key="spin">
+                        <DoubleAnimation x:Name="da" 
                                      Storyboard.TargetName="TransRotate" 
                                      Storyboard.TargetProperty="Angle"
                                      By="360" 
@@ -44,22 +52,53 @@
                                      DecelerationRatio="0.8" 
                                      AccelerationRatio="0.2"
                                      RepeatBehavior="Forever" />
-                </Storyboard>
-            </Image.Resources>
-        </Image>
+                    </Storyboard>
+                </Image.Resources>
+            </Image>
 
-        <Label 
-            Name="lblStartingUp"
-            Content="{x:Static p:Resources.preparing_mathchatbot}"
-            FontFamily="Roboto"
-            FontWeight="Bold"
-            Grid.Row="4"  
-            TextBlock.TextAlignment="Center"
-            VerticalContentAlignment="Center"
-            HorizontalContentAlignment="Center"
-            FontSize="20"
-            />
+            <Grid 
+                Grid.Column="3"
+                Grid.Row="1"
+                >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="2"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-    </Grid>
+                <Label 
+                    Name="lblMathChatBot"
+                    Content="MathChatBot"
+                    FontFamily="Roboto"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Padding="0, 0, 0, 5"
+                    TextBlock.TextAlignment="Center"
+                    VerticalContentAlignment="Bottom"
+                    HorizontalContentAlignment="Left"
+                    FontSize="24"
+                    />
+
+                <Label
+                    Grid.Row="1"
+                    Background="White"/>
+
+                <Label 
+                    Name="lblDoingSetup"
+                    Content="{x:Static p:Resources.doing_setup_please_wait}"
+                    FontFamily="Roboto"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Grid.Row="2"
+                    Padding="0, 5, 0, 0"
+                    TextBlock.TextAlignment="Center"
+                    VerticalContentAlignment="Top"
+                    HorizontalContentAlignment="Left"
+                    FontSize="14"
+                    />
+
+            </Grid>
+
+        </Grid>
     </Border>
 </Window>

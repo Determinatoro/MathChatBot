@@ -22,8 +22,9 @@
         <AssociationConnector Association="MathChatBotModel.FK__Materials__TermI__7755B73D" />
         <AssociationConnector Association="MathChatBotModel.FK__Materials__Topic__76619304" />
         <AssociationConnector Association="MathChatBotModel.FK__Terms__TopicId__73852659" />
-        <EntityTypeShape EntityType="MathChatBotModel.HelpRequest" Width="1.5" PointX="9.75" PointY="3.5" />
-        <AssociationConnector Association="MathChatBotModel.FK__HelpReque__TermI__1F63A897" />
+        <EntityTypeShape EntityType="MathChatBotModel.HelpRequest" Width="1.5" PointX="9.625" PointY="3.25" />
+        <AssociationConnector Association="MathChatBotModel.FK__HelpReque__Mater__251C81ED" />
+        <AssociationConnector Association="MathChatBotModel.FK__HelpReque__Mater__2610A626" />
         <AssociationConnector Association="MathChatBotModel.FK__HelpReque__UserI__1E6F845E" />
       </Diagram>
     </edmx:Diagrams>

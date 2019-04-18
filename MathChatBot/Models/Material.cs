@@ -18,6 +18,7 @@ namespace MathChatBot.Models
         public Material()
         {
             this.MaterialExamples = new HashSet<MaterialExample>();
+            this.HelpRequests = new HashSet<HelpRequest>();
         }
     
         public int Id { get; set; }
@@ -30,5 +31,7 @@ namespace MathChatBot.Models
         public virtual ICollection<MaterialExample> MaterialExamples { get; set; }
         public virtual Term Term { get; set; }
         public virtual Topic Topic { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<HelpRequest> HelpRequests { get; set; }
     }
 }

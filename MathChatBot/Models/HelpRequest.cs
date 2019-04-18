@@ -16,9 +16,11 @@ namespace MathChatBot.Models
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public int TermId { get; set; }
+        public Nullable<int> MaterialId { get; set; }
+        public Nullable<int> MaterialExampleId { get; set; }
     
-        public virtual Term Term { get; set; }
+        public virtual Material Material { get; set; }
+        public virtual MaterialExample MaterialExample { get; set; }
         public virtual User User { get; set; }
     }
 }

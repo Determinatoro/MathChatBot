@@ -126,24 +126,24 @@
                         </Grid.ColumnDefinitions>
 
                         <DataGrid 
-                    Name="dgUsers" 
+                            Name="dgUsers" 
                             VerticalScrollBarVisibility="Visible"
-                    ColumnWidth="*"
-                    Margin="1"
-                    Background="#FFFFFF"
-                    BorderBrush="{StaticResource BorderColor}"
-                    BorderThickness="1"
-                    AutoGenerateColumns="False"    
-                    CanUserReorderColumns="False"    
-                    CanUserResizeColumns="False"    
-                    CanUserResizeRows="False"    
-                    CanUserSortColumns="True"   
-                    CanUserAddRows="False"
-                    RowHeaderWidth="0"
-                    SelectionMode="Extended"
-                    RowEditEnding="dataGrid_RowEditEnding"  
-                    CellEditEnding="dataGrid_CellEditEnding"
-                    >
+                            ColumnWidth="*"
+                            Margin="1"
+                            Background="#FFFFFF"
+                            BorderBrush="{StaticResource BorderColor}"
+                            BorderThickness="1"
+                            AutoGenerateColumns="False"    
+                            CanUserReorderColumns="False"    
+                            CanUserResizeColumns="False"    
+                            CanUserResizeRows="False"    
+                            CanUserSortColumns="True"   
+                            CanUserAddRows="False"
+                            RowHeaderWidth="0"
+                            SelectionMode="Extended"
+                            RowEditEnding="dataGrid_RowEditEnding"  
+                            CellEditEnding="dataGrid_CellEditEnding"
+                            >
                             <DataGrid.CellStyle>
                                 <Style TargetType="{x:Type DataGridCell}">
                                     <Setter Property="Template">

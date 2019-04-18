@@ -171,6 +171,14 @@ namespace MathChatBot.Utilities
                 Application.Current.Dispatcher.Invoke(action);
         }
 
+        public static T RunOnUIThread<T>(this Window window, Func<T> func)
+        {
+            if (Thread.CurrentThread == Application.Current.Dispatcher.Thread)
+                return func();
+            else
+                return Application.Current.Dispatcher.Invoke(func);
+        }
+
         /// <summary>
         /// Setup border header
         /// </summary>

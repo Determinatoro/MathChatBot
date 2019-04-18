@@ -97,11 +97,29 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Admin controls.
+        /// </summary>
+        public static string admin_controls {
+            get {
+                return ResourceManager.GetString("admin_controls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Admin Controls.
         /// </summary>
         public static string admin_controls_title {
             get {
                 return ResourceManager.GetString("admin_controls_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All topics.
+        /// </summary>
+        public static string all_topics {
+            get {
+                return ResourceManager.GetString("all_topics", resourceCulture);
             }
         }
         
@@ -226,6 +244,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Doing setup. Please wait....
+        /// </summary>
+        public static string doing_setup_please_wait {
+            get {
+                return ResourceManager.GetString("doing_setup_please_wait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to First name.
         /// </summary>
         public static string first_name {
@@ -331,6 +358,16 @@ namespace MathChatBot.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap icon_log_out {
+            get {
+                object obj = ResourceManager.GetObject("icon_log_out", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap icon_users {
             get {
                 object obj = ResourceManager.GetObject("icon_users", resourceCulture);
@@ -344,6 +381,15 @@ namespace MathChatBot.Properties {
         public static string last_name {
             get {
                 return ResourceManager.GetString("last_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log out.
+        /// </summary>
+        public static string log_out {
+            get {
+                return ResourceManager.GetString("log_out", resourceCulture);
             }
         }
         
@@ -455,6 +501,15 @@ namespace MathChatBot.Properties {
         public static string new_user {
             get {
                 return ResourceManager.GetString("new_user", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of help requests.
+        /// </summary>
+        public static string number_of_help_requests {
+            get {
+                return ResourceManager.GetString("number_of_help_requests", resourceCulture);
             }
         }
         
@@ -588,6 +643,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Retrieving data. Please wait....
+        /// </summary>
+        public static string retrieving_data_please_wait {
+            get {
+                return ResourceManager.GetString("retrieving_data_please_wait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Roles.
         /// </summary>
         public static string roles {
@@ -656,6 +720,24 @@ namespace MathChatBot.Properties {
         public static string see_examples {
             get {
                 return ResourceManager.GetString("see_examples", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See for whole class.
+        /// </summary>
+        public static string see_for_whole_class {
+            get {
+                return ResourceManager.GetString("see_for_whole_class", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See requests.
+        /// </summary>
+        public static string see_requests {
+            get {
+                return ResourceManager.GetString("see_requests", resourceCulture);
             }
         }
         

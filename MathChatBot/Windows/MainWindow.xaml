@@ -168,8 +168,7 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="33"/>
-                    <ColumnDefinition Width="33"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid Margin="1,0,1,0">
@@ -195,21 +194,47 @@
                         />
                 </Grid>
 
-                <Button Name="btnClose" 
-                        BorderThickness="0" 
-                        Grid.Column="2" 
-                        Foreground="#FFFFFF"
+                <StackPanel
+                    Grid.Column="1"
+                    Width="auto"
+                    Orientation="Horizontal">
+
+                    <Button                    
+                        Name="btnLogOut"
+                        Style="{StaticResource styleButtonHeader}"
+                        Width="33"
                         Background="#00000000"
+                        Foreground="White"
+                        Grid.Column="1"
+                        ToolTip="{x:Static p:Resources.log_out}"
+                        >
+                        <Image
+                            Source="/Resources\icon_log_out.png"
+                            Margin="5"
+                            Stretch="Uniform"
+                            />
+                    </Button>
+                    
+                    <Button                    
+                        Name="btnMinimize"
+                        Style="{StaticResource styleButtonMinimize}"
+                        Width="33"
+                        Background="#00000000"
+                        Foreground="White"
+                        Grid.Column="1"
+                        />
+
+                    <Button 
+                        Name="btnClose" 
+                        BorderThickness="0" 
+                        Width="33" 
+                        Foreground="White"
+                        Background="Transparent"
                         Style="{StaticResource styleButtonClose}"
                         />
 
-                <Button                    
-                    Style="{StaticResource styleButtonMinimize}"
-                    Background="#00000000"
-                    Foreground="#FFFFFF"
-                    Name="btnMinimize"
-                    Grid.Column="1"
-                    />
+                </StackPanel>
+
             </Grid>
 
         </Border>
@@ -258,7 +283,7 @@
                         HorizontalContentAlignment="Center"
                         FontSize="26"
                         />
-                    
+
                 </Grid>
 
                 <Border 
@@ -307,7 +332,7 @@
                         Margin="1"
                         TextWrapping="Wrap"                
                         />
-                    
+
                 </Grid>
 
                 <Grid Grid.Column="1" 
@@ -325,30 +350,24 @@
                         Foreground="#FFFFFF"
                         FontSize="14"
                         Margin="1"
-                        Grid.Column="0"                            
-                        Content="Admin controls"
+                        Grid.Column="1"                            
+                        Content="{x:Static p:Resources.admin_controls}"
                         />
 
                     <Button
-                        Name="btnLogOut" 
+                        Name="btnSeeRequests"  
                         BorderBrush="{StaticResource BorderColor}"
                         Background="{StaticResource AUU_Blue}"
                         Style="{StaticResource styleButtonHover}"
                         Foreground="#FFFFFF"
                         FontSize="14"
                         Margin="1"
-                        Grid.Column="1"                            
-                        Content="Log out"
+                        Grid.Column="0"                            
+                        Content="{x:Static p:Resources.see_requests}"
                         />
 
                 </Grid>
-
-
-
             </Grid>
-
-
-
         </Border>
     </Grid>
 </Window>

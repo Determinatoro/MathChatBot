@@ -17,6 +17,10 @@ namespace MathChatBot
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        //*************************************************/
+        // Properties
+        //*************************************************/
         #region Properties
 
         public User User { get; set; }
@@ -26,6 +30,9 @@ namespace MathChatBot
 
         #endregion
 
+        //*************************************************/
+        // Constructor
+        //*************************************************/
         #region Constructor
 
         public MainWindow()
@@ -38,6 +45,7 @@ namespace MathChatBot
             // Click events
             btnAdminControls.Click += button_Click;
             btnLogOut.Click += button_Click;
+            btnSeeRequests.Click += button_Click;
 
             // KeyDown events
             tbChat.KeyDown += textBox_KeyDown;
@@ -74,6 +82,9 @@ namespace MathChatBot
 
         #endregion
 
+        //*************************************************/
+        // Methods
+        //*************************************************/
         #region Methods
 
         /// <summary>
@@ -98,6 +109,9 @@ namespace MathChatBot
 
         #endregion
 
+        //*************************************************/
+        // Events
+        //*************************************************/
         #region Events
 
         // TextBox - KeyDown
@@ -110,7 +124,7 @@ namespace MathChatBot
                     {
                         if (e.Key == Key.Enter)
                         {
-                            MathChatBotHelper.WriteMessageToBot(tb.Text); 
+                            MathChatBotHelper.WriteMessageToBot(tb.Text);
                             tb.Text = string.Empty;
                         }
                     }
@@ -136,6 +150,13 @@ namespace MathChatBot
                 case nameof(btnLogOut):
                     {
                         ShowLogin();
+                    }
+                    break;
+                // See requests
+                case nameof(btnSeeRequests):
+                    {
+                        HelpRequestsWindow helpRequestsWindow = new HelpRequestsWindow();
+                        helpRequestsWindow.ShowDialog();
                     }
                     break;
             }

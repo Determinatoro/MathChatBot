@@ -14,11 +14,19 @@ namespace MathChatBot.Models
     
     public partial class MaterialExample
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public MaterialExample()
+        {
+            this.HelpRequests = new HashSet<HelpRequest>();
+        }
+    
         public int Id { get; set; }
         public int MaterialId { get; set; }
         public string Source { get; set; }
         public int ShowOrderId { get; set; }
     
         public virtual Material Material { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<HelpRequest> HelpRequests { get; set; }
     }
 }

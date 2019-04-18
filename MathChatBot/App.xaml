@@ -554,6 +554,87 @@
 
         <!--#region STYLE Button-->
 
+        <Style x:Key="styleButtonHeader" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <ControlTemplate.Resources>
+                            <!--STORYBOARDS-->
+                            <Storyboard x:Key="Timeline1">
+                                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="glow" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                    <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                            <Storyboard x:Key="Timeline2">
+                                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="glow" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                    <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </ControlTemplate.Resources>
+
+                        <!--ROOT GRID-->
+                        <Grid 
+                            Width="{TemplateBinding Width}" 
+                            Height="{TemplateBinding Height}"
+                            ClipToBounds="True"
+                            >
+
+                            <!--BACKGROUND-->
+                            <Rectangle Name="background" 
+                                       HorizontalAlignment="Stretch" 
+                                       VerticalAlignment="Stretch" 
+                                       Fill="{TemplateBinding Background}" 
+                                       />
+
+                            <!--GLOW-->
+                            <Border 
+                                Opacity="0"
+                                HorizontalAlignment="Stretch"
+                                x:Name="glow" 
+                                Width="Auto" 
+                                Grid.RowSpan="2" 
+                                Background="#AAFFFFFF"
+                                />
+
+                            <!--TEXT-->
+                            <DockPanel Name="myContentPresenterDockPanel">
+                                <ContentPresenter 
+                                    x:Name="myContentPresenter" 
+                                    Margin="0, 0, 0, 0"                                    
+                                    VerticalAlignment="Center" 
+                                    HorizontalAlignment="Center"                                 
+                                    TextBlock.Foreground="{TemplateBinding Foreground}" 
+                                    TextBlock.FontFamily="{TemplateBinding FontFamily}" 
+                                    TextBlock.FontWeight="{TemplateBinding FontWeight}"                                 
+                                    TextBlock.FontSize="{TemplateBinding FontSize}"
+                                    Content="{TemplateBinding Content}"
+                                    >
+                                </ContentPresenter>
+                            </DockPanel>
+                        </Grid>
+
+                        <!--TRIGGERS-->
+                        <ControlTemplate.Triggers>
+                            <!--IsPressed-->
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="glow" Property="Background" Value="#D0FFFFFF"/>
+                            </Trigger>
+                            <!--IsMouseOver-->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard Storyboard="{StaticResource Timeline1}"/>
+                                </Trigger.EnterActions>
+                                <!--EXIT fra MouseOver-->
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard x:Name="Timeline2_BeginStoryboard" Storyboard="{StaticResource Timeline2}"/>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="styleButtonMinimize" TargetType="{x:Type Button}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -1104,6 +1185,195 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <!--#endregion-->
+
+        <!--#region STYLE COMBOBOX-->
+
+        <!--COMBOBOX ARROW BUTTON-->
+        <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                <Border x:Name="Border" 
+                        Grid.Column="1"
+                        Grid.ColumnSpan="1"
+                        CornerRadius="0,1,1,0"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        />
+                <Border Grid.Column="0"
+                        x:Name="Border2"
+                        CornerRadius="1, 0, 0, 1" 
+                        Margin="0" 
+                        Background="Transparent" 
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="1,1,0,1"
+                        />
+                <Path x:Name="Arrow"         
+                      Grid.Column="1"     
+                      Fill="{TemplateBinding Foreground}"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Data="M 0 0 L 4 4 L 8 0 Z"
+                      />
+            </Grid>
+        </ControlTemplate>
+
+        <!-- ComboBox TextBox Template-->
+        <ControlTemplate x:Key="ComboBoxTextBox" TargetType="TextBox">
+            <Border x:Name="PART_ContentHost" Focusable="False" Background="Transparent" CornerRadius="5" />
+        </ControlTemplate>
+
+        <!--STYLE COMBOBOX-->
+        <Style x:Key="styleComboBox" TargetType="ComboBox">
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="MinHeight" Value="20"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <!--BACKGROUND-->
+                            <Border                                                                 
+                                x:Name="Border"
+                                CornerRadius="2, 2, 2, 2" 
+                                Margin="0" 
+                                Background="{TemplateBinding Background}"                                     
+                                />
+
+                            <!--COMBOBOX HINT-->
+                            <TextBox 
+                                x:Name="PART_EditableTextBox"
+                                Style="{x:Null}" 
+                                Template="{StaticResource ComboBoxTextBox}"                         
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Focusable="False"
+                                Margin="0,0,22,1"  
+                                TextAlignment="Center"
+                                Background="Transparent"           
+                                FontFamily="Calibri"                                                      
+                                Visibility="Hidden"
+                                Text="{TemplateBinding Tag}"
+                                FontSize="{TemplateBinding FontSize}"
+                                Foreground="{TemplateBinding Foreground}"
+                                />
+
+                            <!--ARROW INSIDE COMBOBOX-->
+                            <ToggleButton 
+                                Name="ToggleButton" 
+                                Grid.Column="2" 
+                                Template="{StaticResource ComboBoxToggleButton}" 
+                                IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
+                                Focusable="false"
+                                ClickMode="Press"
+                                Background="{TemplateBinding Background}"                                
+                                Foreground="{TemplateBinding Foreground}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                />
+
+                            <!--SELECTED ITEM-->
+                            <ContentPresenter 
+                                x:Name="ContentSite"
+                                IsHitTestVisible="False" 
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                Margin="10,0,10,0"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"
+                                TextBlock.FontFamily="{TemplateBinding FontFamily}"
+                                TextBlock.FontWeight="{TemplateBinding FontWeight}"
+                                TextBlock.FontSize="14"
+                                TextBlock.Foreground="{TemplateBinding Foreground}"
+                                />
+                            <!--POPUP-->
+                            <Popup 
+                                Name="Popup"
+                                Placement="Bottom"
+                                IsOpen="{TemplateBinding IsDropDownOpen}"
+                                AllowsTransparency="True" 
+                                Focusable="False"
+                                PopupAnimation="Slide"
+                                TextBlock.FontSize="{TemplateBinding FontSize}"
+                                TextBlock.FontFamily="{TemplateBinding FontFamily}"
+                                TextBlock.FontWeight="{TemplateBinding FontWeight}"
+                                TextBlock.Foreground="{TemplateBinding Foreground}"
+                                >
+                                <!--DROP DOWN GRID-->
+                                <Grid Name="DropDown"
+                                      SnapsToDevicePixels="True"                
+                                      MinWidth="{TemplateBinding ActualWidth}"
+                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border 
+                                        x:Name="DropDownBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        BorderBrush="{TemplateBinding BorderBrush}" 
+                                        />
+
+                                    <!--ITEM HOST-->
+                                    <ScrollViewer Margin="6" 
+                                                  TextBlock.FontSize="14"
+                                                  TextBlock.FontFamily="{TemplateBinding FontFamily}"
+                                                  TextBlock.FontWeight="{TemplateBinding FontWeight}"
+                                                  TextBlock.Foreground="{TemplateBinding Foreground}"
+                                                  SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True" 
+                                                    KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+
+                        <!--TRIGGERS-->
+                        <ControlTemplate.Triggers>
+                            <!--HasItems-->
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                            </Trigger>
+                            <!--Text = ""-->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Text" Value="" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Visibility" TargetName="PART_EditableTextBox" Value="Visible"/>
+                            </MultiTrigger>
+                            <!--IsEnabled-->
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="Transparent"/>
+                            </Trigger>
+                            <!--IsGrouping-->
+                            <Trigger Property="IsGrouping" Value="true">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </Trigger>
+                            <!--Popup.AllowsTransparency-->
+                            <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="true">
+                                <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="0,0,1,1"/>
+                                <Setter TargetName="DropDownBorder" Property="Margin" Value="0"/>
+                            </Trigger>
+                            <!--IsEditable-->
+                            <Trigger Property="IsEditable" Value="true">
+                                <Setter Property="IsTabStop" Value="false"/>
+                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+            </Style.Triggers>
         </Style>
 
         <!--#endregion-->

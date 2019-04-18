@@ -18,7 +18,8 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="TermId" Type="int" Nullable="false" />
+          <Property Name="MaterialId" Type="int" />
+          <Property Name="MaterialExampleId" Type="int" />
         </EntityType>
         <EntityType Name="MaterialExamples">
           <Key>
@@ -88,15 +89,27 @@
           <Property Name="Username" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="IsActivated" Type="bit" Nullable="false" />
         </EntityType>
-        <Association Name="FK__HelpReque__TermI__1F63A897">
-          <End Role="Terms" Type="Self.Terms" Multiplicity="1" />
+        <Association Name="FK__HelpReque__Mater__251C81ED">
+          <End Role="Materials" Type="Self.Materials" Multiplicity="0..1" />
           <End Role="HelpRequests" Type="Self.HelpRequests" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Terms">
+            <Principal Role="Materials">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="HelpRequests">
-              <PropertyRef Name="TermId" />
+              <PropertyRef Name="MaterialId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__HelpReque__Mater__2610A626">
+          <End Role="MaterialExamples" Type="Self.MaterialExamples" Multiplicity="0..1" />
+          <End Role="HelpRequests" Type="Self.HelpRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaterialExamples">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HelpRequests">
+              <PropertyRef Name="MaterialExampleId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -219,8 +232,12 @@
           <EntitySet Name="UserClassRelations" EntityType="Self.UserClassRelations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserRoleRelations" EntityType="Self.UserRoleRelations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__HelpReque__TermI__1F63A897" Association="Self.FK__HelpReque__TermI__1F63A897">
-            <End Role="Terms" EntitySet="Terms" />
+          <AssociationSet Name="FK__HelpReque__Mater__251C81ED" Association="Self.FK__HelpReque__Mater__251C81ED">
+            <End Role="Materials" EntitySet="Materials" />
+            <End Role="HelpRequests" EntitySet="HelpRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK__HelpReque__Mater__2610A626" Association="Self.FK__HelpReque__Mater__2610A626">
+            <End Role="MaterialExamples" EntitySet="MaterialExamples" />
             <End Role="HelpRequests" EntitySet="HelpRequests" />
           </AssociationSet>
           <AssociationSet Name="FK__HelpReque__UserI__1E6F845E" Association="Self.FK__HelpReque__UserI__1E6F845E">
@@ -307,15 +324,19 @@
             <End Role="Term" EntitySet="Terms" />
           </AssociationSet>
           <EntitySet Name="HelpRequests" EntityType="MathChatBotModel.HelpRequest" />
-          <AssociationSet Name="FK__HelpReque__TermI__1F63A897" Association="MathChatBotModel.FK__HelpReque__TermI__1F63A897">
-            <End Role="Term" EntitySet="Terms" />
+          <AssociationSet Name="FK__HelpReque__Mater__251C81ED" Association="MathChatBotModel.FK__HelpReque__Mater__251C81ED">
+            <End Role="Material" EntitySet="Materials" />
+            <End Role="HelpRequest" EntitySet="HelpRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK__HelpReque__Mater__2610A626" Association="MathChatBotModel.FK__HelpReque__Mater__2610A626">
+            <End Role="MaterialExample" EntitySet="MaterialExamples" />
             <End Role="HelpRequest" EntitySet="HelpRequests" />
           </AssociationSet>
           <AssociationSet Name="FK__HelpReque__UserI__1E6F845E" Association="MathChatBotModel.FK__HelpReque__UserI__1E6F845E">
             <End Role="User" EntitySet="Users" />
             <End Role="HelpRequest" EntitySet="HelpRequests" />
           </AssociationSet>
-        </EntityContainer>
+          </EntityContainer>
         <EntityType Name="Class">
           <Key>
             <PropertyRef Name="Id" />
@@ -423,6 +444,7 @@
           <Property Name="Source" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Material" Relationship="MathChatBotModel.FK__MaterialE__Mater__01D345B0" FromRole="MaterialExample" ToRole="Material" />
           <Property Name="ShowOrderId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="HelpRequests" Relationship="MathChatBotModel.FK__HelpReque__Mater__2610A626" FromRole="MaterialExample" ToRole="HelpRequest" />
         </EntityType>
         <EntityType Name="Material">
           <Key>
@@ -436,6 +458,7 @@
           <NavigationProperty Name="Term" Relationship="MathChatBotModel.FK__Materials__TermI__7755B73D" FromRole="Material" ToRole="Term" />
           <NavigationProperty Name="Topic" Relationship="MathChatBotModel.FK__Materials__Topic__76619304" FromRole="Material" ToRole="Topic" />
           <Property Name="ShowOrderId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="HelpRequests" Relationship="MathChatBotModel.FK__HelpReque__Mater__251C81ED" FromRole="Material" ToRole="HelpRequest" />
         </EntityType>
         <EntityType Name="Term">
           <Key>
@@ -446,7 +469,6 @@
           <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Materials" Relationship="MathChatBotModel.FK__Materials__TermI__7755B73D" FromRole="Term" ToRole="Material" />
           <NavigationProperty Name="Topic" Relationship="MathChatBotModel.FK__Terms__TopicId__73852659" FromRole="Term" ToRole="Topic" />
-          <NavigationProperty Name="HelpRequests" Relationship="MathChatBotModel.FK__HelpReque__TermI__1F63A897" FromRole="Term" ToRole="HelpRequest" />
         </EntityType>
         <EntityType Name="Topic">
           <Key>
@@ -511,19 +533,33 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="TermId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Term" Relationship="MathChatBotModel.FK__HelpReque__TermI__1F63A897" FromRole="HelpRequest" ToRole="Term" />
+          <Property Name="MaterialId" Type="Int32" />
+          <Property Name="MaterialExampleId" Type="Int32" />
+          <NavigationProperty Name="Material" Relationship="MathChatBotModel.FK__HelpReque__Mater__251C81ED" FromRole="HelpRequest" ToRole="Material" />
+          <NavigationProperty Name="MaterialExample" Relationship="MathChatBotModel.FK__HelpReque__Mater__2610A626" FromRole="HelpRequest" ToRole="MaterialExample" />
           <NavigationProperty Name="User" Relationship="MathChatBotModel.FK__HelpReque__UserI__1E6F845E" FromRole="HelpRequest" ToRole="User" />
         </EntityType>
-        <Association Name="FK__HelpReque__TermI__1F63A897">
-          <End Type="MathChatBotModel.Term" Role="Term" Multiplicity="1" />
+        <Association Name="FK__HelpReque__Mater__251C81ED">
+          <End Type="MathChatBotModel.Material" Role="Material" Multiplicity="0..1" />
           <End Type="MathChatBotModel.HelpRequest" Role="HelpRequest" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Term">
+            <Principal Role="Material">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="HelpRequest">
-              <PropertyRef Name="TermId" />
+              <PropertyRef Name="MaterialId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__HelpReque__Mater__2610A626">
+          <End Type="MathChatBotModel.MaterialExample" Role="MaterialExample" Multiplicity="0..1" />
+          <End Type="MathChatBotModel.HelpRequest" Role="HelpRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaterialExample">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HelpRequest">
+              <PropertyRef Name="MaterialExampleId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -632,7 +668,8 @@
           <EntitySetMapping Name="HelpRequests">
             <EntityTypeMapping TypeName="MathChatBotModel.HelpRequest">
               <MappingFragment StoreEntitySet="HelpRequests">
-                <ScalarProperty Name="TermId" ColumnName="TermId" />
+                <ScalarProperty Name="MaterialExampleId" ColumnName="MaterialExampleId" />
+                <ScalarProperty Name="MaterialId" ColumnName="MaterialId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

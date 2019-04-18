@@ -64,6 +64,16 @@ namespace MathChatBot.Utilities
             return user;
         }
 
+        public static List<string> GetTermNames(this MathChatBotEntities entities)
+        {
+            return entities.Terms.Select(x => x.Name).ToList();
+        }
+
+        public static List<string> GetTopicNames(this MathChatBotEntities entities)
+        {
+            return entities.Topics.Select(x => x.Name).ToList();
+        }
+
         /// <summary>
         /// Check login for an user
         /// </summary>
