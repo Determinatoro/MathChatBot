@@ -21,6 +21,9 @@ namespace MathChatBot.Utilities
     public static class Utility
     {
 
+        //*************************************************/
+        // METHODS
+        //*************************************************/
         #region Methods
 
         /// <summary>
@@ -92,31 +95,6 @@ namespace MathChatBot.Utilities
             return (T)Enum.Parse(typeof(T), value, true);
         }
 
-        public static string RegexReplace(this string source, string pattern, string replacement)
-        {
-            return Regex.Replace(source, pattern, replacement);
-        }
-
-        public static string ReplaceLastOccurence(this string source, string value, string replacement)
-        {
-            return RegexReplace(source, $"{value}$", replacement);
-        }
-
-        public static Dictionary<string, string> GetLocaleResources()
-        {
-            ResourceManager rm = Properties.Resources.ResourceManager;
-
-            ResourceSet rs = rm.GetResourceSet(CultureInfo.CurrentCulture, true, true);
-
-            Dictionary<string, string> properties = new Dictionary<string, string>();
-            foreach (var entry in rs.Cast<DictionaryEntry>())
-            {
-                properties[entry.Key.ToString()] = entry.Value.ToString();
-            }
-
-            return properties;
-        }
-
         /// <summary>
         /// A methpod that replaces words with other words, this function ignores case.
         /// </summary>
@@ -162,19 +140,30 @@ namespace MathChatBot.Utilities
         /// Run code on UI thread
         /// </summary>
         /// <param name="window">The window who has to run something on the UI thread</param>
-        /// <param name="action"></param>
+        /// <param name="action">The action to invike</param>
         public static void RunOnUIThread(this Window window, Action action)
         {
+            // Are we on the UI thread
             if (Thread.CurrentThread == Application.Current.Dispatcher.Thread)
                 action(); 
+            // We are on a background thread
             else
                 Application.Current.Dispatcher.Invoke(action);
         }
 
+        /// <summary>
+        /// Run code on UI thread and return a value
+        /// </summary>
+        /// <typeparam name="T">The type for the return value</typeparam>
+        /// <param name="window">The window using this method</param>
+        /// <param name="func">The function to invoke</param>
+        /// <returns></returns>
         public static T RunOnUIThread<T>(this Window window, Func<T> func)
         {
+            // Are we on the UI thread
             if (Thread.CurrentThread == Application.Current.Dispatcher.Thread)
                 return func();
+            // We are on a background thread
             else
                 return Application.Current.Dispatcher.Invoke(func);
         }
@@ -182,8 +171,8 @@ namespace MathChatBot.Utilities
         /// <summary>
         /// Setup border header
         /// </summary>
-        /// <param name="window"></param>
-        /// <param name="title"></param>
+        /// <param name="window">The window calling this method</param>
+        /// <param name="title">The title for the window</param>
         public static void SetupBorderHeader(this Window window, string title = "MathChatBot")
         {
             if (title != "MathChatBot")
@@ -230,19 +219,19 @@ namespace MathChatBot.Utilities
 
         #endregion
 
+        //*************************************************/
+        // EVENTS
+        //*************************************************/
         #region Events
 
-        /// <summary>
-        /// Mouse down event for border header
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        // Border - MouseDown
         private static void BorderHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var window = GetParentWindow((DependencyObject)sender);
             window.DragMove();
         }
 
+        // Button - Click
         private static void button_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;

@@ -9,6 +9,9 @@ using NCalc;
 namespace MathChatBot.Helpers
 {
 
+    /// <summary>
+    /// Exceptions used in the SimpleCalculatorHelper
+    /// </summary>
     #region Exceptions
 
     public class NegativeSqrtException : Exception
@@ -58,9 +61,15 @@ namespace MathChatBot.Helpers
 
     #endregion
 
+    /// <summary>
+    /// Interaction logic for the SimpleCalculatorHelper
+    /// </summary>
     public class SimpleCalculatorHelper
     {
 
+        //*************************************************/
+        // VARIABLES
+        //*************************************************/
         #region Variables
 
         private string _result;
@@ -68,6 +77,9 @@ namespace MathChatBot.Helpers
 
         #endregion
 
+        //*************************************************/
+        // PROPERTIES
+        //*************************************************/
         #region Properties
 
         // The variable where all results are saved
@@ -124,8 +136,17 @@ namespace MathChatBot.Helpers
 
         #endregion
 
+        //*************************************************/
+        // METHODS
+        //*************************************************/
         #region Methods
 
+        /// <summary>
+        /// Replace natural in the given input with math operators
+        /// </summary>
+        /// <param name="input">The given input text</param>
+        /// <param name="removeSpaces">Flag for removing spaces in the input text</param>
+        /// <returns></returns>
         public string ReplaceNaturalLanguage(string input, bool removeSpaces = true)
         {
             input = input.ReplaceIgnoreCase("add", "+");
@@ -231,4 +252,5 @@ namespace MathChatBot.Helpers
         #endregion
 
     }
+
 }

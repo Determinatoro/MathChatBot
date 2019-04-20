@@ -19,7 +19,7 @@ namespace MathChatBot.Objects
     {
         private Term _term;
         private Topic _topic;
-        private bool _showExample;
+        private bool _isExample;
 
         public MessageObject()
         {
@@ -36,15 +36,15 @@ namespace MathChatBot.Objects
         {
             Material = material;
             ShowOrderId = showOrderId;
-            ShowExample = true;
+            IsExample = true;
         }
 
-        public bool ShowExample
+        public bool IsExample
         {
-            get { return _showExample; }
+            get { return _isExample; }
             private set
             {
-                _showExample = value;
+                _isExample = value;
                 if (value)
                 {
                     _topic = null;
@@ -59,16 +59,11 @@ namespace MathChatBot.Objects
             }
         }
         public int? ShowOrderId { get; set; }
-
         public MaterialExample MaterialExample { get; set; }
-
         public string Source { get; private set; }
-
         public System.DateTime SendDate { get; set; }
         public string Text { get; set; }
-
         public MessageTypes MessageType { get; set; }
-        public User User { get; set; }
         public Term Term
         {
             get { return _term; }
@@ -84,7 +79,15 @@ namespace MathChatBot.Objects
                 }
             }
         }
-
+        public bool ShowExampleButton
+        {
+            get
+            {
+                if (IsExample)
+                    return false;
+                return Material != null && Material.MaterialExamples.Count != 0;
+            }
+        }
         public Topic Topic
         {
             get { return _topic; }
@@ -100,9 +103,7 @@ namespace MathChatBot.Objects
                 }
             }
         }
-
         public Material Material { get; set; }
-
         public Brush MessageBackground
         {
             get
@@ -123,7 +124,6 @@ namespace MathChatBot.Objects
                 return new SolidColorBrush(Colors.Gray);
             }
         }
-
         public Brush MessageForeground
         {
             get
@@ -144,7 +144,6 @@ namespace MathChatBot.Objects
                 return new SolidColorBrush(Colors.Black);
             }
         }
-
         public BitmapImage Image
         {
             get
@@ -165,7 +164,6 @@ namespace MathChatBot.Objects
                 return null;
             }
         }
-
         public Visibility MessageVisibility
         {
             get
@@ -186,7 +184,6 @@ namespace MathChatBot.Objects
                 return Visibility.Collapsed;
             }
         }
-
         public Visibility ImageVisibility
         {
             get
@@ -207,7 +204,6 @@ namespace MathChatBot.Objects
                 return Visibility.Collapsed;
             }
         }
-
         public HorizontalAlignment MessageHorizontalAlignment
         {
             get
@@ -228,7 +224,6 @@ namespace MathChatBot.Objects
                 return HorizontalAlignment.Center;
             }
         }
-
         public bool IsTopic
         {
             get
@@ -236,21 +231,13 @@ namespace MathChatBot.Objects
                 return Topic != null;
             }
         }
-
         public bool IsTerm
         {
             get
             {
-                return Term != null && !ShowExample;
+                return Term != null && !IsExample;
             }
         }
 
-        public bool IsExample
-        {
-            get
-            {
-                return ShowExample;
-            }
-        }
     }
 }

@@ -5,13 +5,6 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using NCalc;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Resources;
-using System.Collections;
-using System.Globalization;
-using System.Linq;
 
 namespace MathChatBot
 {
@@ -20,8 +13,19 @@ namespace MathChatBot
     /// </summary>
     public partial class LoginWindow : Window
     {
+
+        //*************************************************/
+        // PROPERTIES
+        //*************************************************/
+        #region Properties
+
         public User User { get; private set; }
 
+        #endregion
+
+        //*************************************************/
+        // CONSTRUCTOR
+        //*************************************************/
         #region Constructor
 
         public LoginWindow()
@@ -42,7 +46,10 @@ namespace MathChatBot
 
         #endregion
 
-        #region Functions
+        //*************************************************/
+        // METHODS
+        //*************************************************/
+        #region Methods
 
         /// <summary>
         /// Get saved login from settings
@@ -69,16 +76,11 @@ namespace MathChatBot
         /// <param name="password">The given password</param>
         private void CheckLogin(string username, string password)
         {
+            CustomDialog.ShowProgress(Properties.Resources.logging_in_please_wait, hideCancelButton: true);
+            bool saveCredentials = cbSaveCredentials.IsChecked.Value;
+
             new Thread(() =>
             {
-                bool saveCredentials = false;
-
-                this.RunOnUIThread(() =>
-                {
-                    saveCredentials = cbSaveCredentials.IsChecked.Value;
-                    CustomDialog.ShowProgress(Properties.Resources.logging_in_please_wait);
-                });
-
                 try
                 {
                     var response = DatabaseUtility.CheckLogin(username, password);
@@ -113,6 +115,9 @@ namespace MathChatBot
 
         #endregion
 
+        //*************************************************/
+        // EVENTS
+        //*************************************************/
         #region Events
 
         // Button - Click
@@ -147,7 +152,6 @@ namespace MathChatBot
         }
 
         #endregion
-
 
     }
 }

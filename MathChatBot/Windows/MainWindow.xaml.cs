@@ -19,7 +19,7 @@ namespace MathChatBot
     {
 
         //*************************************************/
-        // Properties
+        // PROPERTIES
         //*************************************************/
         #region Properties
 
@@ -31,7 +31,7 @@ namespace MathChatBot
         #endregion
 
         //*************************************************/
-        // Constructor
+        // CONSTRUCTOR
         //*************************************************/
         #region Constructor
 
@@ -83,7 +83,7 @@ namespace MathChatBot
         #endregion
 
         //*************************************************/
-        // Methods
+        // METHODS
         //*************************************************/
         #region Methods
 
@@ -99,8 +99,23 @@ namespace MathChatBot
             {
                 User = loginWindow.User;
                 var roles = DatabaseUtility.GetUserRoles(User.Username);
-                if (!roles.Any(x => x.RoleType == Role.RoleTypes.Administrator))
+
+                if (roles.Any(x => x == Role.RoleTypes.Administrator))
+                {
+                    btnAdminControls.Visibility = Visibility.Visible;
+                    btnSeeRequests.Visibility = Visibility.Visible;
+                }
+                else if (roles.Any(x => x == Role.RoleTypes.Teacher))
+                {
                     btnAdminControls.Visibility = Visibility.Collapsed;
+                    btnSeeRequests.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    btnAdminControls.Visibility = Visibility.Collapsed;
+                    btnSeeRequests.Visibility = Visibility.Collapsed;
+                }
+
                 Show();
             }
             else
@@ -110,7 +125,7 @@ namespace MathChatBot
         #endregion
 
         //*************************************************/
-        // Events
+        // EVENTS
         //*************************************************/
         #region Events
 
@@ -149,13 +164,14 @@ namespace MathChatBot
                 // Log out
                 case nameof(btnLogOut):
                     {
+                        MathChatBotHelper.WriteMessageToBot(Properties.Resources.clear);
                         ShowLogin();
                     }
                     break;
                 // See requests
                 case nameof(btnSeeRequests):
                     {
-                        HelpRequestsWindow helpRequestsWindow = new HelpRequestsWindow();
+                        HelpRequestsWindow helpRequestsWindow = new HelpRequestsWindow(User);
                         helpRequestsWindow.ShowDialog();
                     }
                     break;
@@ -175,11 +191,16 @@ namespace MathChatBot
                     {
                         if (message.IsTerm)
                             MathChatBotHelper.SeeExample(message);
+                        else if (message.IsExample)
+                            MathChatBotHelper.SeeDefinition(message);
                         break;
                     }
                 case "btnRight":
                     {
-
+                        if (message.IsTerm)
+                            MathChatBotHelper.DidNotHelp(User, message);
+                        else if (message.IsExample)
+                            MathChatBotHelper.DidNotHelp(User, message);
                         break;
                     }
                 case "btnMiddle":
@@ -189,7 +210,7 @@ namespace MathChatBot
                         else if (message.IsExample)
                             MathChatBotHelper.SeeDefinition(message);
                         else if (message.IsTerm)
-                            MathChatBotHelper.SeeExample(message);
+                            MathChatBotHelper.DidNotHelp(User, message);
                         break;
                     }
             }

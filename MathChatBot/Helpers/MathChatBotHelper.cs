@@ -10,6 +10,9 @@ using System.Linq;
 namespace MathChatBot.Helpers
 {
 
+    /// <summary>
+    /// Result returned after a message has been generated as response
+    /// </summary>
     public class MessageResult
     {
         public MessageResult()
@@ -32,6 +35,9 @@ namespace MathChatBot.Helpers
         public MessageObject[] Messages { get; set; }
     }
 
+    /// <summary>
+    /// Anylyze result used for when analyzing the words in the given message text
+    /// </summary>
     public class AnalyzeResult
     {
         public AnalyzeResult(string errorMessage)
@@ -57,45 +63,44 @@ namespace MathChatBot.Helpers
         public bool IsCommand { get { return SearchStrings == null; } }
     }
 
-    public class MathChatBotHelper : INotifyPropertyChanged
+    /// <summary>
+    /// Interaction logic for the MathChatBotHelper
+    /// </summary>
+    public class MathChatBotHelper
     {
 
+        //*************************************************/
+        // PROPERTIES
+        //*************************************************/
         #region Properties
 
         private NLPHelper NLPHelper { get; set; }
         public SimpleCalculatorHelper SimpleCalculatorHelper { get; set; }
-        private MathChatBotEntities MathChatBotEntities { get; set; }
-
+        private MathChatBotEntities Entity { get; set; }
         public List<MessageObject> LastBotMessagesAdded { get; set; }
         public MessageObject LastBotMessage { get; set; }
         public ObservableCollection<MessageObject> Messages { get; private set; }
 
         #endregion
 
-        #region Interface
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged(string info)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
-        }
-
-        #endregion
-
+        //*************************************************/
+        // CONSTRUCTOR
+        //*************************************************/
         #region Constructor
 
         public MathChatBotHelper()
         {
             NLPHelper = new NLPHelper();
             SimpleCalculatorHelper = new SimpleCalculatorHelper();
-            MathChatBotEntities = DatabaseUtility.GetEntity();
-
+            Entity = DatabaseUtility.GetEntity();
             Messages = new ObservableCollection<MessageObject>();
         }
 
         #endregion
 
+        //*************************************************/
+        // METHODS
+        //*************************************************/
         #region Methods
 
         /// <summary>
@@ -126,6 +131,10 @@ namespace MathChatBot.Helpers
             WriteMessageToUser(text);
         }
 
+        /// <summary>
+        /// See example for a term
+        /// </summary>
+        /// <param name="message">The message object</param>
         public void SeeExample(MessageObject message)
         {
             if (message == null || message.MessageType != MessageTypes.BotHelp)
@@ -163,6 +172,10 @@ namespace MathChatBot.Helpers
             AddBotMessages(messages);
         }
 
+        /// <summary>
+        /// See definition for an example
+        /// </summary>
+        /// <param name="message">The message object</param>
         public void SeeDefinition(MessageObject message)
         {
             if (message.Material == null || !message.IsExample)
@@ -189,6 +202,52 @@ namespace MathChatBot.Helpers
         }
 
         /// <summary>
+        /// Did not help command for terms and examples
+        /// </summary>
+        /// <param name="user">The user object</param>
+        /// <param name="message">The message object</param>
+        public void DidNotHelp(User user, MessageObject message)
+        {
+            var userRoles = DatabaseUtility.GetUserRoles(user.Username);
+
+            // If you are not a student you cannot make help requests
+            if (!userRoles.Any(x => x == Role.RoleTypes.Student))
+            {
+                WriteMessageToUser(Properties.Resources.you_need_to_be_a_student_to_make_help_requests);
+                return;
+            }
+
+            // Create help request
+            var helpRequest = new HelpRequest()
+            {
+                User = user,
+                Material = message.IsExample ? null : message.Material,
+                MaterialExample = !message.IsExample ? null : message.MaterialExample
+            };
+            
+            // You cannot use null propagation in linq so therefore there is used temp values
+            var materialId = helpRequest.Material?.Id;
+            var materialExampleId = helpRequest.MaterialExample?.Id;
+
+            if (!Entity.HelpRequests.Any(
+                x => x.UserId == helpRequest.User.Id && 
+                x.MaterialId == materialId && 
+                x.MaterialExampleId == materialExampleId)
+                )
+            {
+                Entity.HelpRequests.Add(helpRequest);
+                if (Entity.SaveChanges() == 1)
+                    WriteMessageToUser(Properties.Resources.help_request_has_been_sent_to_your_teacher);
+                else
+                    WriteMessageToUser(Properties.Resources.could_not_make_a_help_request);
+
+                return;
+            }
+
+            WriteMessageToUser(Properties.Resources.you_have_already_sent_a_help_request_for_this_material);
+        }
+
+        /// <summary>
         /// Write a message to the bot
         /// </summary>
         /// <param name="text">The message text</param>
@@ -208,11 +267,19 @@ namespace MathChatBot.Helpers
                 AddBotMessages(messageResult.Messages.ToList());
         }
 
+        /// <summary>
+        /// Add a single bot message
+        /// </summary>
+        /// <param name="message">The message object</param>
         private void AddBotMessage(MessageObject message)
         {
             AddBotMessages(new MessageObject[] { message }.ToList());
         }
 
+        /// <summary>
+        /// Add multiple bot messages
+        /// </summary>
+        /// <param name="messages">The list of message objects</param>
         private void AddBotMessages(List<MessageObject> messages)
         {
             LastBotMessagesAdded = messages;
@@ -307,13 +374,15 @@ namespace MathChatBot.Helpers
         /// <summary>
         /// Analyze the wordlist to generate a search string list
         /// </summary>
-        /// <param name="wordList"></param>
+        /// <param name="wordList">The list with the tagged words</param>
         /// <returns></returns>
         private AnalyzeResult AnalyzeWordList(List<TaggedWord> wordList)
         {
             var stringList = new List<string>();
 
+            // Get only the words
             var onlyWordsList = wordList.Where(x => x.POSIdentifier != TaggedWord.POSTag.NONE).ToList();
+            // Get only nouns
             var onlyNounsList = wordList.Where(x => x.IsNoun).ToList();
 
             // Check if there has been given a command
@@ -325,6 +394,7 @@ namespace MathChatBot.Helpers
             if (onlyWordsList.Count == 0 || onlyNounsList.Count == 0)
                 return new AnalyzeResult(Properties.Resources.i_did_not_understand_that_sentence);
 
+            // Using hashset to avoid having search string dublets
             var hashSet = new HashSet<string>();
 
             // Index of the first noun or adjective in the phrase
@@ -334,6 +404,7 @@ namespace MathChatBot.Helpers
             // Get all nouns, adjectives and words inbetween
             var range = wordList.GetRange(firstIndex, lastIndex - firstIndex + 1).ToList();
 
+            // Checking range
             for (int i = 0; i < range.Count; i++)
             {
                 var word = range[i];
@@ -341,7 +412,7 @@ namespace MathChatBot.Helpers
                 if (word.IsAdjective)
                 {
                     var nextIndex = i + 1;
-                    // Check for erros in sentence
+                    // If not a noun or an adjective follows an adjective the sentence is not proper
                     if (nextIndex == range.Count || (!range[nextIndex].IsNoun && !range[nextIndex].IsAdjective))
                         return new AnalyzeResult(Properties.Resources.please_write_a_proper_sentence);
                 }
@@ -358,16 +429,19 @@ namespace MathChatBot.Helpers
             // Check if any commas are located beside each other
             for (int i = 0; i < indexes.Count - 1; i++)
             {
+                // If the index difference is 1 then they are written beside each other
                 if (indexes[i + 1] - indexes[i] == 1)
                     return new AnalyzeResult(Properties.Resources.please_write_a_proper_list_representation_of_nouns);
             }
 
+            // Check for a proper list representation of nouns
             var notNounsAndAdjectives = range.Where(x => !x.IsAdjective && !x.IsNoun).ToList();
-
             if (notNounsAndAdjectives.Any(x => x.Word == "," || x.Word == "and"))
             {
+                // Error if the last word is not "and"
                 if (notNounsAndAdjectives.Last().Word != "and")
                     return new AnalyzeResult(Properties.Resources.please_write_a_proper_list_representation_of_nouns);
+                // Error if there is commas but it ends with more than just one "and" like (dog, bird and bee and tiger)
                 else if (notNounsAndAdjectives.Count > 1 && notNounsAndAdjectives.SkipWhile(x => x.Word == ",").ToList().Count != 1)
                     return new AnalyzeResult(Properties.Resources.please_write_a_proper_list_representation_of_nouns);
             }
@@ -379,21 +453,20 @@ namespace MathChatBot.Helpers
             // Add noun collection search string
             hashSet.Add(nounCollection.ToLower());
 
-            var stringWordList = range.Select(x =>
+            // Get remaining nouns and adjective collections
+            var tempRange = range;
+            do
             {
-                if (!x.IsAdjective && !x.IsNoun)
-                {
-                    x.POSIdentifier = TaggedWord.POSTag.NONE;
-                    x.Word = "|";
-                }
-                return x.Word;
-            }).ToList();
-
-            var joinedWords = string.Join(" ", stringWordList);
-            var splitted = joinedWords.Split('|').ToList();
-            splitted = splitted.Select(x => { x = x.Trim(); return x; }).Where(x => x != "").ToList();
-
-            splitted.ForEach(x => hashSet.Add(x));
+                // First nouns and adjectives in range
+                var collection = tempRange.TakeWhile(x => x.IsNoun || x.IsAdjective).ToList();
+                // Join them
+                var join = string.Join(string.Empty, collection.Select(x => x.OriginalText)).Trim();
+                // Add them list hashset
+                hashSet.Add(join);
+                // Skip them plus the seperator
+                tempRange = tempRange.Skip(collection.Count + 1).ToList();
+            } while (tempRange.Count > 0);
+            
             stringList = hashSet.ToList();
 
             return new AnalyzeResult(stringList);
@@ -413,11 +486,11 @@ namespace MathChatBot.Helpers
                     return new MessageResult();
 
                 Topic topic = null;
-                Term term = MathChatBotEntities.Terms.FirstOrDefault(x => x.Name.ToLower() == str);
+                Term term = Entity.Terms.FirstOrDefault(x => x.Name.ToLower() == str);
 
                 if (term == null)
                 {
-                    topic = MathChatBotEntities.Topics.FirstOrDefault(x => x.Name.ToLower() == str);
+                    topic = Entity.Topics.FirstOrDefault(x => x.Name.ToLower() == str);
                     if (topic == null)
                         continue;
                 }
@@ -451,6 +524,11 @@ namespace MathChatBot.Helpers
 
         }
 
+        /// <summary>
+        /// Check if the text is a command
+        /// </summary>
+        /// <param name="text">The message text</param>
+        /// <returns></returns>
         private bool IsCommand(string text)
         {
             var commands = new List<string>();
@@ -602,11 +680,12 @@ namespace MathChatBot.Helpers
         /// <returns>A string presentation of the topics</returns>
         private string GetTopics()
         {
-            var topics = MathChatBotEntities.Topics.Select(x => x.Name).ToList();
+            var topics = DatabaseUtility.GetTopicNames();
             return string.Join("\n", topics);
         }
 
         #endregion
 
     }
+
 }

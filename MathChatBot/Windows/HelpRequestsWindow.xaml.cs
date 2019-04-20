@@ -3,6 +3,7 @@ using MathChatBot.Utilities;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -16,78 +17,73 @@ namespace MathChatBot
     /// </summary>
     public partial class HelpRequestsWindow : Window
     {
+
+        //*************************************************/
+        // PROPERTIES
+        //*************************************************/
+        #region Properties
+
         private BarSeries Series { get; set; }
         private CategoryAxis YAxis { get; set; }
         private LinearAxis XAxis { get; set; }
         private List<User> Users { get; set; }
+        private User User { get; set; }
 
-        private bool IsShowingTopics
+        #endregion
+
+        //*************************************************/
+        // CONSTRUCTOR
+        //*************************************************/
+        #region Constructor
+
+        public HelpRequestsWindow(User user) : this()
         {
-            get
-            {
-                return cbbTopics.SelectedItem != null && cbbTopics.SelectedItem.ToString() == Properties.Resources.all_topics;
-            }
+            var roles = DatabaseUtility.GetUserRoles(user.Username);
+            List<Class> classes = null;
+
+            // Get classes
+            if (roles.Any(x => x == Role.RoleTypes.Administrator))
+                classes = DatabaseUtility.GetEntity().Classes.ToList();
+            else if (roles.Any(x => x == Role.RoleTypes.Teacher))
+                classes = user.UserClassRelations.Select(x => x.Class).ToList();
+            cbbClasses.ItemsSource = classes;
         }
 
-        public HelpRequestsWindow()
+        private HelpRequestsWindow()
         {
             InitializeComponent();
 
             SetupDiagram();
             ShowTopics();
 
-            cbbClasses.ItemsSource = DatabaseUtility.GetEntity().Classes.Select(x => x.Name).ToList();
+            // Get topics
             var topics = DatabaseUtility.GetEntity().Topics.Select(x => x.Name).ToList();
+            // Insert a selection for all topics
             topics.Insert(0, Properties.Resources.all_topics);
             cbbTopics.ItemsSource = topics;
             cbbTopics.SelectedIndex = 0;
 
+            // SelectionChanged events
             cbbClasses.SelectionChanged += control_SelectionChanged;
             cbbTopics.SelectionChanged += control_SelectionChanged;
             dgUsers.SelectionChanged += control_SelectionChanged;
+
+            // Click events
             btnSeeForWholeClass.Click += button_Click;
 
-            this.SetupBorderHeader("Help Requests");
+            this.SetupBorderHeader(Properties.Resources.help_requests);
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
-        {
-            var element = sender as FrameworkElement;
+        #endregion
 
-            switch (element.Name)
-            {
-                case nameof(btnSeeForWholeClass):
-                    {
-                        if (dgUsers.SelectedValue == null)
-                            return;
+        //*************************************************/
+        // METHODS
+        //*************************************************/
+        #region Methods
 
-                        CustomDialog.ShowProgress(Properties.Resources.retrieving_data_please_wait, hideCancelButton: true);
-
-                        new Thread(() =>
-                        {
-                            var users = (List<User>)dgUsers.ItemsSource;
-
-                            var req = new List<HelpRequest>();
-                            users.Select(x =>
-                            {
-                                req.AddRange(x.HelpRequests);
-                                return x.HelpRequests;
-                            }).ToList();
-
-                            SetData(req, false);
-
-                            this.RunOnUIThread(() =>
-                            {
-                                CustomDialog.Dismiss();
-                                dgUsers.SelectedIndex = -1;
-                            });
-                        }).Start();
-
-                        break;
-                    }
-            }
-        }
-
+        /// <summary>
+        /// Setup the diagram
+        /// </summary>
         private void SetupDiagram()
         {
             var model = new PlotModel();
@@ -110,7 +106,8 @@ namespace MathChatBot
             YAxis = new CategoryAxis()
             {
                 Key = "Categories",
-                Position = AxisPosition.Left
+                Position = AxisPosition.Left,
+                IsZoomEnabled = false
             };
 
             model.Axes.Add(XAxis);
@@ -123,138 +120,255 @@ namespace MathChatBot
                 FillColor = OxyColor.FromRgb(0, 36, 86),
                 TextColor = OxyColor.FromRgb(255, 255, 255),
                 FontSize = 12,
+                StrokeColor = OxyColor.FromRgb(32, 32, 32),
+                StrokeThickness = 1
+            };
+            Series.MouseDown += (s, e) =>
+            {
+                // Get selected topic
+                string topicName = cbbTopics.SelectedItem.ToString();
+                // Get flag
+                bool isShowingAllTopics = topicName == Properties.Resources.all_topics;
+
+                if (isShowingAllTopics)
+                {
+                    var y = (int)Math.Round((s as BarSeries).InverseTransform(e.Position).Y);
+                    var list = YAxis.ItemsSource as List<string>;
+                    var item = list[y];
+                    cbbTopics.SelectedItem = item;
+                }
             };
 
             model.Series.Add(Series);
         }
 
+        /// <summary>
+        /// Show the topic names in the diagram
+        /// </summary>
         private void ShowTopics()
         {
-            YAxis.ItemsSource = DatabaseUtility.GetEntity().GetTopicNames().OrderByDescending(x => x).ToList();
-            opHelpRequests.InvalidatePlot();
-        }
-
-        private void ShowTerms(string topicName)
-        {
-            YAxis.ItemsSource = DatabaseUtility.GetEntity().Terms
-                .Where(x => x.Topic.Name == topicName)
-                .Select(x => x.Name)
+            YAxis.ItemsSource = DatabaseUtility
+                .GetTopicNames()
                 .OrderByDescending(x => x)
                 .ToList();
             opHelpRequests.InvalidatePlot();
         }
 
-        private void AddTestData()
+        /// <summary>
+        /// Show term names in the diagram for a given topic
+        /// </summary>
+        /// <param name="topicName">Name of the topic</param>
+        private void ShowTerms(string topicName)
         {
-            /*var materials = DatabaseUtility.GetEntity().Materials.ToList();
-            var materialExamples = DatabaseUtility.GetEntity().MaterialExamples.ToList();
-
-            int i = 0;
-            foreach (var material in materials)
-            {
-                if (material.Term == null)
-                    continue;
-                DatabaseUtility.GetEntity().HelpRequests.Add(new HelpRequest()
-                {
-                    User = users[i++ % 20],
-                    Material = material
-                });
-            }
-
-            DatabaseUtility.GetEntity().SaveChanges();*/
-
+            YAxis.ItemsSource = DatabaseUtility
+                .GetTermNames(topicName)
+                .OrderByDescending(x => x)
+                .ToList();
+            opHelpRequests.InvalidatePlot();
         }
 
-        private void SetData(List<HelpRequest> helpRequests, bool filter = true)
+        /// <summary>
+        /// Set data for the diagram
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="keepUserSelected"></param>
+        private void SetData(Class @class = null, bool filter = true, bool keepUserSelected = false)
         {
-            List<User> filteredUsers = (List<User>)dgUsers.ItemsSource;
-            var examples = helpRequests.Where(x => x.MaterialExample != null).ToList();
-            var materials = helpRequests.Where(x => x.Material != null).ToList();
+            CustomDialog.ShowProgress(Properties.Resources.retrieving_data_please_wait, hideCancelButton: true);
 
-            bool isShowingTopics = this.RunOnUIThread(() => { return IsShowingTopics; });
+            // Get selected topic
+            string topicName = cbbTopics.SelectedItem.ToString();
 
-            var barItems = new List<BarItem>();
-
-            if (isShowingTopics)
+            new Thread(() =>
             {
-                var topics = DatabaseUtility.GetEntity().Topics.ToList();
-
-                if (filter)
-                    filteredUsers = Users.Where(x => x.HelpRequests.Count != 0).ToList();
-
-                var groupedMaterials = materials.GroupBy(x => x.Material.Term.Topic.Name);
-                var groupedExamples = examples.GroupBy(x => x.MaterialExample.Material.Term.Topic.Name);
-
-                foreach (var topic in topics)
+                try
                 {
-                    var value = 0;
+                    // Get all the students in the class
+                    if (@class != null)
+                        Users = DatabaseUtility.GetUsersInClass(@class, Role.RoleTypes.Student);
 
-                    if (groupedMaterials.Any(x => x.Key == topic.Name))
-                        value += groupedMaterials.FirstOrDefault(x => x.Key == topic.Name).Count();
-                    if (groupedExamples.Any(x => x.Key == topic.Name))
-                        value += groupedExamples.FirstOrDefault(x => x.Key == topic.Name).Count();
+                    // If there are no users in the class do not go any further
+                    if (Users.Count == 0)
+                        return;
 
-                    barItems.Add(new BarItem
+                    List<User> users = dgUsers.ItemsSource as List<User>;
+                    User selectedUser = null;
+                    List<BarItem> barItems = new List<BarItem>();
+                    List<HelpRequest> helpRequests = new List<HelpRequest>();
+
+                    if (keepUserSelected)
+                        selectedUser = this.RunOnUIThread(() => { return dgUsers.SelectedValue as User; });
+
+                    // Get flag
+                    bool isShowingAllTopics = topicName == Properties.Resources.all_topics;
+
+                    if (isShowingAllTopics)
                     {
-                        Value = value
+                        // Only show users who has made a help request
+                        if (filter)
+                            users = Users
+                                .Where(x => x.HelpRequests.Count != 0)
+                                .OrderBy(x => x.Name)
+                                .ToList();
+                    }
+                    else
+                    {
+                        // Only show users who has made a help request for a term under the specific topic
+                        if (filter)
+                        {
+                            users = Users
+                                .Where(x => x.HelpRequests.Any(x2 =>
+                                {
+                                    if (x2.Material != null)
+                                        return x2.Material.Term.Topic.Name == topicName;
+                                    else
+                                        return x2.MaterialExample.Material.Term.Topic.Name == topicName;
+                                }))
+                                .OrderBy(x => x.Name)
+                                .ToList();
+                        }
+                    }
+
+                    // Get help requests
+                    if (keepUserSelected &&
+                            selectedUser != null &&
+                            users.Any(x => x == selectedUser)
+                            )
+                    {
+                        helpRequests.AddRange(selectedUser.HelpRequests);
+                    }
+                    else
+                    {
+                        users.Select(x =>
+                        {
+                            helpRequests.AddRange(x.HelpRequests);
+                            return x.HelpRequests;
+                        }).ToList();
+                    }
+
+                    // Help requests for term material examples
+                    var helpRequestsForExamples = helpRequests.Where(x => x.MaterialExample != null).ToList();
+                    // Help requests for term materials
+                    var helpRequestsForMaterials = helpRequests.Where(x => x.Material != null).ToList();
+
+                    if (isShowingAllTopics)
+                    {
+                        // Get topics from database
+                        var topics = DatabaseUtility.GetEntity().Topics.ToList();
+
+                        // Group help requests by topics
+                        var groupedMaterials = helpRequestsForMaterials.GroupBy(x => x.Material.Term.Topic.Name);
+                        var groupedExamples = helpRequestsForExamples.GroupBy(x => x.MaterialExample.Material.Term.Topic.Name);
+
+                        foreach (var topic in topics)
+                        {
+                            var value = 0;
+
+                            // Get number of help requests for each topic
+                            if (groupedMaterials.Any(x => x.Key == topic.Name))
+                                value += groupedMaterials.FirstOrDefault(x => x.Key == topic.Name).Count();
+                            if (groupedExamples.Any(x => x.Key == topic.Name))
+                                value += groupedExamples.FirstOrDefault(x => x.Key == topic.Name).Count();
+
+                            barItems.Add(new BarItem
+                            {
+                                Value = value,
+                                CategoryIndex = (YAxis.ItemsSource as List<string>).IndexOf(topic.Name)
+                            });
+                        }
+                    }
+                    else
+                    {
+                        // Get all terms for the specific topic
+                        var terms = DatabaseUtility.GetEntity().Terms.Where(x => x.Topic.Name == topicName).ToList();
+
+                        // Group help requests for materials
+                        var groupedMaterials = helpRequestsForMaterials
+                            .Where(x => x.Material.Term.Topic.Name == topicName)
+                            .GroupBy(x => x.Material.Term.Name);
+                        // Group help reuqests for examples
+                        var groupedExamples = helpRequestsForExamples
+                            .Where(x => x.MaterialExample.Material.Term.Topic.Name == topicName)
+                            .GroupBy(x => x.MaterialExample.Material.Term.Name);
+
+                        foreach (var term in terms)
+                        {
+                            var value = 0;
+
+                            // Get number of help requests for each term
+                            if (groupedMaterials.Any(x => x.Key == term.Name))
+                                value += groupedMaterials.FirstOrDefault(x => x.Key == term.Name).Count();
+                            if (groupedExamples.Any(x => x.Key == term.Name))
+                                value += groupedExamples.FirstOrDefault(x => x.Key == term.Name).Count();
+
+                            barItems.Add(new BarItem
+                            {
+                                Value = value,
+                                CategoryIndex = (YAxis.ItemsSource as List<string>).IndexOf(term.Name)
+                            });
+                        }
+                    }
+
+                    this.RunOnUIThread(() =>
+                    {
+                        // Show users
+                        dgUsers.ItemsSource = users;
+                        // Set selection
+                        dgUsers.SelectedValue = selectedUser;
+
+                        // Set diagram items
+                        if (barItems.Count != 0)
+                        {
+                            var max = barItems.Max(x => x.Value) + 1;
+                            XAxis.Maximum = max == 1 ? 100 : max;
+                            XAxis.MaximumRange = max == 1 ? 100 : max;
+                        }
+                        Series.ItemsSource = barItems;
+                        opHelpRequests.InvalidatePlot();
+
+                        CustomDialog.Dismiss();
                     });
                 }
-            }
-            else
-            {
-                var topicName = this.RunOnUIThread(() => { return cbbTopics.SelectedItem.ToString(); });
-
-                if (filter)
+                catch (Exception mes)
                 {
-                    filteredUsers = Users.Where(x => x.HelpRequests.Any(x2 =>
+                    this.RunOnUIThread(() =>
                     {
-                        if (x2.Material != null)
-                            return x2.Material.Term.Topic.Name == topicName;
+                        if (mes.Message == string.Empty)
+                            CustomDialog.Dismiss();
                         else
-                            return x2.MaterialExample.Material.Term.Topic.Name == topicName;
-                    })).ToList();
-                }
-
-                var terms = DatabaseUtility.GetEntity().Terms.Where(x => x.Topic.Name == topicName).ToList();
-
-                var groupedMaterials = materials
-                    .Where(x => x.Material.Term.Topic.Name == topicName)
-                    .GroupBy(x => x.Material.Term.Name);
-                var groupedExamples = examples
-                    .Where(x => x.MaterialExample.Material.Term.Topic.Name == topicName)
-                    .GroupBy(x => x.MaterialExample.Material.Term.Name);
-
-                foreach (var term in terms)
-                {
-                    var value = 0;
-
-                    if (groupedMaterials.Any(x => x.Key == term.Name))
-                        value += groupedMaterials.FirstOrDefault(x => x.Key == term.Name).Count();
-                    if (groupedExamples.Any(x => x.Key == term.Name))
-                        value += groupedExamples.FirstOrDefault(x => x.Key == term.Name).Count();
-
-                    barItems.Add(new BarItem
-                    {
-                        Value = value
+                            CustomDialog.Show(mes.Message);
                     });
                 }
-            }
-
-            this.RunOnUIThread(() =>
-            {
-                dgUsers.ItemsSource = filteredUsers;
-
-                if (barItems.Count != 0)
-                {
-                    var max = barItems.Max(x => x.Value) + 1;
-                    XAxis.Maximum = max == 1 ? 100 : max;
-                    XAxis.MaximumRange = max == 1 ? 100 : max;
-                }
-                Series.ItemsSource = barItems;
-                opHelpRequests.InvalidatePlot();
-            });
+            }).Start();
         }
 
+        #endregion
+
+        //*************************************************/
+        // EVENTS
+        //*************************************************/
+        #region Events
+
+        // Button - Click
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+
+            switch (element.Name)
+            {
+                case nameof(btnSeeForWholeClass):
+                    {
+                        if (dgUsers.SelectedValue == null)
+                            return;
+
+                        SetData(filter: false);
+
+                        break;
+                    }
+            }
+        }
+
+        // ComboBox, DataGrid - SelectionChanged
         private void control_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var element = sender as FrameworkElement;
@@ -263,35 +377,11 @@ namespace MathChatBot
             {
                 case nameof(cbbClasses):
                     {
-                        CustomDialog.ShowProgress(Properties.Resources.retrieving_data_please_wait, hideCancelButton: true);
-                        var @class = cbbClasses.SelectedItem.ToString();
+                        var @class = cbbClasses.SelectedItem as Class;
+                        if (@class == null)
+                            return;
 
-                        new Thread(() =>
-                        {
-                            var theClass = DatabaseUtility.GetEntity().Classes.FirstOrDefault(x => x.Name == @class);
-
-                            if (theClass == null)
-                                return;
-
-                            Users = theClass.UserClassRelations
-                                .Select(x => x.User)
-                                .Where(x => x.UserRoleRelations.Any(x2 => x2.Role.RoleType == Role.RoleTypes.Student))
-                                .ToList();
-
-                            var req = new List<HelpRequest>();
-                            Users.Select(x =>
-                            {
-                                req.AddRange(x.HelpRequests);
-                                return x.HelpRequests;
-                            }).ToList();
-
-                            SetData(req);
-
-                            this.RunOnUIThread(() =>
-                            {
-                                CustomDialog.Dismiss();
-                            });
-                        }).Start();
+                        SetData(@class: @class);
 
                         break;
                     }
@@ -308,34 +398,7 @@ namespace MathChatBot
                         if (cbbClasses.SelectedItem == null)
                             return;
 
-                        CustomDialog.ShowProgress(Properties.Resources.retrieving_data_please_wait, hideCancelButton: true);
-
-                        new Thread(() =>
-                        {
-                            var req = new List<HelpRequest>();
-                            Users.Select(x =>
-                            {
-                                req.AddRange(x.HelpRequests);
-                                return x.HelpRequests;
-                            }).ToList();
-
-                            SetData(req);
-
-                            var selectedUser = this.RunOnUIThread(() =>
-                            {
-                                dgUsers.SelectedValue = user;
-                                return dgUsers.SelectedValue as User;
-                            });
-
-                            if (selectedUser != null)
-                                SetData(user.HelpRequests.ToList(), false);
-
-                            this.RunOnUIThread(() =>
-                            {
-                                control_SelectionChanged(dgUsers, null);
-                                CustomDialog.Dismiss();
-                            });
-                        }).Start();
+                        SetData(keepUserSelected: true);
 
                         break;
                     }
@@ -346,26 +409,14 @@ namespace MathChatBot
                         if (user == null)
                             return;
 
-                        CustomDialog.ShowProgress(Properties.Resources.retrieving_data_please_wait, hideCancelButton: true);
-
-                        new Thread(() =>
-                        {
-                            SetData(user.HelpRequests.ToList(), false);
-
-                            this.RunOnUIThread(() =>
-                            {
-                                CustomDialog.Dismiss();
-                            });
-                        }).Start();
+                        SetData(filter: false, keepUserSelected: true);
 
                         break;
                     }
             }
         }
 
-        private void CbWholeClass_Unchecked(object sender, RoutedEventArgs e)
-        {
+        #endregion
 
-        }
     }
 }

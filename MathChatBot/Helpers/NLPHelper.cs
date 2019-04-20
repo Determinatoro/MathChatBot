@@ -12,6 +12,10 @@ using System.Text.RegularExpressions;
 
 namespace MathChatBot.Helpers
 {
+
+    /// <summary>
+    /// An object for when tagging the words
+    /// </summary>
     public class TaggedWord
     {
         public enum POSTag
@@ -55,8 +59,6 @@ namespace MathChatBot.Helpers
             WRB         // Wh-adverb
         }
 
-        private string _stringIdentifier;
-
         public string OriginalText
         {
             get
@@ -73,27 +75,15 @@ namespace MathChatBot.Helpers
         public string Lemma { get; set; }
         public string Original { get; set; }
         public string NERStringIdentifier { get; set; }
-        public POSTag POSIdentifier { get; set; }
-        public string POSStringIdentifier
-        {
-            get
+        public POSTag POSIdentifier { get
             {
-                return _stringIdentifier;
-            }
-            set
-            {
-                _stringIdentifier = value;
-
-                if (_stringIdentifier == null)
-                    POSIdentifier = POSTag.NONE;
-
-                var tempIdentifier = _stringIdentifier.Replace("$", "S");
-
-                POSIdentifier = Utility.ParseEnum<POSTag>(tempIdentifier);
+                if (POSStringIdentifier == null)
+                    return POSTag.NONE;
+                var tempIdentifier = POSStringIdentifier.Replace("$", "S");
+                return Utility.ParseEnum<POSTag>(tempIdentifier);
             }
         }
-
-
+        public string POSStringIdentifier { get; set; }
         public bool IsNoun
         {
             get
@@ -110,7 +100,6 @@ namespace MathChatBot.Helpers
                 return false;
             }
         }
-
         public bool IsAdjective
         {
             get
@@ -126,7 +115,6 @@ namespace MathChatBot.Helpers
                 return false;
             }
         }
-
         public bool IsVerb
         {
             get
@@ -145,7 +133,6 @@ namespace MathChatBot.Helpers
                 return false;
             }
         }
-
         public bool IsWHWord
         {
             get
@@ -175,21 +162,41 @@ namespace MathChatBot.Helpers
                 POSStringIdentifier = splitted[1]
             };
         }
+
     }
 
+    /// <summary>
+    /// Interaction logic for the NLPHelper
+    /// </summary>
     public class NLPHelper
     {
-        //private MaxentTagger POSTagger { get; set; }
-        private StanfordCoreNLP ExtendedTagger { get; set; }
+
+        //*************************************************/
+        // VARIABLES
+        //*************************************************/
+        #region Variables
 
         private static string AppFolderPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
         private static string ResourcesFolderPath = Path.Combine(Directory.GetParent(AppFolderPath).Parent.FullName, "Resources\\{0}");
 
+        #endregion
+
+        //*************************************************/
+        // PROPERTIES
+        //*************************************************/
+        #region Properties
+
+        private StanfordCoreNLP ExtendedTagger { get; set; }
+
+        #endregion
+
+        //*************************************************/
+        // CONSTRUCTOR
+        //*************************************************/
+        #region Constructor
+
         public NLPHelper()
         {
-            //var taggerPath = string.Format(ResourcesFolderPath, @"stanford-corenlp-3.9.2-models\edu\stanford\nlp\models\pos-tagger\english-left3words\english-left3words-distsim.tagger");
-            //POSTagger = new MaxentTagger(taggerPath);
-
             var jarRoot = string.Format(ResourcesFolderPath, @"stanford-corenlp-3.9.2-models");
             var props = new java.util.Properties();
             props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner");
@@ -203,36 +210,29 @@ namespace MathChatBot.Helpers
             ExtendedTagger = new StanfordCoreNLP(props);
         }
 
+        #endregion
+
+        //*************************************************/
+        // METHODS
+        //*************************************************/
+        #region Methods
+
+        /// <summary>
+        /// Get sentences from the given message text
+        /// </summary>
+        /// <param name="text">The message text</param>
+        /// <returns>A list with the sentences</returns>
         public List<object> GetSentences(string text)
         {
             var sentences = MaxentTagger.tokenizeText(new java.io.StringReader(text)).toArray();
-
             return new List<object>(sentences);
         }
 
-        /*public List<TaggedWord> POSTag(string text)
-        {
-            var list = new List<TaggedWord>();
-            
-            var sentences = MaxentTagger.tokenizeText(new java.io.StringReader(text)).toArray();
-            foreach (ArrayList sentence in sentences)
-            {
-                var taggedSentence = POSTagger.tagSentence(sentence);
-                var array = taggedSentence.toArray();
-
-                foreach (var word in array)
-                {
-                    var strWord = word.ToString();
-                    var nlpWord = TaggedWord.ParseFromNLP(strWord);
-                    list.Add(nlpWord);
-                }
-
-                //System.Console.WriteLine(edu.stanford.nlp.ling.SentenceUtils.listToString(taggedSentence, false));
-            }
-
-            return list;
-        }*/
-
+        /// <summary>
+        /// Tag the given message text
+        /// </summary>
+        /// <param name="text">The message text</param>
+        /// <returns>A list with the tagged words</returns>
         public List<TaggedWord> Tag(string text)
         {
             var list = new List<TaggedWord>();
@@ -275,5 +275,9 @@ namespace MathChatBot.Helpers
 
             return list;
         }
+
+        #endregion
+
     }
+
 }

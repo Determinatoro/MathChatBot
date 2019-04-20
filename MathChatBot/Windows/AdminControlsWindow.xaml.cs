@@ -152,7 +152,7 @@ namespace MathChatBot
                         // Get roles from file entry
                         var roles = Regex.Split(dictionary[nameof(MathChatBotEntities.Roles)], ",");
                         // Add roles for the user
-                        if (!DatabaseUtility.AddRolesByName(user, roles))
+                        if (!DatabaseUtility.AssignRolesByName(user, roles))
                             break;
                     }
 
@@ -251,7 +251,7 @@ namespace MathChatBot
                 // New user
                 case nameof(btnNewUser):
                     {
-                        InputWindow inputWindow = new InputWindow(windowType: InputWindow.WindowTypes.NewUser);
+                        InputWindow inputWindow = new InputWindow(windowType: WindowTypes.NewUser);
                         // Closing event
                         inputWindow.Closing += window_Closing;
                         // Show the new user window
@@ -301,7 +301,7 @@ namespace MathChatBot
                         // Get the associated object
                         User user = ((FrameworkElement)sender).DataContext as User;
                         // Open a window containing more information about the user
-                        var inputWindow = new InputWindow(user, InputWindow.WindowTypes.UserInformation);
+                        var inputWindow = new InputWindow(user, WindowTypes.UserInformation);
                         // Closing event
                         inputWindow.Closing += window_Closing;
                         // Show the information window

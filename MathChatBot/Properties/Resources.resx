@@ -457,4 +457,22 @@ How to use the calculator:
   <data name="see_for_whole_class" xml:space="preserve">
     <value>See for whole class</value>
   </data>
+  <data name="help_requests" xml:space="preserve">
+    <value>Help Requests</value>
+  </data>
+  <data name="could_not_make_a_help_request" xml:space="preserve">
+    <value>Could not make a help request.</value>
+  </data>
+  <data name="help_request_has_been_sent_to_your_teacher" xml:space="preserve">
+    <value>Help request has been sent to your teacher.</value>
+  </data>
+  <data name="version" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="you_have_already_sent_a_help_request_for_this_material" xml:space="preserve">
+    <value>You have already sent a help request for this material.</value>
+  </data>
+  <data name="you_need_to_be_a_student_to_make_help_requests" xml:space="preserve">
+    <value>You need to be a student to make help requests.</value>
+  </data>
 </root>

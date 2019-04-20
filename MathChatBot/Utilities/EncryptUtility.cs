@@ -8,8 +8,18 @@ using System.Threading.Tasks;
 
 namespace MathChatBot.Utilities
 {
+
+    /// <summary>
+    /// Encryption functions found on the web
+    /// </summary>
     public class EncryptUtility
     {
+
+        //*************************************************/
+        // VARIABLES
+        //*************************************************/
+        #region Variables
+
         // This constant is used to determine the keysize of the encryption algorithm in bits.
         // We divide this by 8 within the code below to get the equivalent number of bytes.
         private const int Keysize = 256;
@@ -17,6 +27,19 @@ namespace MathChatBot.Utilities
         // This constant determines the number of iterations for the password bytes generation function.
         private const int DerivationIterations = 1000;
 
+        #endregion
+
+        //*************************************************/
+        // METHODS
+        //*************************************************/
+        #region Methods
+
+        /// <summary>
+        /// Encrypt a text
+        /// </summary>
+        /// <param name="plainText">The text</param>
+        /// <param name="passPhrase">A passphrase used for the encryption</param>
+        /// <returns></returns>
         public static string Encrypt(string plainText, string passPhrase)
         {
             // Salt and IV is randomly generated each time, but is preprended to encrypted cipher text
@@ -54,6 +77,12 @@ namespace MathChatBot.Utilities
             }
         }
 
+        /// <summary>
+        /// Decrypt encrypted text
+        /// </summary>
+        /// <param name="cipherText">The encrypted text</param>
+        /// <param name="passPhrase">The passphrase that was used for the encryption</param>
+        /// <returns></returns>
         public static string Decrypt(string cipherText, string passPhrase)
         {
             // Get the complete stream of bytes that represent:
@@ -92,6 +121,10 @@ namespace MathChatBot.Utilities
             }
         }
 
+        /// <summary>
+        /// Generate random bytes
+        /// </summary>
+        /// <returns>Returns 256 random bits</returns>
         private static byte[] Generate256BitsOfRandomEntropy()
         {
             var randomBytes = new byte[32]; // 32 Bytes will give us 256 bits.
@@ -102,5 +135,8 @@ namespace MathChatBot.Utilities
             }
             return randomBytes;
         }
+
+        #endregion
+
     }
 }

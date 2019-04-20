@@ -99,6 +99,7 @@
                         Name="cbbClasses"
                         Tag="Select class"
                         Margin="1"
+                        DisplayMemberPath="Name"
                         FontFamily="Roboto"
                         FontSize="16"
                         Foreground="White"

@@ -233,7 +233,6 @@
     <Compile Include="Windows\HelpRequestsWindow.xaml.cs">
       <DependentUpon>HelpRequestsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\ModelUtility.cs" />
     <Compile Include="Models\Objects\Role.cs" />
     <Compile Include="Models\Objects\User.cs" />
     <Compile Include="Objects\MessageObject.cs" />

@@ -6,7 +6,6 @@
              StartupUri="Windows\MainWindow.xaml">
     <Application.Resources>
         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#33002456"/>
-
         <SolidColorBrush x:Key="AUU_Blue" Color="#002456"/>
         <SolidColorBrush x:Key="AAU_DarkBlue" Color="#FF001636"/>
         <SolidColorBrush x:Key="UserMessageColor" Color="#002456"/>

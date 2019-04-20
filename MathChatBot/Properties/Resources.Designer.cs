@@ -196,6 +196,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not make a help request..
+        /// </summary>
+        public static string could_not_make_a_help_request {
+            get {
+                return ResourceManager.GetString("could_not_make_a_help_request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create.
         /// </summary>
         public static string create {
@@ -302,6 +311,24 @@ namespace MathChatBot.Properties {
         public static string help_message {
             get {
                 return ResourceManager.GetString("help_message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help request has been sent to your teacher..
+        /// </summary>
+        public static string help_request_has_been_sent_to_your_teacher {
+            get {
+                return ResourceManager.GetString("help_request_has_been_sent_to_your_teacher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help Requests.
+        /// </summary>
+        public static string help_requests {
+            get {
+                return ResourceManager.GetString("help_requests", resourceCulture);
             }
         }
         
@@ -944,6 +971,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Version {0}.
+        /// </summary>
+        public static string version {
+            get {
+                return ResourceManager.GetString("version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Welcome to MathChatBot.
         ///Ask me anything math-related and I might be able to help you.
         ///Write “help” to get more information..
@@ -1023,6 +1059,24 @@ namespace MathChatBot.Properties {
         public static string you_cannot_take_square_root_of_negative_number {
             get {
                 return ResourceManager.GetString("you_cannot_take_square_root_of_negative_number", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have already sent a help request for this material..
+        /// </summary>
+        public static string you_have_already_sent_a_help_request_for_this_material {
+            get {
+                return ResourceManager.GetString("you_have_already_sent_a_help_request_for_this_material", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need to be a student to make help requests..
+        /// </summary>
+        public static string you_need_to_be_a_student_to_make_help_requests {
+            get {
+                return ResourceManager.GetString("you_need_to_be_a_student_to_make_help_requests", resourceCulture);
             }
         }
         

@@ -137,14 +137,19 @@
                     <Setter TargetName="btnMiddle" Property="Content" Value="{x:Static p:Resources.see_terms}"/>
                     <Setter TargetName="rowLeftRight" Property="Height" Value="0"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Path=IsTopic}" Value="false">
+                <DataTrigger Binding="{Binding Path=IsTerm}" Value="true">
                     <Setter TargetName="rowMiddle" Property="Height" Value="0"/>
                     <Setter TargetName="rowLeftRight" Property="Height" Value="35"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Path=IsExample}" Value="true">
+                <DataTrigger Binding="{Binding Path=ShowExampleButton}" Value="false">
                     <Setter TargetName="rowMiddle" Property="Height" Value="35"/>
                     <Setter TargetName="rowLeftRight" Property="Height" Value="0"/>
-                    <Setter TargetName="btnMiddle" Property="Content" Value="{x:Static p:Resources.see_definition}"/>
+                    <Setter TargetName="btnMiddle" Property="Content" Value="{x:Static p:Resources.did_not_help}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=IsExample}" Value="true">
+                    <Setter TargetName="rowMiddle" Property="Height" Value="0"/>
+                    <Setter TargetName="rowLeftRight" Property="Height" Value="35"/>
+                    <Setter TargetName="btnLeft" Property="Content" Value="{x:Static p:Resources.see_definition}"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>

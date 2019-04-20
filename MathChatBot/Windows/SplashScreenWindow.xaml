@@ -29,6 +29,21 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <Label 
+                Name="lblVersion"
+                Content="Version 1.0.0.0"
+                FontFamily="Roboto"
+                FontWeight="Bold"
+                Foreground="White"
+                Padding="7, 0, 0, 5"
+                Grid.ColumnSpan="10"
+                Grid.RowSpan="10"
+                TextBlock.TextAlignment="Center"
+                VerticalContentAlignment="Bottom"
+                HorizontalContentAlignment="Left"
+                FontSize="12"
+                />
+
             <Image 
                 Name="imgLogo"
                 Grid.Row="1"

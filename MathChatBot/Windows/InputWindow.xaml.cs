@@ -9,42 +9,65 @@ using System.Windows.Input;
 
 namespace MathChatBot
 {
+
+    public enum WindowTypes
+    {
+        NewUser,
+        ResetPassword,
+        UserInformation,
+        ClassOverview
+    }
+
     /// <summary>
     /// Interaction logic for InputWindow.xaml
     /// </summary>
     public partial class InputWindow : Window
     {
-        public enum WindowTypes
-        {
-            NewUser,
-            ResetPassword,
-            UserInformation,
-            ClassOverview
-        }
+
+        //*************************************************/
+        // PROPERTIES
+        //*************************************************/
+        #region Properties
 
         private WindowTypes WindowType { get; set; }
         public User User { get; set; }
         public List<Role> RolesListForUser { get; set; }
-        private MathChatBotEntities MathChatBotEntities { get; set; }
+        private MathChatBotEntities Entity { get; set; }
 
+        #endregion
+
+        //*************************************************/
+        // CONSTRUCTOR
+        //*************************************************/
+        #region Constructor
+
+        /// <summary>
+        /// Basic constructor
+        /// </summary>
         private InputWindow()
         {
             InitializeComponent();
 
-            MathChatBotEntities = DatabaseUtility.GetEntity();
+            Entity = DatabaseUtility.GetEntity();
 
             spResetPassword.Visibility = Visibility.Collapsed;
             spUser.Visibility = Visibility.Collapsed;
             spClassOverview.Visibility = Visibility.Collapsed;
 
+            // Click events
             btnOk.Click += button_Click;
             btnCancel.Click += button_Click;
         }
 
+        /// <summary>
+        /// Constructor for reset password and user information
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="windowType"></param>
         public InputWindow(User user, WindowTypes windowType) : this()
         {
             WindowType = windowType;
-            User = MathChatBotEntities.Users.FirstOrDefault(x => x.Id == user.Id);
+            User = Entity.Users.FirstOrDefault(x => x.Id == user.Id);
 
             switch (WindowType)
             {
@@ -78,6 +101,10 @@ namespace MathChatBot
             }
         }
 
+        /// <summary>
+        /// Constructor for new user 
+        /// </summary>
+        /// <param name="windowType"></param>
         public InputWindow(WindowTypes windowType) : this()
         {
             WindowType = windowType;
@@ -114,13 +141,17 @@ namespace MathChatBot
 
         }
 
+        /// <summary>
+        /// Constuctor for class overview
+        /// </summary>
+        /// <param name="clas">The class object</param>
         public InputWindow(Class clas) : this()
         {
             spClassOverview.Visibility = Visibility.Visible;
 
             WindowType = WindowTypes.ClassOverview;
 
-            var users = MathChatBotEntities.UserClassRelations.Where(x => x.ClassId == clas.Id).Select(x => x.User).ToList();
+            var users = Entity.UserClassRelations.Where(x => x.ClassId == clas.Id).Select(x => x.User).ToList();
             users.SetStringRolesForUsers();
 
             dgUsers.ItemsSource = users;
@@ -129,6 +160,13 @@ namespace MathChatBot
 
             this.SetupBorderHeader(clas.Name);
         }
+
+        #endregion
+
+        //*************************************************/
+        // EVENTS
+        //*************************************************/
+        #region Events
 
         // TextBox - PreviewTextInput
         private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -191,7 +229,7 @@ namespace MathChatBot
                                         {
                                             if (role.IsAssigned)
                                             {
-                                                MathChatBotEntities.UserRoleRelations.Add(new UserRoleRelation()
+                                                Entity.UserRoleRelations.Add(new UserRoleRelation()
                                                 {
                                                     UserId = User.Id,
                                                     RoleId = role.Id
@@ -199,7 +237,7 @@ namespace MathChatBot
                                             }
                                         }
 
-                                        MathChatBotEntities.SaveChanges();
+                                        Entity.SaveChanges();
                                     }
 
                                     break;
@@ -237,17 +275,17 @@ namespace MathChatBot
 
                                         if (role.IsAssigned)
                                         {
-                                            MathChatBotEntities.UserRoleRelations.Add(new UserRoleRelation()
+                                            Entity.UserRoleRelations.Add(new UserRoleRelation()
                                             {
                                                 UserId = User.Id,
                                                 RoleId = role.Id
                                             });
                                         }
                                         else
-                                            MathChatBotEntities.Entry(userRoleRelation).State = System.Data.Entity.EntityState.Deleted;
+                                            Entity.Entry(userRoleRelation).State = System.Data.Entity.EntityState.Deleted;
                                     }
 
-                                    MathChatBotEntities.SaveChanges();
+                                    Entity.SaveChanges();
 
                                     break;
                                 }
@@ -280,6 +318,8 @@ namespace MathChatBot
                     }
             }
         }
+
+        #endregion
 
     }
 }
