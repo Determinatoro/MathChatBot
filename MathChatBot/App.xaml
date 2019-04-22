@@ -1004,9 +1004,13 @@
                                 <Setter TargetName="background" Property="CornerRadius" Value="0, 0, 10, 0"/>
                                 <Setter TargetName="glow" Property="CornerRadius" Value="0, 0, 10, 0"/>
                             </Trigger>
-                            <Trigger Property="Tag" Value="middle">
+                            <Trigger Property="Tag" Value="bottom">
                                 <Setter TargetName="background" Property="CornerRadius" Value="0, 0, 10, 10"/>
                                 <Setter TargetName="glow" Property="CornerRadius" Value="0, 0, 10, 10"/>
+                            </Trigger>
+                            <Trigger Property="Tag" Value="middle">
+                                <Setter TargetName="background" Property="CornerRadius" Value="0, 0, 0, 0"/>
+                                <Setter TargetName="glow" Property="CornerRadius" Value="0, 0, 0, 0"/>
                             </Trigger>
                             <!--IsFocused true-->
                             <!--<Trigger Property="IsFocused" Value="true">

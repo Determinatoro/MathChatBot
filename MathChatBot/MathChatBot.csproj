@@ -200,6 +200,9 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\MathChatBotHelper.cs" />
     <Compile Include="Helpers\SimpleCalculatorHelper.cs" />
+    <Compile Include="Models\Assignment.cs">
+      <DependentUpon>MathChatBotModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Class.cs">
       <DependentUpon>MathChatBotModel.tt</DependentUpon>
     </Compile>
@@ -355,6 +358,9 @@
       <DependentUpon>MathChatBotModel.edmx</DependentUpon>
       <LastGenOutput>MathChatBotModel.cs</LastGenOutput>
     </Content>
+    <Resource Include="Resources\icon_materials.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\icon_log_out.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

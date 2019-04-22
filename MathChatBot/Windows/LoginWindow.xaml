@@ -159,16 +159,16 @@
                     />
 
                 <Button
-            Name="btnLogin"  
-            Background="{StaticResource AUU_Blue}"
-            Style="{StaticResource styleButtonHover}"
-            Foreground="#FFFFFF"
-            FontSize="16"
-            FontFamily="Roboto"
-            Margin="25, 1, 25, 1"
-            Grid.Row="8"
-            Content="Login"
-            />
+                    Name="btnLogin"  
+                    Background="{StaticResource AUU_Blue}"
+                    Style="{StaticResource styleButtonHover}"
+                    Foreground="#FFFFFF"
+                    FontSize="14"
+                    FontFamily="Roboto"
+                    Margin="25, 1, 25, 1"
+                    Grid.Row="8"
+                    Content="Login"
+                    />
 
             </Grid>
         </Border>

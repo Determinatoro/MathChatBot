@@ -221,6 +221,8 @@ namespace MathChatBot
                                 {
                                     if (x2.Material != null)
                                         return x2.Material.Term.Topic.Name == topicName;
+                                    else if (x2.Assignment != null)
+                                        return x2.Assignment.Term.Topic.Name == topicName;
                                     else
                                         return x2.MaterialExample.Material.Term.Topic.Name == topicName;
                                 }))
@@ -250,6 +252,8 @@ namespace MathChatBot
                     var helpRequestsForExamples = helpRequests.Where(x => x.MaterialExample != null).ToList();
                     // Help requests for term materials
                     var helpRequestsForMaterials = helpRequests.Where(x => x.Material != null).ToList();
+                    // Help requests for assignments
+                    var helpRequestsAssignments = helpRequests.Where(x => x.Assignment != null).ToList();
 
                     if (isShowingAllTopics)
                     {
@@ -259,6 +263,7 @@ namespace MathChatBot
                         // Group help requests by topics
                         var groupedMaterials = helpRequestsForMaterials.GroupBy(x => x.Material.Term.Topic.Name);
                         var groupedExamples = helpRequestsForExamples.GroupBy(x => x.MaterialExample.Material.Term.Topic.Name);
+                        var groupedAssignments = helpRequestsAssignments.GroupBy(x => x.Assignment.Term.Topic.Name);
 
                         foreach (var topic in topics)
                         {
@@ -269,6 +274,8 @@ namespace MathChatBot
                                 value += groupedMaterials.FirstOrDefault(x => x.Key == topic.Name).Count();
                             if (groupedExamples.Any(x => x.Key == topic.Name))
                                 value += groupedExamples.FirstOrDefault(x => x.Key == topic.Name).Count();
+                            if (groupedAssignments.Any(x => x.Key == topic.Name))
+                                value += groupedAssignments.FirstOrDefault(x => x.Key == topic.Name).Count();
 
                             barItems.Add(new BarItem
                             {
@@ -286,10 +293,14 @@ namespace MathChatBot
                         var groupedMaterials = helpRequestsForMaterials
                             .Where(x => x.Material.Term.Topic.Name == topicName)
                             .GroupBy(x => x.Material.Term.Name);
-                        // Group help reuqests for examples
+                        // Group help requests for examples
                         var groupedExamples = helpRequestsForExamples
                             .Where(x => x.MaterialExample.Material.Term.Topic.Name == topicName)
                             .GroupBy(x => x.MaterialExample.Material.Term.Name);
+                        // Group help requests for assignments
+                        var groupedAssignments = helpRequestsAssignments
+                            .Where(x => x.Assignment.Term.Topic.Name == topicName)
+                            .GroupBy(x => x.Assignment.Term.Name);
 
                         foreach (var term in terms)
                         {
@@ -300,6 +311,8 @@ namespace MathChatBot
                                 value += groupedMaterials.FirstOrDefault(x => x.Key == term.Name).Count();
                             if (groupedExamples.Any(x => x.Key == term.Name))
                                 value += groupedExamples.FirstOrDefault(x => x.Key == term.Name).Count();
+                            if (groupedAssignments.Any(x => x.Key == term.Name))
+                                value += groupedAssignments.FirstOrDefault(x => x.Key == term.Name).Count();
 
                             barItems.Add(new BarItem
                             {

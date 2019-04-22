@@ -1,12 +1,7 @@
-﻿using MathChatBot.Models;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Resources;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -26,6 +21,11 @@ namespace MathChatBot.Utilities
         //*************************************************/
         #region Methods
 
+        public static object GetPropertyValue(this object src, string propName)
+        {
+            return src.GetType().GetProperty(propName).GetValue(src, null);
+        }
+
         /// <summary>
         /// Convert base64 string to bitmap image
         /// </summary>
@@ -33,14 +33,21 @@ namespace MathChatBot.Utilities
         /// <returns></returns>
         public static BitmapImage Base64ToImage(string base64String)
         {
-            // Convert base 64 string to byte[]
-            byte[] binaryData = Convert.FromBase64String(base64String);
+            try
+            {
+                // Convert base 64 string to byte[]
+                byte[] binaryData = Convert.FromBase64String(base64String);
 
-            BitmapImage bi = new BitmapImage();
-            bi.BeginInit();
-            bi.StreamSource = new MemoryStream(binaryData);
-            bi.EndInit();
-            return bi;
+                BitmapImage bi = new BitmapImage();
+                bi.BeginInit();
+                bi.StreamSource = new MemoryStream(binaryData);
+                bi.EndInit();
+                return bi;
+            }
+            catch (Exception mes)
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -77,7 +84,8 @@ namespace MathChatBot.Utilities
                         var p = destProps.FirstOrDefault(x => x.Name == sourceProp.Name);
                         if (p != null)
                             p.SetValue(dest, sourceProp.GetValue(source, null), null);
-                    } catch { }
+                    }
+                    catch { }
                 }
             }
         }
@@ -145,7 +153,7 @@ namespace MathChatBot.Utilities
         {
             // Are we on the UI thread
             if (Thread.CurrentThread == Application.Current.Dispatcher.Thread)
-                action(); 
+                action();
             // We are on a background thread
             else
                 Application.Current.Dispatcher.Invoke(action);

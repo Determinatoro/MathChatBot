@@ -5,6 +5,22 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="MathChatBotModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Assignments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AssignmentNo" Type="int" Nullable="false" />
+          <Property Name="TermId" Type="int" Nullable="false" />
+          <Property Name="Source" Type="varchar(max)" Nullable="false" />
+          <Property Name="AnswerA" Type="nvarchar" MaxLength="255" />
+          <Property Name="AnswerB" Type="nvarchar" MaxLength="255" />
+          <Property Name="AnswerC" Type="nvarchar" MaxLength="255" />
+          <Property Name="AnswerD" Type="nvarchar" MaxLength="255" />
+          <Property Name="AnswerE" Type="nvarchar" MaxLength="255" />
+          <Property Name="AnswerF" Type="nvarchar" MaxLength="255" />
+          <Property Name="AnswerG" Type="nvarchar" MaxLength="255" />
+        </EntityType>
         <EntityType Name="Classes">
           <Key>
             <PropertyRef Name="Id" />
@@ -20,6 +36,7 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="MaterialId" Type="int" />
           <Property Name="MaterialExampleId" Type="int" />
+          <Property Name="AssignmentId" Type="int" />
         </EntityType>
         <EntityType Name="MaterialExamples">
           <Key>
@@ -89,6 +106,30 @@
           <Property Name="Username" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="IsActivated" Type="bit" Nullable="false" />
         </EntityType>
+        <Association Name="FK__Assignmen__Answe__3552E9B6">
+          <End Role="Terms" Type="Self.Terms" Multiplicity="1" />
+          <End Role="Assignments" Type="Self.Assignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Terms">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignments">
+              <PropertyRef Name="TermId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__HelpReque__Assig__36470DEF">
+          <End Role="Assignments" Type="Self.Assignments" Multiplicity="0..1" />
+          <End Role="HelpRequests" Type="Self.HelpRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Assignments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HelpRequests">
+              <PropertyRef Name="AssignmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__HelpReque__Mater__251C81ED">
           <End Role="Materials" Type="Self.Materials" Multiplicity="0..1" />
           <End Role="HelpRequests" Type="Self.HelpRequests" Multiplicity="*" />
@@ -222,6 +263,7 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="MathChatBotModelStoreContainer">
+          <EntitySet Name="Assignments" EntityType="Self.Assignments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Classes" EntityType="Self.Classes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HelpRequests" EntityType="Self.HelpRequests" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MaterialExamples" EntityType="Self.MaterialExamples" Schema="dbo" store:Type="Tables" />
@@ -232,6 +274,14 @@
           <EntitySet Name="UserClassRelations" EntityType="Self.UserClassRelations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserRoleRelations" EntityType="Self.UserRoleRelations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Assignmen__Answe__3552E9B6" Association="Self.FK__Assignmen__Answe__3552E9B6">
+            <End Role="Terms" EntitySet="Terms" />
+            <End Role="Assignments" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__HelpReque__Assig__36470DEF" Association="Self.FK__HelpReque__Assig__36470DEF">
+            <End Role="Assignments" EntitySet="Assignments" />
+            <End Role="HelpRequests" EntitySet="HelpRequests" />
+          </AssociationSet>
           <AssociationSet Name="FK__HelpReque__Mater__251C81ED" Association="Self.FK__HelpReque__Mater__251C81ED">
             <End Role="Materials" EntitySet="Materials" />
             <End Role="HelpRequests" EntitySet="HelpRequests" />
@@ -334,6 +384,15 @@
           </AssociationSet>
           <AssociationSet Name="FK__HelpReque__UserI__1E6F845E" Association="MathChatBotModel.FK__HelpReque__UserI__1E6F845E">
             <End Role="User" EntitySet="Users" />
+            <End Role="HelpRequest" EntitySet="HelpRequests" />
+          </AssociationSet>
+          <EntitySet Name="Assignments" EntityType="MathChatBotModel.Assignment" />
+          <AssociationSet Name="FK__Assignmen__Answe__3552E9B6" Association="MathChatBotModel.FK__Assignmen__Answe__3552E9B6">
+            <End Role="Term" EntitySet="Terms" />
+            <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__HelpReque__Assig__36470DEF" Association="MathChatBotModel.FK__HelpReque__Assig__36470DEF">
+            <End Role="Assignment" EntitySet="Assignments" />
             <End Role="HelpRequest" EntitySet="HelpRequests" />
           </AssociationSet>
           </EntityContainer>
@@ -469,6 +528,7 @@
           <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Materials" Relationship="MathChatBotModel.FK__Materials__TermI__7755B73D" FromRole="Term" ToRole="Material" />
           <NavigationProperty Name="Topic" Relationship="MathChatBotModel.FK__Terms__TopicId__73852659" FromRole="Term" ToRole="Topic" />
+          <NavigationProperty Name="Assignments" Relationship="MathChatBotModel.FK__Assignmen__Answe__3552E9B6" FromRole="Term" ToRole="Assignment" />
         </EntityType>
         <EntityType Name="Topic">
           <Key>
@@ -538,6 +598,8 @@
           <NavigationProperty Name="Material" Relationship="MathChatBotModel.FK__HelpReque__Mater__251C81ED" FromRole="HelpRequest" ToRole="Material" />
           <NavigationProperty Name="MaterialExample" Relationship="MathChatBotModel.FK__HelpReque__Mater__2610A626" FromRole="HelpRequest" ToRole="MaterialExample" />
           <NavigationProperty Name="User" Relationship="MathChatBotModel.FK__HelpReque__UserI__1E6F845E" FromRole="HelpRequest" ToRole="User" />
+          <Property Name="AssignmentId" Type="Int32" />
+          <NavigationProperty Name="Assignment" Relationship="MathChatBotModel.FK__HelpReque__Assig__36470DEF" FromRole="HelpRequest" ToRole="Assignment" />
         </EntityType>
         <Association Name="FK__HelpReque__Mater__251C81ED">
           <End Type="MathChatBotModel.Material" Role="Material" Multiplicity="0..1" />
@@ -572,6 +634,48 @@
             </Principal>
             <Dependent Role="HelpRequest">
               <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Assignment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AssignmentNo" Type="Int32" Nullable="false" />
+          <Property Name="TermId" Type="Int32" Nullable="false" />
+          <Property Name="Source" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="AnswerA" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="AnswerB" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="AnswerC" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="AnswerD" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="AnswerE" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="AnswerF" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="AnswerG" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Term" Relationship="MathChatBotModel.FK__Assignmen__Answe__3552E9B6" FromRole="Assignment" ToRole="Term" />
+          <NavigationProperty Name="HelpRequests" Relationship="MathChatBotModel.FK__HelpReque__Assig__36470DEF" FromRole="Assignment" ToRole="HelpRequest" />
+        </EntityType>
+        <Association Name="FK__Assignmen__Answe__3552E9B6">
+          <End Type="MathChatBotModel.Term" Role="Term" Multiplicity="1" />
+          <End Type="MathChatBotModel.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Term">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="TermId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__HelpReque__Assig__36470DEF">
+          <End Type="MathChatBotModel.Assignment" Role="Assignment" Multiplicity="0..1" />
+          <End Type="MathChatBotModel.HelpRequest" Role="HelpRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Assignment">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HelpRequest">
+              <PropertyRef Name="AssignmentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -668,9 +772,27 @@
           <EntitySetMapping Name="HelpRequests">
             <EntityTypeMapping TypeName="MathChatBotModel.HelpRequest">
               <MappingFragment StoreEntitySet="HelpRequests">
+                <ScalarProperty Name="AssignmentId" ColumnName="AssignmentId" />
                 <ScalarProperty Name="MaterialExampleId" ColumnName="MaterialExampleId" />
                 <ScalarProperty Name="MaterialId" ColumnName="MaterialId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Assignments">
+            <EntityTypeMapping TypeName="MathChatBotModel.Assignment">
+              <MappingFragment StoreEntitySet="Assignments">
+                <ScalarProperty Name="AnswerG" ColumnName="AnswerG" />
+                <ScalarProperty Name="AnswerF" ColumnName="AnswerF" />
+                <ScalarProperty Name="AnswerE" ColumnName="AnswerE" />
+                <ScalarProperty Name="AnswerD" ColumnName="AnswerD" />
+                <ScalarProperty Name="AnswerC" ColumnName="AnswerC" />
+                <ScalarProperty Name="AnswerB" ColumnName="AnswerB" />
+                <ScalarProperty Name="AnswerA" ColumnName="AnswerA" />
+                <ScalarProperty Name="Source" ColumnName="Source" />
+                <ScalarProperty Name="TermId" ColumnName="TermId" />
+                <ScalarProperty Name="AssignmentNo" ColumnName="AssignmentNo" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

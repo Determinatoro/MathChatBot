@@ -35,5 +35,6 @@ namespace MathChatBot.Models
         public virtual DbSet<Term> Terms { get; set; }
         public virtual DbSet<Topic> Topics { get; set; }
         public virtual DbSet<HelpRequest> HelpRequests { get; set; }
+        public virtual DbSet<Assignment> Assignments { get; set; }
     }
 }

@@ -26,7 +26,6 @@ namespace MathChatBot
         public User User { get; set; }
         private SplashScreenWindow SplashScreenWindow { get; set; }
         private MathChatBotHelper MathChatBotHelper { get; set; }
-        private int ScrollIndex { get; set; }
 
         #endregion
 
@@ -38,6 +37,8 @@ namespace MathChatBot
         public MainWindow()
         {
             InitializeComponent();
+
+            var date = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);
 
             // Hide window until user has logged in
             Hide();
@@ -185,34 +186,31 @@ namespace MathChatBot
 
             MessageObject message = (MessageObject)btn.DataContext;
 
-            switch (btn.Name)
+            string content = btn.Content.ToString();
+
+            if (content == Properties.Resources.see_example)
             {
-                case "btnLeft":
-                    {
-                        if (message.IsTerm)
-                            MathChatBotHelper.SeeExample(message);
-                        else if (message.IsExample)
-                            MathChatBotHelper.SeeDefinition(message);
-                        break;
-                    }
-                case "btnRight":
-                    {
-                        if (message.IsTerm)
-                            MathChatBotHelper.DidNotHelp(User, message);
-                        else if (message.IsExample)
-                            MathChatBotHelper.DidNotHelp(User, message);
-                        break;
-                    }
-                case "btnMiddle":
-                    {
-                        if (message.IsTopic)
-                            MathChatBotHelper.SeeTerms(message);
-                        else if (message.IsExample)
-                            MathChatBotHelper.SeeDefinition(message);
-                        else if (message.IsTerm)
-                            MathChatBotHelper.DidNotHelp(User, message);
-                        break;
-                    }
+                MathChatBotHelper.SeeExample(message);
+            }
+            else if (content == Properties.Resources.see_terms)
+            {
+                MathChatBotHelper.SeeTerms(message);
+            }
+            else if (content == Properties.Resources.did_not_help || content == Properties.Resources.need_help)
+            {
+                MathChatBotHelper.DidNotHelp(User, message);
+            }
+            else if (content == Properties.Resources.see_definition)
+            {
+                MathChatBotHelper.SeeDefinition(message);
+            }
+            else if (content == Properties.Resources.see_assignments)
+            {
+                MathChatBotHelper.SeeAssignments(message);
+            }
+            else if (content == Properties.Resources.see_answers)
+            {
+                MathChatBotHelper.SeeAnswers(message);
             }
         }
 
@@ -227,7 +225,6 @@ namespace MathChatBot
         // MathChatBotHelper.Messages - CollectionChanged
         private void Messages_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            ScrollIndex = MathChatBotHelper.Messages.IndexOf(MathChatBotHelper.LastBotMessagesAdded[0]);
             lbChat.Items.Refresh();
         }
 
@@ -248,7 +245,8 @@ namespace MathChatBot
                     {
                         double totalItemHeight = 0;
 
-                        for (int i = ScrollIndex; i < MathChatBotHelper.Messages.Count; i++)
+                        var scrollIndex = MathChatBotHelper.Messages.IndexOf(MathChatBotHelper.LastBotMessagesAdded[0]);
+                        for (int i = scrollIndex; i < MathChatBotHelper.Messages.Count; i++)
                         {
                             ListBoxItem tempListBoxItem = lbChat.ItemContainerGenerator.ContainerFromIndex(i) as ListBoxItem;
 

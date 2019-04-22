@@ -89,7 +89,7 @@
                                 FontSize="14"
                                 Background="{StaticResource BotMessageColor}"
                                 Style="{StaticResource styleButtonInMessage}"
-                                Tag="middle"
+                                Tag="bottom"
                                 BorderBrush="{StaticResource BorderColor}"
                                 BorderThickness="0, 1, 0, 0"
                                 Content="{x:Static p:Resources.see_terms}"
@@ -132,25 +132,52 @@
                 </Grid>
             </Grid>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=IsTopic}" Value="true">
-                    <Setter TargetName="rowMiddle" Property="Height" Value="35"/>
-                    <Setter TargetName="btnMiddle" Property="Content" Value="{x:Static p:Resources.see_terms}"/>
-                    <Setter TargetName="rowLeftRight" Property="Height" Value="0"/>
-                </DataTrigger>
                 <DataTrigger Binding="{Binding Path=IsTerm}" Value="true">
-                    <Setter TargetName="rowMiddle" Property="Height" Value="0"/>
+                    <Setter TargetName="rowMiddle" Property="Height" Value="35"/>
                     <Setter TargetName="rowLeftRight" Property="Height" Value="35"/>
+                    <Setter TargetName="btnLeft" Property="BorderThickness" Value="0, 1, 1, 1"/>
+                    <Setter TargetName="btnLeft" Property="Tag" Value="middle"/>
+                    <Setter TargetName="btnLeft" Property="Content" Value="{x:Static p:Resources.see_assignments}"/>
+                    <Setter TargetName="btnRight" Property="BorderThickness" Value="1, 1, 0, 1"/>
+                    <Setter TargetName="btnRight" Property="Tag" Value="middle"/>
+                    <Setter TargetName="btnRight" Property="Content" Value="{x:Static p:Resources.did_not_help}"/>
+                    <Setter TargetName="btnMiddle" Property="Margin" Value="0, 1, 0, 0"/>
+                    <Setter TargetName="btnMiddle" Property="Tag" Value="bottom"/>
+                    <Setter TargetName="btnMiddle" Property="Content" Value="{x:Static p:Resources.see_example}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Path=ShowExampleButton}" Value="false">
-                    <Setter TargetName="rowMiddle" Property="Height" Value="35"/>
-                    <Setter TargetName="rowLeftRight" Property="Height" Value="0"/>
-                    <Setter TargetName="btnMiddle" Property="Content" Value="{x:Static p:Resources.did_not_help}"/>
+                    <Setter TargetName="rowMiddle" Property="Height" Value="0"/>
+                    <Setter TargetName="rowLeftRight" Property="Height" Value="35"/>
+                    <Setter TargetName="btnLeft" Property="Tag" Value="left"/>
+                    <Setter TargetName="btnLeft" Property="Content" Value="{x:Static p:Resources.see_assignments}"/>
+                    <Setter TargetName="btnRight" Property="Tag" Value="right"/>
+                    <Setter TargetName="btnRight" Property="Content" Value="{x:Static p:Resources.did_not_help}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Path=IsExample}" Value="true">
                     <Setter TargetName="rowMiddle" Property="Height" Value="0"/>
                     <Setter TargetName="rowLeftRight" Property="Height" Value="35"/>
+                    <Setter TargetName="btnLeft" Property="Tag" Value="left"/>
                     <Setter TargetName="btnLeft" Property="Content" Value="{x:Static p:Resources.see_definition}"/>
+                    <Setter TargetName="btnRight" Property="Tag" Value="right"/>
+                    <Setter TargetName="btnRight" Property="Content" Value="{x:Static p:Resources.see_assignments}"/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Path=IsTopic}" Value="true">
+                    <Setter TargetName="rowMiddle" Property="Height" Value="0"/>
+                    <Setter TargetName="rowLeftRight" Property="Height" Value="35"/>
+                    <Setter TargetName="btnLeft" Property="Tag" Value="left"/>
+                    <Setter TargetName="btnLeft" Property="Content" Value="{x:Static p:Resources.see_terms}"/>
+                    <Setter TargetName="btnRight" Property="Tag" Value="right"/>
+                    <Setter TargetName="btnRight" Property="Content" Value="{x:Static p:Resources.see_assignments}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=IsAssignment}" Value="true">
+                    <Setter TargetName="rowMiddle" Property="Height" Value="0"/>
+                    <Setter TargetName="rowLeftRight" Property="Height" Value="35"/>
+                    <Setter TargetName="btnLeft" Property="Tag" Value="left"/>
+                    <Setter TargetName="btnLeft" Property="Content" Value="{x:Static p:Resources.see_answers}"/>
+                    <Setter TargetName="btnRight" Property="Tag" Value="right"/>
+                    <Setter TargetName="btnRight" Property="Content" Value="{x:Static p:Resources.need_help}"/>
+                </DataTrigger>
+                
             </DataTemplate.Triggers>
         </DataTemplate>
         

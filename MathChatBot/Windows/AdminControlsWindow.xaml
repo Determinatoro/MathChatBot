@@ -273,19 +273,7 @@
                                 BorderBrush="{StaticResource BorderColor}"
                                 Content="{x:Static p:Resources.add_users_from_file}"
                                 />
-
-                            <Button
-                                Name="btnConvertMaterial"  
-                                Background="{StaticResource AUU_Blue}"
-                                Style="{StaticResource styleButtonHover}"
-                                Foreground="#FFFFFF"
-                                FontSize="13"
-                                Margin="1"
-                                Grid.Row="3"
-                                BorderBrush="{StaticResource BorderColor}"
-                                Content="{x:Static p:Resources.convert_material}"
-                                />
-
+                            
                         </Grid>
                     </Grid>
                 </TabItem>
@@ -415,6 +403,95 @@
                                 BorderBrush="{StaticResource BorderColor}"
                                 Content="{x:Static p:Resources.new_class}"
                                 />
+
+                        </Grid>
+                    </Grid>
+
+                </TabItem>
+
+                <!-- Materials -->
+                <TabItem 
+                    BorderBrush="{StaticResource BorderColor}"
+                    BorderThickness="1"
+                    Margin="1,3,1,-3"
+                    Style="{StaticResource styleTabItem}">
+                    <TabItem.Header>
+                        <StackPanel>
+                            <!-- ICON -->
+                            <Image Source="/Resources/icon_materials.png" 
+                                   Height="40"
+                                   Width="40"   
+                                   Margin="0, 10, 0, 0"
+                                   />
+                            <!-- TEXT -->
+                            <Label FontFamily="Roboto" 
+                                   FontWeight="Bold"   
+                                   Foreground="White"   
+                                   VerticalAlignment="Stretch"   
+                                   VerticalContentAlignment="Center"   
+                                   HorizontalContentAlignment="Center"   
+                                   Content="{x:Static p:Resources.materials}"   
+                                   HorizontalAlignment="Stretch"   
+                                   Margin="-25,0,-25,0"/>
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border BorderBrush="{StaticResource BorderColor}"
+                                BorderThickness="1"
+                                Background="LightGray"
+                                CornerRadius="1">
+                            <ScrollViewer>
+                                <Image 
+                                    Name="imgBase64"
+                                    Margin="10"
+                                    Width="auto"
+                                    Height="auto"
+                                    VerticalAlignment="Top"
+                                    HorizontalAlignment="Left"
+                                    Stretch="None"
+                                    />
+                            </ScrollViewer>
+                        </Border>
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="35"/>
+                            </Grid.RowDefinitions>
+                            
+                            <Button
+                                Margin="2, 0, 0, 1"
+                                Name="btnConvertMaterial"  
+                                Background="{StaticResource AUU_Blue}"
+                                Style="{StaticResource styleButtonHover}"
+                                Foreground="#FFFFFF"
+                                FontSize="14"
+                                BorderBrush="{StaticResource BorderColor}"
+                                Content="{x:Static p:Resources.convert_material}"
+                                />
+
+                            <TextBox
+                                Name="tbBase64Image"  
+                                Grid.Row="1"
+                                Style="{StaticResource styleWaterMark}"
+                                Tag="{x:Static p:Resources.insert_image}"
+                                VerticalContentAlignment="Center"
+                                Padding="5,2.5,5,2.5"
+                                BorderBrush="#000000"
+                                BorderThickness="1"
+                                Margin="2, 1, 0, 1"
+                                TextWrapping="Wrap"                
+                                />
+
+
+
 
                         </Grid>
                     </Grid>

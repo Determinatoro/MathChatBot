@@ -28,7 +28,7 @@ namespace MathChatBot
             InitializeComponent();
 
             lblVersion.Content = string.Format(Properties.Resources.version, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-
+            
             Storyboard sb = (Storyboard)this.imgLogo.FindResource("spin");
             sb.Begin();
         }

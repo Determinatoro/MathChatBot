@@ -84,6 +84,12 @@ namespace MathChatBot
                 try
                 {
                     var response = DatabaseUtility.CheckLogin(username, password);
+
+                    this.RunOnUIThread(() =>
+                    {
+                        CustomDialog.Dismiss();
+                    });
+
                     if (response.Success)
                     {
                         if (saveCredentials)
@@ -94,11 +100,17 @@ namespace MathChatBot
 
                         this.RunOnUIThread(() =>
                         {
-                            CustomDialog.Dismiss();
                             DialogResult = true;
                             User = response.User;
                             // Close this window
                             Close();
+                        });
+                    }
+                    else
+                    {
+                        this.RunOnUIThread(() =>
+                        {
+                            CustomDialog.Show(Properties.Resources.wrong_username_or_password);
                         });
                     }
                 }

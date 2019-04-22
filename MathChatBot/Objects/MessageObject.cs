@@ -19,6 +19,7 @@ namespace MathChatBot.Objects
     {
         private Term _term;
         private Topic _topic;
+        private Assignment _assignment;
         private bool _isExample;
 
         public MessageObject()
@@ -32,11 +33,22 @@ namespace MathChatBot.Objects
             MessageType = MessageTypes.BotMessage;
         }
 
+        /// <summary>
+        /// Constructor for example
+        /// </summary>
+        /// <param name="material"></param>
+        /// <param name="showOrderId"></param>
         public MessageObject(Material material, int showOrderId) : this()
         {
             Material = material;
             ShowOrderId = showOrderId;
             IsExample = true;
+        }
+
+        public MessageObject(Assignment assignment) : this()
+        {
+            Assignment = assignment;
+            MessageType = MessageTypes.BotHelp;
         }
 
         public bool IsExample
@@ -104,6 +116,22 @@ namespace MathChatBot.Objects
             }
         }
         public Material Material { get; set; }
+        public Assignment Assignment
+        {
+            get { return _assignment; }
+            set
+            {
+                _assignment = value;
+                if (_assignment != null)
+                {
+                    _term = null;
+                    _topic = null;
+                    IsExample = false;
+                    
+                    Source = Assignment.Source;
+                }
+            }
+        }
         public Brush MessageBackground
         {
             get
@@ -236,6 +264,12 @@ namespace MathChatBot.Objects
             get
             {
                 return Term != null && !IsExample;
+            }
+        }
+        public bool IsAssignment {
+            get
+            {
+                return Assignment != null;
             }
         }
 

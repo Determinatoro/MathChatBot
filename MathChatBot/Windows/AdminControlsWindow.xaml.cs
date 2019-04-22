@@ -54,11 +54,12 @@ namespace MathChatBot
             // TextChanged events
             tbSearchForUsers.TextChanged += textBox_TextChanged;
             tbSearchForClasses.TextChanged += textBox_TextChanged;
+            tbBase64Image.TextChanged += textBox_TextChanged;
 
             // Setup top border header
             this.SetupBorderHeader(Properties.Resources.admin_controls_title);
         }
-
+        
         #endregion
 
         /****************************************************************/
@@ -236,6 +237,12 @@ namespace MathChatBot
                         else
                             dgClasses.ItemsSource = Classes.Where(x => x.Name.Contains(searchStr)).ToList();
 
+                        break;
+                    }
+                case nameof(tbBase64Image):
+                    {
+                        var image = Utility.Base64ToImage(tbBase64Image.Text);
+                        imgBase64.Source = image;
                         break;
                     }
             }

@@ -470,9 +470,71 @@ How to use the calculator:
     <value>Version {0}</value>
   </data>
   <data name="you_have_already_sent_a_help_request_for_this_material" xml:space="preserve">
-    <value>You have already sent a help request for this material.</value>
+    <value>You have already sent a help request for this.</value>
   </data>
   <data name="you_need_to_be_a_student_to_make_help_requests" xml:space="preserve">
     <value>You need to be a student to make help requests.</value>
+  </data>
+  <data name="current" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="icon_materials" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_materials.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="insert_image" xml:space="preserve">
+    <value>Insert image...</value>
+  </data>
+  <data name="materials" xml:space="preserve">
+    <value>Materials</value>
+  </data>
+  <data name="need_help" xml:space="preserve">
+    <value>Need help?</value>
+  </data>
+  <data name="please_select_a_term_or_example_first_before_using_this_command" xml:space="preserve">
+    <value>Please select a term or an example first before using this command.</value>
+  </data>
+  <data name="see_answers" xml:space="preserve">
+    <value>See answers</value>
+  </data>
+  <data name="see_assignments" xml:space="preserve">
+    <value>See assignments</value>
+  </data>
+  <data name="there_are_for_this_term_this_is_the_first_assignment" xml:space="preserve">
+    <value>There are {0} assignment(s) for this term. This is the first one.</value>
+  </data>
+  <data name="there_are_no_assignments_for_this_term" xml:space="preserve">
+    <value>There are no assignments for this term.</value>
+  </data>
+  <data name="there_are_under_this_topic_this_is_the_first_assignment" xml:space="preserve">
+    <value>There are {0} assignment(s) under this topic. This is the first one.</value>
+  </data>
+  <data name="this_is_the_answers_for_the_assignment" xml:space="preserve">
+    <value>This is the answers for the assignment:
+
+{0}</value>
+  </data>
+  <data name="next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="please_select_an_assignment_first_before_using_this_command" xml:space="preserve">
+    <value>Please select an assignment first before using this command.</value>
+  </data>
+  <data name="previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="there_are_no_more_assignments" xml:space="preserve">
+    <value>There are no more assignments.</value>
+  </data>
+  <data name="there_are_no_previous_assignments" xml:space="preserve">
+    <value>There are no previous assignments.</value>
+  </data>
+  <data name="this_assignment_has_no_answers" xml:space="preserve">
+    <value>This assignment has no answers.</value>
+  </data>
+  <data name="wrong_username_or_password" xml:space="preserve">
+    <value>Wrong username or password</value>
+  </data>
+  <data name="you_have_not_started_any_assignments_yet" xml:space="preserve">
+    <value>You have not started any assignments yet.</value>
   </data>
 </root>

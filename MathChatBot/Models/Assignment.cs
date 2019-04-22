@@ -12,23 +12,28 @@ namespace MathChatBot.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Term
+    public partial class Assignment
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Term()
+        public Assignment()
         {
-            this.Materials = new HashSet<Material>();
-            this.Assignments = new HashSet<Assignment>();
+            this.HelpRequests = new HashSet<HelpRequest>();
         }
     
         public int Id { get; set; }
-        public int TopicId { get; set; }
-        public string Name { get; set; }
+        public int AssignmentNo { get; set; }
+        public int TermId { get; set; }
+        public string Source { get; set; }
+        public string AnswerA { get; set; }
+        public string AnswerB { get; set; }
+        public string AnswerC { get; set; }
+        public string AnswerD { get; set; }
+        public string AnswerE { get; set; }
+        public string AnswerF { get; set; }
+        public string AnswerG { get; set; }
     
+        public virtual Term Term { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Material> Materials { get; set; }
-        public virtual Topic Topic { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ICollection<HelpRequest> HelpRequests { get; set; }
     }
 }

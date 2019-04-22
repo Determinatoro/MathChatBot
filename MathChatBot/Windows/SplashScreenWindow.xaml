@@ -48,7 +48,7 @@
                 Name="imgLogo"
                 Grid.Row="1"
                 HorizontalAlignment="Center"
-                RenderTransformOrigin=".5,.6"
+                RenderTransformOrigin=".5,.6555"
                 Grid.Column="1"
                 Margin="0, 0, 0, 25"
                 Source="/Resources\mathchatbot_logo_white.png"
