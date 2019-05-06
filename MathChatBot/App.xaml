@@ -13,6 +13,7 @@
         <SolidColorBrush x:Key="BotMessageColor" Color="#D0D0D0"/>
         <SolidColorBrush x:Key="BotMessageTextColor" Color="#000000"/>
         <SolidColorBrush x:Key="BorderColor" Color="#202020"/>
+        <SolidColorBrush x:Key="DisabledColor" Color="#D0D0D0"/>
 
         <Geometry x:Key="closeGeometry">
             F1 M 26.9166,22.1667L 37.9999,33.25L 49.0832,22.1668L 53.8332,26.9168L 42.7499,38L 53.8332,49.0834L 49.0833,53.8334L 37.9999,42.75L 26.9166,53.8334L 22.1666,49.0833L 33.25,38L 22.1667,26.9167L 26.9166,22.1667 Z
@@ -27,7 +28,7 @@
             M1,4.9996096 L1,7.000219 7,6.999219 7,5.001 2,5.001 2,4.9996096 z M3,2.0014141 L3,3.0000001 8,3.0000001 8,4.0000001 8,4.0008045 9,4.0008045 9,2.0014141 z M2,0 L10,0 10,0.0010234118 10,1.0000001 10,5.001 8,5.001 8,7.9990235 0,8.0000239 0,4.0000001 0,3.0009998 0,3.0000001 2,3.0000001 2,1.0000001 2,0.0010234118 z
         </Geometry>
 
-        <!--#region STYLE SCROLLBAR-->
+        <!--#region STYLE ScrollBar-->
 
         <!-- SrollViewer ScrollBar Repeat Buttons (at each end) -->
         <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
@@ -54,12 +55,6 @@
                                 Data="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}" 
                                 />
                         </Border>
-                        <ControlTemplate.Triggers>
-                            <!--IsEnabled-->
-                            <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Foreground" Value="Gray"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -231,7 +226,7 @@
 
         <!--#endregion-->
 
-        <!--#region STYLE TAB CONTROL-->
+        <!--#region STYLE TabControl-->
 
         <Style x:Key="styleTabControl" TargetType="{x:Type TabControl}">
             <Setter Property="TabStripPlacement" Value="Left" />
@@ -347,7 +342,7 @@
 
         <!--#endregion-->
         
-        <!--#region STYLE TAB ITEM-->
+        <!--#region STYLE TabItem-->
 
         <Style x:Key="styleTabItem" TargetType="{x:Type TabItem}">
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -378,15 +373,13 @@
 
                         <!--TRIGGERS-->
                         <ControlTemplate.Triggers>
-                            <Trigger 
-                                Property="IsSelected" 
-                                Value="True"
-                                >
-                                <Setter 
-                                    TargetName="background"
-                                    Property="Background"
-                                    Value="{StaticResource AAU_DarkBlue}" 
-                                    />
+                            <!--IsSelected true-->
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="background" Property="Background" Value="{StaticResource AAU_DarkBlue}"/>
+                            </Trigger>
+                            <!--IsEnabled false-->
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="background" Property="Background" Value="{StaticResource DisabledColor}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -553,6 +546,7 @@
 
         <!--#region STYLE Button-->
 
+        <!--Style for button located in the border header of the windows -->
         <Style x:Key="styleButtonHeader" TargetType="{x:Type Button}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -634,6 +628,7 @@
             </Setter>
         </Style>
 
+        <!--Style for the minimize button in the border header of the windows-->
         <Style x:Key="styleButtonMinimize" TargetType="{x:Type Button}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -717,6 +712,7 @@
             </Setter>
         </Style>
 
+        <!--Style for the close button in the border header of the windows-->
         <Style x:Key="styleButtonClose" TargetType="{x:Type Button}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -885,13 +881,12 @@
                             </Trigger>
                             <!--IsEnabled false-->
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter TargetName="background" Property="Fill" Value="{StaticResource ResourceKey=BotMessageColor}"/>
+                                <Setter TargetName="background" Property="Fill" Value="{StaticResource ResourceKey=DisabledColor}"/>
                             </Trigger>
                             <!--IsFocused true-->
-                            <!--<Trigger Property="IsFocused" Value="true">
-                                <Setter TargetName="background" Property="Fill" Value="White"/>
-                                <Setter TargetName="myContentPresenter" Property="TextBlock.Foreground" Value="Black"/>
-                            </Trigger>-->
+                            <Trigger Property="IsFocused" Value="true">
+                                <Setter TargetName="background" Property="Fill" Value="{StaticResource AAU_DarkBlue}"/>
+                            </Trigger>
                             <!--IsMouseOver-->
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Trigger.EnterActions>
@@ -1192,7 +1187,7 @@
 
         <!--#endregion-->
 
-        <!--#region STYLE COMBOBOX-->
+        <!--#region STYLE ComboBox-->
 
         <!--COMBOBOX ARROW BUTTON-->
         <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
@@ -1245,8 +1240,13 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
                             <!--BACKGROUND-->
-                            <Border                                                                 
+                            <Border  
+                                Grid.ColumnSpan="10"
                                 x:Name="Border"
                                 CornerRadius="2, 2, 2, 2" 
                                 Margin="0" 
@@ -1261,7 +1261,6 @@
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 Focusable="False"
-                                Margin="0,0,22,1"  
                                 TextAlignment="Center"
                                 Background="Transparent"           
                                 FontFamily="Calibri"                                                      
@@ -1274,7 +1273,8 @@
                             <!--ARROW INSIDE COMBOBOX-->
                             <ToggleButton 
                                 Name="ToggleButton" 
-                                Grid.Column="2" 
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
                                 Template="{StaticResource ComboBoxToggleButton}" 
                                 IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
                                 Focusable="false"
@@ -1288,18 +1288,24 @@
                             <!--SELECTED ITEM-->
                             <ContentPresenter 
                                 x:Name="ContentSite"
-                                IsHitTestVisible="False" 
+                                IsHitTestVisible="False"
+                                Margin="10, 0, 10, 0"
                                 Content="{TemplateBinding SelectionBoxItem}"
                                 ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                 ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                Margin="10,0,10,0"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Left"
                                 TextBlock.FontFamily="{TemplateBinding FontFamily}"
                                 TextBlock.FontWeight="{TemplateBinding FontWeight}"
                                 TextBlock.FontSize="14"
                                 TextBlock.Foreground="{TemplateBinding Foreground}"
-                                />
+                                >
+                                <ContentPresenter.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+                                    </Style>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
                             <!--POPUP-->
                             <Popup 
                                 Name="Popup"
@@ -1371,6 +1377,11 @@
                                 <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
                                 <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
                             </Trigger>
+                            <!--IsEnabled false-->
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource DisabledColor}"/>
+                                <Setter TargetName="ToggleButton" Property="Background" Value="{StaticResource DisabledColor}"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -1396,6 +1407,25 @@
             <Setter Property="MinWidth" Value="0" />
             <Setter Property="MinHeight" Value="33" />
             <Setter Property="Cursor" Value="Hand" />
+            <Style.Triggers>
+                <!--IsEnabled false-->
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="Background" Value="{StaticResource DisabledColor}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="styleBorderHeader" TargetType="{x:Type Border}">
+            <Setter Property="Background" Value="{StaticResource AUU_Blue}" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="BorderThickness" Value="1, 1, 1, 0.5" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}" />
+            <Setter Property="CornerRadius" Value="1, 1, 0, 0" />
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="Background" Value="{StaticResource DisabledColor}"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <!-- SCROLLBAR -->
@@ -1421,6 +1451,11 @@
                     <Setter Property="BorderBrush" Value="{StaticResource BorderColor}" />
                     <Setter Property="Background" Value="{StaticResource AUU_Blue}" />
                     <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
+                </Trigger>
+                <!--IsEnabled false-->
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="Background" Value="{StaticResource DisabledColor}"/>
+                    <Setter Property="Foreground" Value="{StaticResource DisabledColor}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>

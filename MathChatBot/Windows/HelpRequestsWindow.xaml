@@ -21,10 +21,7 @@
 
         <Border 
             Name="borderHeader"
-            Background="{StaticResource AUU_Blue}"            
-            CornerRadius="1, 1, 0, 0"
-            BorderBrush="{StaticResource BorderColor}"
-            BorderThickness="1, 1, 1, 0.5"
+            Style="{StaticResource styleBorderHeader}"
             >
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -187,17 +184,17 @@
                         </Grid.ColumnDefinitions>
 
                         <ComboBox
-                        Name="cbbTopics"
-                        Tag="Select topic"
-                        Margin="1"
-                        FontFamily="Roboto"
-                        FontSize="16"
-                        Foreground="White"
-                        BorderThickness="0, 1, 1, 1"
-                        Style="{StaticResource styleComboBox}"
-                        BorderBrush="{StaticResource BorderColor}"
-                        Background="{StaticResource AUU_Blue}"
-                        />    
+                            Name="cbbTopics"
+                            Tag="Select topic"
+                            Margin="1"
+                            FontFamily="Roboto"
+                            FontSize="16"
+                            Foreground="White"
+                            BorderThickness="0, 1, 1, 1"
+                            Style="{StaticResource styleComboBox}"
+                            BorderBrush="{StaticResource BorderColor}"
+                            Background="{StaticResource AUU_Blue}"
+                            />    
 
                     </Grid>
                     

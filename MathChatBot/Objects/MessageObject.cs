@@ -1,6 +1,5 @@
 ﻿using MathChatBot.Models;
 using MathChatBot.Utilities;
-using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -12,6 +11,7 @@ namespace MathChatBot.Objects
     {
         BotHelp,
         BotMessage,
+        BotSelection,
         User
     }
 
@@ -19,13 +19,6 @@ namespace MathChatBot.Objects
     {
         private Term _term;
         private Topic _topic;
-        private Assignment _assignment;
-        private bool _isExample;
-
-        public MessageObject()
-        {
-            SendDate = DateTime.Now;
-        }
 
         public MessageObject(string text)
         {
@@ -33,103 +26,122 @@ namespace MathChatBot.Objects
             MessageType = MessageTypes.BotMessage;
         }
 
-        /// <summary>
-        /// Constructor for example
-        /// </summary>
-        /// <param name="material"></param>
-        /// <param name="showOrderId"></param>
-        public MessageObject(Material material, int showOrderId) : this()
+        public MessageObject(MessageTypes messageTypes, string text)
         {
-            Material = material;
-            ShowOrderId = showOrderId;
-            IsExample = true;
+            Text = text;
+            MessageType = messageTypes;
         }
 
-        public MessageObject(Assignment assignment) : this()
+        public MessageObject(MaterialExample materialExample)
+        {
+            Material = materialExample.Material;
+            MaterialExample = materialExample;
+            Source = MaterialExample.Source;
+            MessageType = MessageTypes.BotHelp;
+        }
+
+        public MessageObject(Assignment assignment)
         {
             Assignment = assignment;
+            Source = Assignment.Source;
             MessageType = MessageTypes.BotHelp;
+        }
+
+        public MessageObject(Material material)
+        {
+            Material = material;
+            Source = Material.Source;
+            MessageType = MessageTypes.BotHelp;
+        }
+
+        public MessageObject(Term term, Topic topic)
+        {
+            _term = term;
+            _topic = topic;
+            Text = Properties.Resources.what_you_searched_for_is_both_a_topic_and_a_term_which_one_do_you_want;
+            MessageType = MessageTypes.BotSelection;
         }
 
         public bool IsExample
         {
-            get { return _isExample; }
-            private set
-            {
-                _isExample = value;
-                if (value)
-                {
-                    _topic = null;
-
-                    MaterialExample = Material.MaterialExamples.FirstOrDefault(x => x.ShowOrderId == (ShowOrderId == null ? 1 : ShowOrderId));
-                    Source = MaterialExample.Source;
-                }
-                else
-                {
-                    MaterialExample = null;
-                }
-            }
+            get { return MaterialExample != null; }
         }
-        public int? ShowOrderId { get; set; }
-        public MaterialExample MaterialExample { get; set; }
-        public string Source { get; private set; }
-        public System.DateTime SendDate { get; set; }
-        public string Text { get; set; }
-        public MessageTypes MessageType { get; set; }
-        public Term Term
-        {
-            get { return _term; }
-            set
-            {
-                _term = value;
-                if (_term != null)
-                {
-                    _topic = null;
-
-                    Material = Term.Materials.FirstOrDefault(x => x.ShowOrderId == 1);
-                    Source = Material.Source;
-                }
-            }
-        }
-        public bool ShowExampleButton
+        public bool IsTopicDefinition
         {
             get
             {
-                if (IsExample)
-                    return false;
-                return Material != null && Material.MaterialExamples.Count != 0;
+                return Topic != null;
+            }
+        }
+        public bool IsTermDefinition
+        {
+            get
+            {
+                return Term != null;
+            }
+        }
+        public bool IsAssignment
+        {
+            get
+            {
+                return Assignment != null;
+            }
+        }
+        public bool IsMaterial
+        {
+            get
+            {
+                return Material != null && !IsExample;
+            }
+        }
+        public bool IsSelection
+        {
+            get { return _term != null && _topic != null; }
+        }
+
+        public string Source { get; private set; }
+        public string Text { get; set; }
+        public MessageTypes MessageType { get; private set; }
+
+        public MaterialExample MaterialExample { get; private set; }
+        public Material Material { get; private set; }
+        public Assignment Assignment { get; private set; }
+        public Term Term
+        {
+            get
+            {
+                if (_term != null)
+                    return _term;
+                else if (IsMaterial)
+                    return Material.Term;
+                else if (IsAssignment)
+                    return Assignment.Term;
+                else if (IsExample)
+                    return Material.Term;
+
+                return null;
             }
         }
         public Topic Topic
         {
-            get { return _topic; }
-            set
+            get
             {
-                _topic = value;
                 if (_topic != null)
-                {
-                    _term = null;
+                    return _topic;
+                else if (IsMaterial)
+                    return Material.Topic;
 
-                    Material = Topic.Materials.FirstOrDefault(x => x.ShowOrderId == 1);
-                    Source = Material?.Source;
-                }
+                return null;
             }
         }
-        public Material Material { get; set; }
-        public Assignment Assignment
+
+        #region UI specific
+
+        public bool ShowExampleButton
         {
-            get { return _assignment; }
-            set
+            get
             {
-                _assignment = value;
-                if (_assignment != null)
-                {
-                    _term = null;
-                    _topic = null;
-                    IsExample = false;
-                    
-                    Source = Assignment.Source;
-                }
+                return IsMaterial && Material.MaterialExamples.Any();
             }
         }
         public Brush MessageBackground
@@ -144,6 +156,7 @@ namespace MathChatBot.Objects
                         }
                     case MessageTypes.BotHelp:
                     case MessageTypes.BotMessage:
+                    case MessageTypes.BotSelection:
                         {
                             return Application.Current.Resources["BotMessageColor"] as SolidColorBrush;
                         }
@@ -164,6 +177,7 @@ namespace MathChatBot.Objects
                         }
                     case MessageTypes.BotHelp:
                     case MessageTypes.BotMessage:
+                    case MessageTypes.BotSelection:
                         {
                             return Application.Current.Resources["BotMessageTextColor"] as SolidColorBrush;
                         }
@@ -179,6 +193,7 @@ namespace MathChatBot.Objects
                 switch (MessageType)
                 {
                     case MessageTypes.BotMessage:
+                    case MessageTypes.BotSelection:
                     case MessageTypes.User:
                         {
                             return null;
@@ -199,6 +214,7 @@ namespace MathChatBot.Objects
                 switch (MessageType)
                 {
                     case MessageTypes.BotMessage:
+                    case MessageTypes.BotSelection:
                     case MessageTypes.User:
                         {
                             return Visibility.Visible;
@@ -219,11 +235,33 @@ namespace MathChatBot.Objects
                 switch (MessageType)
                 {
                     case MessageTypes.BotMessage:
+                    case MessageTypes.BotSelection:
                     case MessageTypes.User:
                         {
                             return Visibility.Collapsed;
                         }
                     case MessageTypes.BotHelp:
+                        {
+                            return Visibility.Visible;
+                        }
+                }
+
+                return Visibility.Collapsed;
+            }
+        }
+        public Visibility SelectionVisibility
+        {
+            get
+            {
+                switch (MessageType)
+                {
+                    case MessageTypes.BotMessage:
+                    case MessageTypes.BotHelp:
+                    case MessageTypes.User:
+                        {
+                            return Visibility.Collapsed;
+                        }
+                    case MessageTypes.BotSelection:
                         {
                             return Visibility.Visible;
                         }
@@ -244,6 +282,7 @@ namespace MathChatBot.Objects
                         }
                     case MessageTypes.BotHelp:
                     case MessageTypes.BotMessage:
+                    case MessageTypes.BotSelection:
                         {
                             return HorizontalAlignment.Left;
                         }
@@ -252,26 +291,8 @@ namespace MathChatBot.Objects
                 return HorizontalAlignment.Center;
             }
         }
-        public bool IsTopic
-        {
-            get
-            {
-                return Topic != null;
-            }
-        }
-        public bool IsTerm
-        {
-            get
-            {
-                return Term != null && !IsExample;
-            }
-        }
-        public bool IsAssignment {
-            get
-            {
-                return Assignment != null;
-            }
-        }
+
+        #endregion
 
     }
 }

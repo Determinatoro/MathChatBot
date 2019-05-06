@@ -46,5 +46,14 @@ namespace MathChatBot.Properties {
                 this["Password"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool PerformanceTesting {
+            get {
+                return ((bool)(this["PerformanceTesting"]));
+            }
+        }
     }
 }

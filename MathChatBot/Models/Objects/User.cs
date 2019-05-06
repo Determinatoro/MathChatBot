@@ -1,5 +1,6 @@
-﻿using MathChatBot.Utilities;
+﻿using System;
 using System.Linq;
+using static MathChatBot.Models.Role;
 
 namespace MathChatBot.Models
 {

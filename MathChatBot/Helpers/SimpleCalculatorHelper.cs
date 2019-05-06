@@ -1,10 +1,8 @@
 ﻿using MathChatBot.Utilities;
+using NCalc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NCalc;
 
 namespace MathChatBot.Helpers
 {
@@ -123,15 +121,25 @@ namespace MathChatBot.Helpers
                 _input = value;
                 // Replaces the input from the user with valid input to make sure our library can calculate the result
                 _input = ReplaceNaturalLanguage(_input);
-                
+
                 // If the inputstring starts with '=' it will overwrite the current result
                 if (_input.StartsWith("="))
                     Result = _input.Substring(1);
-                else if (!_input.StartsWith("+") && !_input.StartsWith("-") && !_input.StartsWith("*") && !_input.StartsWith("/") && _input != "value")
+                else if (!_input.StartsWith("+") && !_input.StartsWith("-") && !_input.StartsWith("*") && !_input.StartsWith("/") && _input != Properties.Resources.value)
                     Result = Result + "+" + _input;
                 else
                     Result += string.Format("{0}", _input);
             }
+        }
+        private List<ChatBotCommand> Commands { get; set; }
+
+        #endregion
+
+        #region Contructor
+
+        public SimpleCalculatorHelper()
+        {
+            GetCommands();
         }
 
         #endregion
@@ -141,6 +149,42 @@ namespace MathChatBot.Helpers
         //*************************************************/
         #region Methods
 
+        private void GetCommands()
+        {
+            Commands = new List<ChatBotCommand>();
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.clear_result.ToLower()
+                },
+                () =>
+                {
+                    Result = "0";
+                    return Properties.Resources.your_total_value_has_been_set_to_0;
+                }));
+        }
+
+        /// <summary>
+        /// Check input
+        /// </summary>
+        /// <param name="input">Input given from the user</param>
+        public bool CheckInput(ref string input, out string text)
+        {
+            if (RunCommand(input, out text))
+                return true;
+
+            var hasNumber = HasNumber(input);
+
+            if (hasNumber)
+                return true;
+            else if (!hasNumber && input.Contains(Properties.Resources.value.ToLower()))
+            {
+                // Replace natural language in the text with operators
+                input = ReplaceNaturalLanguage(input, removeSpaces: false);
+                return true;
+            }
+            
+            return false;
+        }
+
         /// <summary>
         /// Replace natural in the given input with math operators
         /// </summary>
@@ -149,18 +193,22 @@ namespace MathChatBot.Helpers
         /// <returns></returns>
         public string ReplaceNaturalLanguage(string input, bool removeSpaces = true)
         {
-            input = input.ReplaceIgnoreCase("add", "+");
-            input = input.ReplaceIgnoreCase("plus", "+");
-            input = input.ReplaceIgnoreCase("minus", "-");
-            input = input.ReplaceIgnoreCase("subtract", "-");
-            input = input.ReplaceIgnoreCase("times", "*");
-            input = input.ReplaceIgnoreCase("multiply by", "*");
-            input = input.ReplaceIgnoreCase("multiply", "*");
-            input = input.ReplaceIgnoreCase("divide by", "/");
-            input = input.ReplaceIgnoreCase("divide", "/");
-            input = input.ReplaceIgnoreCase("modulus", "%");
+            if (Result == null || Result == "")
+                Result = "0";
+            input = input.ReplaceIgnoreCase(Properties.Resources.value, Result);
+            input = input.ReplaceIgnoreCase(Properties.Resources.add, "+");
+            input = input.ReplaceIgnoreCase(Properties.Resources.plus, "+");
+            input = input.ReplaceIgnoreCase(Properties.Resources.minus, "-");
+            input = input.ReplaceIgnoreCase(Properties.Resources.substract, "-");
+            input = input.ReplaceIgnoreCase(Properties.Resources.times, "*");
+            input = input.ReplaceIgnoreCase(Properties.Resources.multiply_by, "*");
+            input = input.ReplaceIgnoreCase(Properties.Resources.multiply, "*");
+            input = input.ReplaceIgnoreCase(Properties.Resources.divide_by, "/");
+            input = input.ReplaceIgnoreCase(Properties.Resources.divide, "/");
+            input = input.ReplaceIgnoreCase(Properties.Resources.modulus, "%");
             if (removeSpaces)
                 input = input.ReplaceIgnoreCase(" ", "");
+
             return input;
         }
 
@@ -171,13 +219,12 @@ namespace MathChatBot.Helpers
         /// <returns></returns>
         public string UseCalculator(string calculation)
         {
-            if (Result == null || Result == "")
-                Result = "0";
+            var text = "";
+            if (RunCommand(calculation, out text))
+                return text;
 
-            calculation = calculation.ReplaceIgnoreCase("value", Result);
-            if (IsCalculatorCommand(calculation))
-                return Properties.Resources.your_total_value_has_been_set_to_0;
-            else if (!HasNumber(calculation))
+            calculation = ReplaceNaturalLanguage(calculation);
+            if (!HasNumber(calculation))
                 return null;
 
             try
@@ -225,18 +272,11 @@ namespace MathChatBot.Helpers
         /// </summary>
         /// <param name="input">The inputstring from the user</param>
         /// <returns>Returns true or false depending if the string is a calculator command or not.</returns>
-        private bool IsCalculatorCommand(string input)
+        private bool RunCommand(string input, out string text)
         {
-            switch (input)
-            {
-                case "clear result":
-                    {
-                        Result = "0";
-                        return true;
-                    }
-                default:
-                    return false;
-            }
+            var command = Commands.FirstOrDefault(x => x.CommandTexts.Contains(input));
+            text = command?.RunFunc();
+            return command != null;
         }
 
         /// <summary>

@@ -39,6 +39,7 @@ namespace MathChatBot
             btnLogin.Click += button_Click;
             // KeyDown events
             tbPassword.KeyDown += textBox_KeyDown;
+            tbUsername.KeyDown += textBox_KeyDown;
 
             // Set border
             this.SetupBorderHeader(Properties.Resources.login);
@@ -85,11 +86,6 @@ namespace MathChatBot
                 {
                     var response = DatabaseUtility.CheckLogin(username, password);
 
-                    this.RunOnUIThread(() =>
-                    {
-                        CustomDialog.Dismiss();
-                    });
-
                     if (response.Success)
                     {
                         if (saveCredentials)
@@ -104,6 +100,13 @@ namespace MathChatBot
                             User = response.User;
                             // Close this window
                             Close();
+                        });
+                    }
+                    else if (response.User != null && !response.User.IsActivated)
+                    {
+                        this.RunOnUIThread(() =>
+                        {
+                            CustomDialog.Show(Properties.Resources.user_is_deactivated_contact_your_administrator);
                         });
                     }
                     else
@@ -155,6 +158,7 @@ namespace MathChatBot
             switch (element.Name)
             {
                 case nameof(tbPassword):
+                case nameof(tbUsername):
                     {
                         if (e.Key == Key.Enter)
                             CheckLogin(tbUsername.Text, tbPassword.Password);

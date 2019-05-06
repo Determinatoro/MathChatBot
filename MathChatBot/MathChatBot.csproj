@@ -215,6 +215,8 @@
     <Compile Include="Models\MaterialExample.cs">
       <DependentUpon>MathChatBotModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Objects\Term.cs" />
+    <Compile Include="Models\Objects\Topic.cs" />
     <Compile Include="Models\Role.cs">
       <DependentUpon>MathChatBotModel.tt</DependentUpon>
     </Compile>
@@ -233,6 +235,7 @@
     <Compile Include="Models\UserRoleRelation.cs">
       <DependentUpon>MathChatBotModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\PerformanceTester.cs" />
     <Compile Include="Windows\HelpRequestsWindow.xaml.cs">
       <DependentUpon>HelpRequestsWindow.xaml</DependentUpon>
     </Compile>

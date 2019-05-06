@@ -303,7 +303,7 @@ Write “help” to get more information.</value>
     <value>See example</value>
   </data>
   <data name="this_is_what_i_found_about" xml:space="preserve">
-    <value>This is the definition I found for {0}.</value>
+    <value>This is the definition(s) I found for {0}.</value>
   </data>
   <data name="acos_can_only_contain_numbers_between_minus1_and_1" xml:space="preserve">
     <value>Acos can only contain numbers between -1 and 1.</value>
@@ -350,7 +350,7 @@ How to use the calculator:
     <value>Any news</value>
   </data>
   <data name="any_news_response" xml:space="preserve">
-    <value>Two students were arrested this morning for trying to smuggle 20 Gb of memes into Sweden. Both students are claiming they were only for “personal use”.</value>
+    <value>Two students were arrested this morning for trying to smuggle 20 GB of memes into Sweden. Both students are claiming they were only for “personal use”.</value>
   </data>
   <data name="clear" xml:space="preserve">
     <value>Clear</value>
@@ -428,7 +428,7 @@ How to use the calculator:
     <value>Who is your creator</value>
   </data>
   <data name="who_is_your_creator_response" xml:space="preserve">
-    <value>My creators are a group og people from Aalborg University.</value>
+    <value>My creators are a group of people from Aalborg University.</value>
   </data>
   <data name="doing_setup_please_wait" xml:space="preserve">
     <value>Doing setup. Please wait...</value>
@@ -502,14 +502,14 @@ How to use the calculator:
   <data name="there_are_for_this_term_this_is_the_first_assignment" xml:space="preserve">
     <value>There are {0} assignment(s) for this term. This is the first one.</value>
   </data>
-  <data name="there_are_no_assignments_for_this_term" xml:space="preserve">
-    <value>There are no assignments for this term.</value>
+  <data name="there_are_no_assignments_for_this" xml:space="preserve">
+    <value>There are no assignments for this.</value>
   </data>
   <data name="there_are_under_this_topic_this_is_the_first_assignment" xml:space="preserve">
     <value>There are {0} assignment(s) under this topic. This is the first one.</value>
   </data>
   <data name="this_is_the_answers_for_the_assignment" xml:space="preserve">
-    <value>This is the answers for the assignment:
+    <value>This is the answer(s) for the assignment:
 
 {0}</value>
   </data>
@@ -536,5 +536,218 @@ How to use the calculator:
   </data>
   <data name="you_have_not_started_any_assignments_yet" xml:space="preserve">
     <value>You have not started any assignments yet.</value>
+  </data>
+  <data name="value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="down" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="examples" xml:space="preserve">
+    <value>Examples</value>
+  </data>
+  <data name="id" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="see" xml:space="preserve">
+    <value>See</value>
+  </data>
+  <data name="select_material" xml:space="preserve">
+    <value>Select material</value>
+  </data>
+  <data name="show_order_id" xml:space="preserve">
+    <value>Show order ID</value>
+  </data>
+  <data name="up" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="user_is_deactivated_contact_your_administrator" xml:space="preserve">
+    <value>User is deactivated. Contact your administrator to get more info.</value>
+  </data>
+  <data name="could_not_add_the_term" xml:space="preserve">
+    <value>Could not add the term</value>
+  </data>
+  <data name="could_not_add_the_topic" xml:space="preserve">
+    <value>Could not add the topic</value>
+  </data>
+  <data name="do_you_want_to_delete" xml:space="preserve">
+    <value>Do you want to delete {0}?</value>
+  </data>
+  <data name="it_cannot_be_deleted_because_it_is_used_in_other_tables" xml:space="preserve">
+    <value>It cannot be deleted because it is used in other tables</value>
+  </data>
+  <data name="new_term" xml:space="preserve">
+    <value>New term</value>
+  </data>
+  <data name="new_topic" xml:space="preserve">
+    <value>New topic</value>
+  </data>
+  <data name="no" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="please_fill_out_all_fields" xml:space="preserve">
+    <value>Please fill out all fields</value>
+  </data>
+  <data name="term_name" xml:space="preserve">
+    <value>Term name</value>
+  </data>
+  <data name="topic_name" xml:space="preserve">
+    <value>Topic name</value>
+  </data>
+  <data name="yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="and" xml:space="preserve">
+    <value>and</value>
+  </data>
+  <data name="assignments" xml:space="preserve">
+    <value>Assignments</value>
+  </data>
+  <data name="clear_result" xml:space="preserve">
+    <value>clear result</value>
+  </data>
+  <data name="could_not_remove_the_term" xml:space="preserve">
+    <value>Could not remove the term. It still has some associations to other tables in the database.</value>
+  </data>
+  <data name="could_not_remove_the_topic" xml:space="preserve">
+    <value>Could not remove the topic. It still has some associations to other tables in the database.</value>
+  </data>
+  <data name="divide" xml:space="preserve">
+    <value>divide</value>
+  </data>
+  <data name="divide_by" xml:space="preserve">
+    <value>divide by</value>
+  </data>
+  <data name="item_removed" xml:space="preserve">
+    <value>{0} removed</value>
+  </data>
+  <data name="minus" xml:space="preserve">
+    <value>minus</value>
+  </data>
+  <data name="modulus" xml:space="preserve">
+    <value>modulus</value>
+  </data>
+  <data name="multiply" xml:space="preserve">
+    <value>multiply</value>
+  </data>
+  <data name="multiply_by" xml:space="preserve">
+    <value>multiply by</value>
+  </data>
+  <data name="plus" xml:space="preserve">
+    <value>plus</value>
+  </data>
+  <data name="substract" xml:space="preserve">
+    <value>substract</value>
+  </data>
+  <data name="times" xml:space="preserve">
+    <value>times</value>
+  </data>
+  <data name="assignment_no" xml:space="preserve">
+    <value>Assignment no.</value>
+  </data>
+  <data name="definitions" xml:space="preserve">
+    <value>Definitions</value>
+  </data>
+  <data name="remove_definition" xml:space="preserve">
+    <value>Remove definition?</value>
+  </data>
+  <data name="please_select_an_image" xml:space="preserve">
+    <value>Please select an image</value>
+  </data>
+  <data name="select_assignment" xml:space="preserve">
+    <value>Select assignment</value>
+  </data>
+  <data name="could_not_remove_definition" xml:space="preserve">
+    <value>Could not remove the definition. It still has some associations to other tables in the database.</value>
+  </data>
+  <data name="new_image" xml:space="preserve">
+    <value>New image</value>
+  </data>
+  <data name="old_image" xml:space="preserve">
+    <value>Old image</value>
+  </data>
+  <data name="overwrite" xml:space="preserve">
+    <value>Overwrite</value>
+  </data>
+  <data name="remove_assignment" xml:space="preserve">
+    <value>Remove assignment?</value>
+  </data>
+  <data name="remove_example" xml:space="preserve">
+    <value>Remove example?</value>
+  </data>
+  <data name="select_image" xml:space="preserve">
+    <value>Select image</value>
+  </data>
+  <data name="class_overview" xml:space="preserve">
+    <value>{0} - Class Overview</value>
+  </data>
+  <data name="defitions_and_assignments" xml:space="preserve">
+    <value>{0} - Definitions and Assignments</value>
+  </data>
+  <data name="did_not_help_command" xml:space="preserve">
+    <value>did not help</value>
+  </data>
+  <data name="need_help_command" xml:space="preserve">
+    <value>Need help</value>
+  </data>
+  <data name="new_assignment" xml:space="preserve">
+    <value>{0} - New Assignment</value>
+  </data>
+  <data name="new_term_definition" xml:space="preserve">
+    <value>{0} - New Term Definition</value>
+  </data>
+  <data name="new_term_definition_example" xml:space="preserve">
+    <value>{0} - New Term Definition Example</value>
+  </data>
+  <data name="new_topic_definition" xml:space="preserve">
+    <value>{0} - New Topic Definition</value>
+  </data>
+  <data name="overwrite_assignment" xml:space="preserve">
+    <value>{0} - Overwrite Assignment</value>
+  </data>
+  <data name="overwrite_term_definition" xml:space="preserve">
+    <value>{0} - Overwrite Term Definition</value>
+  </data>
+  <data name="overwrite_term_definition_example" xml:space="preserve">
+    <value>{0} - Overwrite Term Definition Example</value>
+  </data>
+  <data name="overwrite_topic_definition" xml:space="preserve">
+    <value>{0} - Overwrite Topic Definition</value>
+  </data>
+  <data name="please_select_a_topic_term_or_example_before_using_this_command" xml:space="preserve">
+    <value>Please select a topic, a term or an example before using this command.</value>
+  </data>
+  <data name="see_image" xml:space="preserve">
+    <value>See Image</value>
+  </data>
+  <data name="term_defition_examples" xml:space="preserve">
+    <value>{0} - Term Definition Examples</value>
+  </data>
+  <data name="topic_definitions" xml:space="preserve">
+    <value>{0} - Topic Definitions</value>
+  </data>
+  <data name="what_you_searched_for_is_both_a_topic_and_a_term_which_one_do_you_want" xml:space="preserve">
+    <value>What you searched for is both a topic and a term which one do you want?</value>
+  </data>
+  <data name="you_can_only_use_this_command_when_having_a_selection" xml:space="preserve">
+    <value>You can only use this command when having a selection.</value>
+  </data>
+  <data name="add_users_to_class" xml:space="preserve">
+    <value>{0} - Add Users to Class</value>
+  </data>
+  <data name="remove_user_from_class" xml:space="preserve">
+    <value>Remove user from class</value>
   </data>
 </root>

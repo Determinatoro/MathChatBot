@@ -2,6 +2,7 @@
 using edu.stanford.nlp.pipeline;
 using edu.stanford.nlp.tagger.maxent;
 using edu.stanford.nlp.util;
+using edu.stanford.nlp.util.logging;
 using java.util;
 using MathChatBot.Utilities;
 using System;
@@ -75,7 +76,9 @@ namespace MathChatBot.Helpers
         public string Lemma { get; set; }
         public string Original { get; set; }
         public string NERStringIdentifier { get; set; }
-        public POSTag POSIdentifier { get
+        public POSTag POSIdentifier
+        {
+            get
             {
                 if (POSStringIdentifier == null)
                     return POSTag.NONE;
@@ -187,6 +190,7 @@ namespace MathChatBot.Helpers
         #region Properties
 
         private StanfordCoreNLP ExtendedTagger { get; set; }
+        private ArrayList Sentences { get; set; }
 
         #endregion
 
@@ -197,17 +201,26 @@ namespace MathChatBot.Helpers
 
         public NLPHelper()
         {
+            PerformanceTester.StartMET("NLP");
+            // Get path to Stanford NLP models
             var jarRoot = string.Format(ResourcesFolderPath, @"stanford-corenlp-3.9.2-models");
+            // Turn off logging
+            RedwoodConfiguration.current().clear().apply();
             var props = new java.util.Properties();
-            props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner");
-            props.setProperty("ner.useSUTime", "0");
-            props.put("ner.applyFineGrained", "0");
-            props.put("ner.fine.regexner.mapping", jarRoot + @"\edu\stanford\nlp\models\kbp\english\");
+            //props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner");
+            props.setProperty("annotators", "tokenize, ssplit, pos");
+            // Makes Named Entity Recognition work in the library
+            //props.setProperty("ner.useSUTime", "0");
+            //props.put("ner.applyFineGrained", "0");
+            //props.put("ner.fine.regexner.mapping", jarRoot + @"\edu\stanford\nlp\models\kbp\english\");
+            // Set current directory
             var curDir = Environment.CurrentDirectory;
             var modelsDirectory = curDir + "\\" + jarRoot + @"\edu\stanford\nlp\models";
             Directory.SetCurrentDirectory(jarRoot);
 
+            // Load Stanford NLP
             ExtendedTagger = new StanfordCoreNLP(props);
+            PerformanceTester.StopMET("NLP");
         }
 
         #endregion
@@ -224,8 +237,11 @@ namespace MathChatBot.Helpers
         /// <returns>A list with the sentences</returns>
         public List<object> GetSentences(string text)
         {
-            var sentences = MaxentTagger.tokenizeText(new java.io.StringReader(text)).toArray();
-            return new List<object>(sentences);
+            var annotation = new Annotation(text);
+            ExtendedTagger.annotate(annotation);
+            Sentences = annotation.get(new CoreAnnotations.SentencesAnnotation().getClass()) as ArrayList;
+            //Sentences = MaxentTagger.tokenizeText(new java.io.StringReader(text)) as ArrayList;
+            return new List<object>(Sentences.toArray());
         }
 
         /// <summary>
@@ -233,15 +249,19 @@ namespace MathChatBot.Helpers
         /// </summary>
         /// <param name="text">The message text</param>
         /// <returns>A list with the tagged words</returns>
-        public List<TaggedWord> Tag(string text)
+        public List<TaggedWord> Tag(string text, bool useSavedSentences = false)
         {
             var list = new List<TaggedWord>();
 
-            var annotation = new Annotation(text);
-
-            ExtendedTagger.annotate(annotation);
-
-            var sentences = annotation.get(new CoreAnnotations.SentencesAnnotation().getClass()) as ArrayList;
+            ArrayList sentences = null;
+            if (useSavedSentences && Sentences != null)
+                sentences = Sentences;
+            else
+            {
+                var annotation = new Annotation(text);
+                ExtendedTagger.annotate(annotation);
+                sentences = annotation.get(new CoreAnnotations.SentencesAnnotation().getClass()) as ArrayList;
+            }
             foreach (CoreMap sentence in sentences)
             {
                 var tokens = sentence.get(new
@@ -252,12 +272,9 @@ namespace MathChatBot.Helpers
                     var after = token.get(new CoreAnnotations.AfterAnnotation().getClass());
                     var before = token.get(new CoreAnnotations.BeforeAnnotation().getClass());
                     var word = token.get(new CoreAnnotations.TextAnnotation().getClass());
-                    var pos = token.get(new
-                    CoreAnnotations.PartOfSpeechAnnotation().getClass());
-                    var ner = token.get(new
-                    CoreAnnotations.NamedEntityTagAnnotation().getClass());
-                    var lemma = token.get(new
-                    CoreAnnotations.LemmaAnnotation().getClass());
+                    var pos = token.get(new CoreAnnotations.PartOfSpeechAnnotation().getClass());
+                    //var ner = token.get(new CoreAnnotations.NamedEntityTagAnnotation().getClass());
+                    //var lemma = token.get(new CoreAnnotations.LemmaAnnotation().getClass());
 
                     var taggedWord = new TaggedWord()
                     {
@@ -266,8 +283,8 @@ namespace MathChatBot.Helpers
                         WhiteSpaceCharacterAfter = after.ToString(),
                         WhiteSpaceCharacterBefore = before.ToString(),
                         POSStringIdentifier = pos.ToString(),
-                        Lemma = lemma.ToString(),
-                        NERStringIdentifier = ner.ToString()
+                        //Lemma = lemma.ToString(),
+                        //NERStringIdentifier = ner.ToString()
                     };
                     list.Add(taggedWord);
                 }

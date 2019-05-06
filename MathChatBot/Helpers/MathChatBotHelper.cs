@@ -22,12 +22,13 @@ namespace MathChatBot.Helpers
         public MessageResult(string errorMessage)
         {
             IsSuccess = false;
-            Messages = new MessageObject[]{ new MessageObject()
-            {
-                MessageType = MessageTypes.BotMessage,
-                Text = errorMessage,
-                SendDate = DateTime.Now
-            }};
+            Messages = new MessageObject[] { new MessageObject(errorMessage) };
+        }
+
+        public MessageResult(MessageObject[] messageObjects)
+        {
+            IsSuccess = true;
+            Messages = messageObjects;
         }
 
         public bool IsSuccess { get; set; }
@@ -62,6 +63,35 @@ namespace MathChatBot.Helpers
         public bool IsCommand { get { return SearchStrings == null; } }
     }
 
+    public class ChatBotCommand
+    {
+        public string[] CommandTexts { get; set; }
+        public Action Action { get; set; }
+        public Func<string> Func { get; set; }
+
+        public ChatBotCommand(string[] commandTexts, Action action)
+        {
+            CommandTexts = commandTexts;
+            Action = action;
+        }
+
+        public ChatBotCommand(string[] commandTexts, Func<string> func)
+        {
+            CommandTexts = commandTexts;
+            Func = func;
+        }
+
+        public void RunAction()
+        {
+            Action?.Invoke();
+        }
+
+        public string RunFunc()
+        {
+            return Func?.Invoke();
+        }
+    }
+
     /// <summary>
     /// Interaction logic for the MathChatBotHelper
     /// </summary>
@@ -73,15 +103,18 @@ namespace MathChatBot.Helpers
         //*************************************************/
         #region Properties
 
+        public User User { get; set; }
         private NLPHelper NLPHelper { get; set; }
         public SimpleCalculatorHelper SimpleCalculatorHelper { get; set; }
-        private MathChatBotEntities Entity { get; set; }
+        private MathChatBotEntities Entity { get { return DatabaseUtility.Entity; } }
         public List<MessageObject> LastBotMessagesAdded { get; set; }
         public MessageObject LastBotMessage { get; set; }
         public ObservableCollection<MessageObject> Messages { get; private set; }
 
         public Assignment CurrentAssignment { get; private set; }
         public List<Assignment> SelectedAssignments { get; private set; }
+
+        public List<ChatBotCommand> Commands { get; set; }
 
         #endregion
 
@@ -94,8 +127,9 @@ namespace MathChatBot.Helpers
         {
             NLPHelper = new NLPHelper();
             SimpleCalculatorHelper = new SimpleCalculatorHelper();
-            Entity = DatabaseUtility.GetEntity();
             Messages = new ObservableCollection<MessageObject>();
+
+            GetCommands();
         }
 
         #endregion
@@ -104,6 +138,136 @@ namespace MathChatBot.Helpers
         // METHODS
         //*************************************************/
         #region Methods
+
+        /// <summary>
+        /// Get commands for the chatbot
+        /// </summary>
+        public void GetCommands()
+        {
+            Commands = new List<ChatBotCommand>();
+
+            Commands.Add(new ChatBotCommand(
+                new string[] {
+                    Properties.Resources.see_term.ToLower(),
+                    Properties.Resources.see_terms.ToLower()
+                },
+                () => SeeTerms(LastBotMessage)
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.see_example.ToLower(),
+                    Properties.Resources.see_examples.ToLower()
+                },
+                () => SeeExample(LastBotMessage)
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.see_definition.ToLower()
+                },
+                () => SeeDefinition(LastBotMessage)
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.clear.ToLower()
+                },
+                () =>
+                {
+                    Messages.Clear();
+                    WriteWelcome();
+                }));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.topic.ToLower(),
+                    Properties.Resources.topics.ToLower()
+                },
+                () =>
+                {
+                    if (LastBotMessage != null && LastBotMessage.IsSelection)
+                        SeeDefinitions(LastBotMessage, true);
+                    else
+                        AddBotMessage(new MessageObject(string.Format(Properties.Resources.these_are_the_topics_i_know_about, GetTopics())));
+                }
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.term.ToLower(),
+                    Properties.Resources.terms.ToLower()
+                },
+                () =>
+                {
+                    if (LastBotMessage != null && LastBotMessage.IsSelection)
+                        SeeDefinitions(LastBotMessage, false);
+                    else
+                        AddBotMessage(new MessageObject(string.Format(Properties.Resources.please_select_one_of_these_topics_first, GetTopics())));
+                }
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.help.ToLower()
+                },
+                () => AddBotMessage(new MessageObject(Properties.Resources.help_message))
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.hello.ToLower()
+                },
+                () => AddBotMessage(new MessageObject(Properties.Resources.hello_response))
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.what_is_your_name.ToLower()
+                },
+                () => AddBotMessage(new MessageObject(Properties.Resources.what_is_your_name_response))
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.what_is_the_meaning_of_life.ToLower()
+                },
+                () => AddBotMessage(new MessageObject(Properties.Resources.what_is_the_meaning_of_life_response))
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.tell_me_a_joke.ToLower()
+                },
+                () => AddBotMessage(new MessageObject(Properties.Resources.tell_me_a_joke_response))
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.who_is_your_creator.ToLower()
+                },
+                () => AddBotMessage(new MessageObject(Properties.Resources.who_is_your_creator_response))
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.any_news.ToLower()
+                },
+                () => AddBotMessage(new MessageObject(Properties.Resources.any_news_response))
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.does_god_exist.ToLower()
+                },
+                () => AddBotMessage(new MessageObject(Properties.Resources.does_god_exist_response))
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.current.ToLower()
+                },
+                () => SeeCurrentAssignment()
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.next.ToLower()
+                },
+                () => SeeNextAssignment()
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.previous.ToLower()
+                },
+                () => SeePreviousAssignment()
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.did_not_help_command.ToLower(),
+                    Properties.Resources.need_help_command.ToLower()
+                },
+                () => DidNotHelp(LastBotMessage)
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.see_assignments.ToLower()
+                },
+                () => SeeAssignments(LastBotMessage)
+                ));
+            Commands.Add(new ChatBotCommand(new string[] {
+                    Properties.Resources.see_answers.ToLower()
+                },
+                () => SeeAnswers(LastBotMessage)
+                ));
+        }
 
         /// <summary>
         /// Write a welcome message to the user
@@ -119,7 +283,7 @@ namespace MathChatBot.Helpers
         /// <param name="message">The message object for the topic</param>
         public void SeeTerms(MessageObject message)
         {
-            if (!message.IsTopic)
+            if (!message.IsTopicDefinition)
             {
                 WriteMessageToUser(Properties.Resources.please_select_a_topic_first_before_using_this_command);
                 return;
@@ -139,15 +303,17 @@ namespace MathChatBot.Helpers
         /// <param name="message">The message object</param>
         public void SeeExample(MessageObject message)
         {
-            if (message == null || message.MessageType != MessageTypes.BotHelp)
+            if (message == null || !message.IsMaterial)
             {
                 WriteMessageToUser(Properties.Resources.please_select_a_term_first_before_using_this_command);
                 return;
             }
 
-            var examples = message.Material.MaterialExamples.OrderBy(x => x.ShowOrderId).ToList();
+            var examples = message.Material.MaterialExamples
+                .OrderBy(x => x.ShowOrderId)
+                .ToList();
 
-            if (examples.Count == 0)
+            if (!examples.Any())
             {
                 WriteMessageToUser(Properties.Resources.this_term_has_no_examples);
                 return;
@@ -155,21 +321,11 @@ namespace MathChatBot.Helpers
 
             var messages = new List<MessageObject>();
 
-            messages.Add(
-                new MessageObject()
-                {
-                    Text = string.Format(Properties.Resources.this_is_the_examples_i_found_for, message.Material.Term.Name.ToLower()),
-                    MessageType = MessageTypes.BotMessage
-                }
-                );
-
+            // Bot message
+            messages.Add(new MessageObject(string.Format(Properties.Resources.this_is_the_examples_i_found_for, message.Material.Term.Name.ToLower())));
+            // Examples
             foreach (var example in examples)
-            {
-                messages.Add(new MessageObject(message.Material, example.ShowOrderId)
-                {
-                    MessageType = MessageTypes.BotHelp
-                });
-            }
+                messages.Add(new MessageObject(example));
 
             AddBotMessages(messages);
         }
@@ -180,7 +336,7 @@ namespace MathChatBot.Helpers
         /// <param name="message">The message object</param>
         public void SeeDefinition(MessageObject message)
         {
-            if (message.Material == null || !message.IsExample)
+            if (!message.IsExample)
             {
                 WriteMessageToUser(Properties.Resources.please_select_an_example_first_before_using_this_command);
                 return;
@@ -188,19 +344,41 @@ namespace MathChatBot.Helpers
 
             string text = string.Format(Properties.Resources.this_is_what_i_found_about, message.Material.Term.Name.ToLower());
 
-            AddBotMessages(new MessageObject[]{
-                        new MessageObject()
-                        {
-                            Text = text,
-                            MessageType = MessageTypes.BotMessage
-                        },
-                        new MessageObject()
-                        {
-                            Term = message.Material.Term,
-                            Topic = message.Material.Topic,
-                            MessageType = MessageTypes.BotHelp
-                        }
-                    }.ToList());
+            AddBotMessages(new MessageObject[]
+            {
+                new MessageObject(text),
+                new MessageObject(message.Material)
+            }.ToList());
+        }
+
+        public void SeeDefinitions(MessageObject message, bool selectedTopic)
+        {
+            if (!message.IsSelection)
+            {
+                WriteMessageToUser(Properties.Resources.you_can_only_use_this_command_when_having_a_selection);
+                return;
+            }
+
+            var messages = new List<MessageObject>();
+
+            string text = string.Format(Properties.Resources.this_is_what_i_found_about, selectedTopic ? message.Topic.Name : message.Term.Name);
+            // Add bot message
+            messages.Add(new MessageObject(text));
+
+            if (!selectedTopic)
+            {
+                // Add bot help
+                foreach (var material in message.Term.Materials)
+                    messages.Add(new MessageObject(material));
+            }
+            else
+            {
+                // Add bot help
+                foreach (var material in message.Topic.Materials)
+                    messages.Add(new MessageObject(material));
+            }
+
+            AddBotMessages(messages);
         }
 
         /// <summary>
@@ -208,9 +386,9 @@ namespace MathChatBot.Helpers
         /// </summary>
         /// <param name="user">The user object</param>
         /// <param name="message">The message object</param>
-        public void DidNotHelp(User user, MessageObject message)
+        public void DidNotHelp(MessageObject message)
         {
-            var userRoles = DatabaseUtility.GetUserRoles(user.Username);
+            var userRoles = DatabaseUtility.GetUserRoles(User.Username);
 
             // If you are not a student you cannot make help requests
             if (!userRoles.Any(x => x == Role.RoleTypes.Student))
@@ -222,11 +400,25 @@ namespace MathChatBot.Helpers
             // Create help request
             var helpRequest = new HelpRequest()
             {
-                User = user,
-                Material = message.IsExample ? null : message.Material,
+                User = User,
+                Material = !message.IsMaterial ? null : message.Material,
                 MaterialExample = !message.IsExample ? null : message.MaterialExample,
-                Assignment = !message.IsAssignment ? null : message.Assignment 
+                Assignment = !message.IsAssignment ? null : message.Assignment
             };
+
+            int termId = helpRequest.Material != null ? helpRequest.Material.TermId.Value : 0;
+            if (termId == 0)
+                termId = helpRequest.MaterialExample != null ? helpRequest.MaterialExample.Material.TermId.Value : 0;
+            if (termId == 0)
+                termId = helpRequest.Assignment != null ? helpRequest.Assignment.TermId : 0;
+
+            if (termId == 0)
+            {
+                WriteMessageToUser(Properties.Resources.could_not_make_a_help_request);
+                return;
+            }
+
+            helpRequest.TermId = termId;
 
             // You cannot use null propagation in linq so therefore there is used temp values
             var materialId = helpRequest.Material?.Id;
@@ -315,16 +507,16 @@ namespace MathChatBot.Helpers
             List<Assignment> assignments = null;
             string text = null;
 
-            if (message.IsTerm || message.IsExample)
+            if (message.IsTermDefinition || message.IsExample)
             {
                 assignments = message.Material.Term.Assignments
                 .OrderBy(x => x.AssignmentNo)
                 .ToList();
 
-                if (assignments.Count > 0)
+                if (assignments.Any())
                     text = string.Format(Properties.Resources.there_are_for_this_term_this_is_the_first_assignment, assignments.Count);
             }
-            else if (message.IsTopic)
+            else if (message.IsTopicDefinition)
             {
                 assignments = new List<Assignment>();
                 message.Topic.Terms.OrderBy(x => x.Name)
@@ -336,7 +528,7 @@ namespace MathChatBot.Helpers
                     })
                     .ToList();
 
-                if (assignments.Count > 0)
+                if (assignments.Any())
                     text = string.Format(Properties.Resources.there_are_under_this_topic_this_is_the_first_assignment, assignments.Count);
             }
             else
@@ -345,22 +537,18 @@ namespace MathChatBot.Helpers
                 return;
             }
 
-            if (assignments.Count > 0)
+            if (assignments.Any())
             {
                 SelectedAssignments = assignments;
                 CurrentAssignment = SelectedAssignments.FirstOrDefault();
 
                 AddBotMessages(new MessageObject[]{
-                        new MessageObject()
-                        {
-                            Text = text,
-                            MessageType = MessageTypes.BotMessage
-                        },
+                        new MessageObject(text),
                         new MessageObject(CurrentAssignment)
                     }.ToList());
             }
             else
-                WriteMessageToUser(Properties.Resources.there_are_no_assignments_for_this_term);
+                WriteMessageToUser(Properties.Resources.there_are_no_assignments_for_this);
         }
 
         /// <summary>
@@ -411,12 +599,8 @@ namespace MathChatBot.Helpers
         {
             if (text == "")
                 return;
-            Messages.Add(new MessageObject()
-            {
-                MessageType = MessageTypes.User,
-                Text = text,
-                SendDate = DateTime.Now
-            });
+
+            Messages.Add(new MessageObject(MessageTypes.User, text));
 
             var messageResult = AnalyzeText(text);
             if (messageResult.Messages != null)
@@ -449,13 +633,7 @@ namespace MathChatBot.Helpers
         /// <param name="text">The message text</param>
         public void WriteMessageToUser(string text)
         {
-            AddBotMessages(new MessageObject[] {
-                new MessageObject()
-                {
-                    MessageType = MessageTypes.BotMessage,
-                    Text = text
-                }
-            }.ToList());
+            AddBotMessage(new MessageObject(text));
         }
 
         /// <summary>
@@ -467,33 +645,61 @@ namespace MathChatBot.Helpers
         {
             var tempText = text.ToLower();
 
+            PerformanceTester.StartMET("GetSentences");
             // Get sentences that has been written
             var sentences = NLPHelper.GetSentences(tempText);
+            PerformanceTester.StopMET("GetSentences");
 
             // Does not support more than one sentence
             if (sentences.Count > 1)
                 return new MessageResult(Properties.Resources.i_cannot_process_more_than_one_sentence);
 
-            // Insert a question mark at the end of a text
-            if (!tempText.EndsWith("?"))
-                tempText += "?";
-
             // Tagging on the given words
-            var wordList = new List<TaggedWord>();
+            List<TaggedWord> wordList = null;
 
-            // If text has any numbers use the calculator
-            if (SimpleCalculatorHelper.HasNumber(tempText))
+            // Function for tagging
+            Action tagging = () =>
             {
-                // Replace natural language in the text with operators
-                tempText = SimpleCalculatorHelper.ReplaceNaturalLanguage(tempText, removeSpaces: false);
+                PerformanceTester.StartMET("Tagging");
+                // Insert a question mark at the end of a text
+                if (!tempText.EndsWith("?"))
+                    tempText += "?";
                 // Tag the words in the text
                 wordList = NLPHelper.Tag(tempText);
-                // Skip the WH-words and verbs in the beginning when using calculator
-                var context = wordList.SkipWhile(x => x.IsWHWord || x.IsVerb).Where(x => x.POSStringIdentifier != ".").ToList();
-                // Get text
-                var joined = string.Join(string.Empty, context.Select(x => x.OriginalText));
-                // Use calculator
-                var output = SimpleCalculatorHelper.UseCalculator(joined);
+                PerformanceTester.StopMET("Tagging");
+            };
+
+            PerformanceTester.StartMET("Use calculator");
+            // If text has any numbers use the calculator
+            string output;
+            if (SimpleCalculatorHelper.CheckInput(ref tempText, out output))
+            {
+                // If text is not math command
+                if (output == null)
+                {
+                    var input = tempText;
+
+                    tagging();
+
+                    if (wordList.Any(x => x.IsWHWord || x.IsVerb))
+                    {
+                        // Skip the WH-words and verbs in the beginning when using calculator
+                        var context = wordList
+                            .SkipWhile(x => x.IsWHWord || x.IsVerb)
+                            .Where(x => x.POSStringIdentifier != ".")
+                            .ToList();
+                        // Get text
+                        var joined = string.Join(string.Empty, context.Select(x => x.OriginalText));
+                        // If sentence starts with a WH word insert an equal sign
+                        if (wordList.FirstOrDefault().IsWHWord)
+                            input = joined.Insert(0, "=");
+                    }
+
+                    // Use calculator
+                    output = SimpleCalculatorHelper.UseCalculator(input);
+                    PerformanceTester.StopMET("Use calculator");
+                }
+
                 // If output is not null write the calculator result to the user
                 if (output != null)
                 {
@@ -506,11 +712,12 @@ namespace MathChatBot.Helpers
                 }
             }
 
-            // Tag the words in the text
-            wordList = NLPHelper.Tag(tempText);
+            tagging();
 
+            PerformanceTester.StartMET("Analyze word list");
             // Analyze the input
             var analyzeResult = AnalyzeWordList(wordList);
+            PerformanceTester.StopMET("Analyze word list");
 
             // If success
             if (analyzeResult.IsSuccess)
@@ -560,17 +767,20 @@ namespace MathChatBot.Helpers
             // Get all nouns, adjectives and words inbetween
             var range = wordList.GetRange(firstIndex, lastIndex - firstIndex + 1).ToList();
 
-            // Checking range
-            for (int i = 0; i < range.Count; i++)
+            if (range.Any(x => x.IsAdjective))
             {
-                var word = range[i];
-
-                if (word.IsAdjective)
+                // Checking range
+                for (int i = 0; i < range.Count; i++)
                 {
-                    var nextIndex = i + 1;
-                    // If not a noun or an adjective follows an adjective the sentence is not proper
-                    if (nextIndex == range.Count || (!range[nextIndex].IsNoun && !range[nextIndex].IsAdjective))
-                        return new AnalyzeResult(Properties.Resources.please_write_a_proper_sentence);
+                    var word = range[i];
+
+                    if (word.IsAdjective)
+                    {
+                        var nextIndex = i + 1;
+                        // If not a noun or an adjective follows an adjective the sentence is not proper
+                        if (nextIndex == range.Count || (!range[nextIndex].IsNoun && !range[nextIndex].IsAdjective))
+                            return new AnalyzeResult(Properties.Resources.please_write_a_proper_sentence);
+                    }
                 }
             }
 
@@ -592,10 +802,10 @@ namespace MathChatBot.Helpers
 
             // Check for a proper list representation of nouns
             var notNounsAndAdjectives = range.Where(x => !x.IsAdjective && !x.IsNoun).ToList();
-            if (notNounsAndAdjectives.Any(x => x.Word == "," || x.Word == "and"))
+            if (notNounsAndAdjectives.Any(x => x.Word == "," || x.Word == Properties.Resources.and))
             {
                 // Error if the last word is not "and"
-                if (notNounsAndAdjectives.Last().Word != "and")
+                if (notNounsAndAdjectives.Last().Word != Properties.Resources.and)
                     return new AnalyzeResult(Properties.Resources.please_write_a_proper_list_representation_of_nouns);
                 // Error if there is commas but it ends with more than just one "and" like (dog, bird and bee and tiger)
                 else if (notNounsAndAdjectives.Count > 1 && notNounsAndAdjectives.SkipWhile(x => x.Word == ",").ToList().Count != 1)
@@ -619,9 +829,13 @@ namespace MathChatBot.Helpers
                 var join = string.Join(string.Empty, collection.Select(x => x.OriginalText)).Trim();
                 // Add them list hashset
                 hashSet.Add(join);
+                // If the collection consists of only nouns and there 
+                // are several then add each of them to the hashset
+                if (collection.Count > 1 && collection.All(x => x.IsNoun))
+                    collection.ForEach(x => hashSet.Add(x.Word));
                 // Skip them plus the seperator
                 tempRange = tempRange.Skip(collection.Count + 1).ToList();
-            } while (tempRange.Count > 0);
+            } while (tempRange.Any());
 
             stringList = hashSet.ToList();
 
@@ -635,41 +849,57 @@ namespace MathChatBot.Helpers
         /// <returns>A message result</returns>
         private MessageResult AnalyzeSearchStrings(List<string> list)
         {
+            PerformanceTester.StartMET("Analyze search strings");
+
             foreach (var str in list)
             {
                 // Checking for bot command
                 if (RunCommand(str))
                     return new MessageResult();
 
-                Topic topic = null;
                 Term term = Entity.Terms.FirstOrDefault(x => x.Name.ToLower() == str);
+                Topic topic = Entity.Topics.FirstOrDefault(x => x.Name.ToLower() == str);
+                if (topic == null && term == null)
+                    continue;
 
-                if (term == null)
+                List<MessageObject> messages = new List<MessageObject>();
+                List<Material> materials = null;
+
+                // A term and a topic has the same name
+                if (term != null && topic != null)
+                    messages.Add(new MessageObject(term, topic));
+                // Get materials for the topic
+                else if (term == null)
                 {
-                    topic = Entity.Topics.FirstOrDefault(x => x.Name.ToLower() == str);
-                    if (topic == null)
-                        continue;
+                    materials = Entity.Materials
+                        .Where(x => x.TopicId == topic.Id)
+                        .OrderBy(x => x.ShowOrderId)
+                        .ToList();
+                }
+                // Get materials for the term
+                else
+                {
+                    materials = Entity.Materials
+                        .Where(x => x.TermId == term.Id)
+                        .OrderBy(x => x.ShowOrderId)
+                        .ToList();
                 }
 
-                string message = string.Format(Properties.Resources.this_is_what_i_found_about, term != null ? term.Name.ToLower() : topic.Name.ToLower());
-
-                return new MessageResult()
+                if (materials != null)
                 {
-                    Messages = new MessageObject[]{
-                        new MessageObject()
-                        {
-                            Text = message,
-                            MessageType = MessageTypes.BotMessage
-                        },
-                        new MessageObject()
-                        {
-                            Term = term,
-                            Topic = topic,
-                            MessageType = MessageTypes.BotHelp
-                        }
-                    }
-                };
+                    // Add bot message
+                    messages.Add(new MessageObject(string.Format(Properties.Resources.this_is_what_i_found_about, term != null ? term.Name.ToLower() : topic.Name.ToLower())));
+                    // Add materials            
+                    foreach (var material in materials)
+                        messages.Add(new MessageObject(material));
+                }
+
+                PerformanceTester.StopMET("Analyze search strings");
+
+                return new MessageResult(messages.ToArray());
             }
+
+            PerformanceTester.StopMET("Analyze search strings");
 
             // One noun
             if (list.Count == 1)
@@ -687,33 +917,7 @@ namespace MathChatBot.Helpers
         /// <returns></returns>
         private bool IsCommand(string text)
         {
-            var commands = new List<string>();
-            commands.AddRange(new string[] {
-                Properties.Resources.see_term,
-                Properties.Resources.see_terms,
-                Properties.Resources.see_example,
-                Properties.Resources.see_examples,
-                Properties.Resources.see_definition,
-                Properties.Resources.clear,
-                Properties.Resources.topic,
-                Properties.Resources.topics,
-                Properties.Resources.term,
-                Properties.Resources.terms,
-                Properties.Resources.help,
-                Properties.Resources.hello,
-                Properties.Resources.what_is_your_name,
-                Properties.Resources.what_is_the_meaning_of_life,
-                Properties.Resources.tell_me_a_joke,
-                Properties.Resources.who_is_your_creator,
-                Properties.Resources.does_god_exist,
-                Properties.Resources.any_news,
-                Properties.Resources.current,
-                Properties.Resources.next,
-                Properties.Resources.previous
-            });
-
-            commands = commands.Select(x => x.ToLower()).ToList();
-            return commands.Any(x => x == text);
+            return Commands.Any(x => x.CommandTexts.Contains(text));
         }
 
         /// <summary>
@@ -721,138 +925,16 @@ namespace MathChatBot.Helpers
         /// </summary>
         /// <param name="text">The message text</param>
         /// <returns>A string output for the given command</returns>
-        private bool RunCommand(string text)
+        public bool RunCommand(string text)
         {
-            text = text.ToLower();
+            text = text.ToLower().Replace("?", "");
+            var command = Commands.FirstOrDefault(x => x.CommandTexts.Contains(text));
 
-            // See term 
-            // See terms
-            if (
-              Properties.Resources.see_term.ToLower() == text ||
-              Properties.Resources.see_terms.ToLower() == text
-              )
-            {
-                SeeTerms(LastBotMessage);
-                return true;
-            }
-            // See example 
-            // See examples
-            if (
-              Properties.Resources.see_example.ToLower() == text ||
-              Properties.Resources.see_examples.ToLower() == text
-              )
-            {
-                SeeExample(LastBotMessage);
-                return true;
-            }
-            // See definition
-            else if (Properties.Resources.see_definition.ToLower() == text)
-            {
-                SeeDefinition(LastBotMessage);
-                return true;
-            }
-            // See definition
-            else if (Properties.Resources.see_definition.ToLower() == text)
-            {
-                SeeDefinition(LastBotMessage);
-                return true;
-            }
-            // Clear
-            else if (Properties.Resources.clear.ToLower() == text)
-            {
-                Messages.Clear();
-                WriteWelcome();
-                return true;
-            }
-            // Topic
-            // Topics
-            else if (
-              Properties.Resources.topic.ToLower() == text ||
-              Properties.Resources.topics.ToLower() == text
-              )
-            {
-                AddBotMessage(new MessageObject(string.Format(Properties.Resources.these_are_the_topics_i_know_about, GetTopics())));
-                return true;
-            }
-            // Term
-            // Terms
-            else if (
-              Properties.Resources.term.ToLower() == text ||
-              Properties.Resources.terms.ToLower() == text
-              )
-            {
-                AddBotMessage(new MessageObject(string.Format(Properties.Resources.please_select_one_of_these_topics_first, GetTopics())));
-                return true;
-            }
-            // Help
-            else if (Properties.Resources.help.ToLower() == text)
-            {
-                AddBotMessage(new MessageObject(Properties.Resources.help_message));
-                return true;
-            }
-            // Hello
-            else if (Properties.Resources.hello.ToLower() == text)
-            {
-                AddBotMessage(new MessageObject(Properties.Resources.hello_response));
-                return true;
-            }
-            // What is your name
-            else if (Properties.Resources.what_is_your_name.ToLower() == text)
-            {
-                AddBotMessage(new MessageObject(Properties.Resources.what_is_your_name_response));
-                return true;
-            }
-            // What is the meaning of life
-            else if (Properties.Resources.what_is_the_meaning_of_life.ToLower() == text)
-            {
-                AddBotMessage(new MessageObject(Properties.Resources.what_is_the_meaning_of_life_response));
-                return true;
-            }
-            // Tell me a joke
-            else if (Properties.Resources.tell_me_a_joke.ToLower() == text)
-            {
-                AddBotMessage(new MessageObject(Properties.Resources.tell_me_a_joke_response));
-                return true;
-            }
-            // Who is your creator
-            else if (Properties.Resources.who_is_your_creator.ToLower() == text)
-            {
-                AddBotMessage(new MessageObject(Properties.Resources.who_is_your_creator_response));
-                return true;
-            }
-            // Does god exist
-            else if (Properties.Resources.does_god_exist.ToLower() == text)
-            {
-                AddBotMessage(new MessageObject(Properties.Resources.does_god_exist_response));
-                return true;
-            }
-            // Any news
-            else if (Properties.Resources.any_news.ToLower() == text)
-            {
-                AddBotMessage(new MessageObject(Properties.Resources.any_news_response));
-                return true;
-            }
-            // Current (Current assignment)
-            else if (Properties.Resources.current.ToLower() == text)
-            {
-                SeeCurrentAssignment();
-                return true;
-            }
-            // Next (Next assignment)
-            else if (Properties.Resources.next.ToLower() == text)
-            {
-                SeeNextAssignment();
-                return true;
-            }
-            // Previous (Previous assignment)
-            else if (Properties.Resources.previous.ToLower() == text)
-            {
-                SeePreviousAssignment();
-                return true;
-            }
+            if (command == null)
+                return false;
 
-
-            return false;
+            command.RunAction();
+            return true;
         }
 
         /// <summary>

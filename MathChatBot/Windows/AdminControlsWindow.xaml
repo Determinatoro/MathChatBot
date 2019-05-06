@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="AdminControlsWindow" 
         Height="480" 
-        Width="800"
+        Width="900"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
         AllowsTransparency="True" 
@@ -22,10 +22,7 @@
 
         <Border 
             Name="borderHeader"
-            Background="{StaticResource AUU_Blue}"
-            CornerRadius="1, 0.5, 0, 0"
-            BorderBrush="{StaticResource BorderColor}"
-            BorderThickness="1, 1, 1, 0.5"
+            Style="{StaticResource styleBorderHeader}"
             >
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -144,6 +141,12 @@
                             RowEditEnding="dataGrid_RowEditEnding"  
                             CellEditEnding="dataGrid_CellEditEnding"
                             >
+                            <DataGrid.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#F0F0f0"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#F0F0F0"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black"/>
+                            </DataGrid.Resources>
                             <DataGrid.CellStyle>
                                 <Style TargetType="{x:Type DataGridCell}">
                                     <Setter Property="Template">
@@ -173,7 +176,7 @@
                                     <DataGridTemplateColumn.CellTemplate >
                                         <DataTemplate>
                                             <TextBlock 
-                                                Padding="2, 0, 2, 0"
+                                                Padding="2"
                                                 Background="Transparent"
                                                 Text="{Binding FirstName}"
                                                 />
@@ -183,7 +186,7 @@
                                         <DataTemplate>
                                             <TextBox 
                                                 BorderBrush="Transparent"
-                                                Padding="2, 0, 2, 0"
+                                                Padding="2"
                                                 BorderThickness="0"
                                                 Background="Transparent"
                                                 Text="{Binding FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -195,7 +198,7 @@
                                     <DataGridTemplateColumn.CellTemplate >
                                         <DataTemplate>
                                             <TextBlock 
-                                                Padding="2, 0, 2, 0"
+                                                Padding="2"
                                                 Background="Transparent"
                                                 Text="{Binding LastName}"
                                                 />
@@ -206,6 +209,7 @@
                                             <TextBox 
                                                 BorderBrush="Transparent"
                                                 BorderThickness="0"
+                                                Padding="2"
                                                 Background="Transparent"
                                                 Text="{Binding LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                 />
@@ -221,6 +225,7 @@
                                                 Style="{StaticResource styleButtonHover}"
                                                 Background="{StaticResource AUU_Blue}"
                                                 Foreground="White"
+                                                Height="20"
                                                 FontFamily="Roboto"
                                                 Click="button_Click"
                                                 />
@@ -249,7 +254,7 @@
                                 Margin="1"
                                 TextWrapping="Wrap"                
                                 />
-                            
+
                             <Button
                                 Name="btnNewUser"  
                                 Background="{StaticResource AUU_Blue}"
@@ -273,7 +278,7 @@
                                 BorderBrush="{StaticResource BorderColor}"
                                 Content="{x:Static p:Resources.add_users_from_file}"
                                 />
-                            
+
                         </Grid>
                     </Grid>
                 </TabItem>
@@ -313,7 +318,7 @@
 
                         <DataGrid 
                             Name="dgClasses" 
-                            VerticalScrollBarVisibility="Visible"
+                            VerticalScrollBarVisibility="Auto"
                             ColumnWidth="*"
                             Margin="1"
                             Background="#FFFFFF"
@@ -330,6 +335,12 @@
                             RowEditEnding="dataGrid_RowEditEnding"  
                             CellEditEnding="dataGrid_CellEditEnding"
                             >
+                            <DataGrid.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#F0F0f0"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#F0F0F0"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black"/>
+                            </DataGrid.Resources>
                             <DataGrid.CellStyle>
                                 <Style TargetType="{x:Type DataGridCell}">
                                     <Setter Property="Template">
@@ -348,7 +359,7 @@
                                     <DataGridTemplateColumn.CellTemplate >
                                         <DataTemplate>
                                             <TextBlock 
-                                                Padding="2, 0, 2, 0"
+                                                Padding="2"
                                                 Background="Transparent"
                                                 Text="{Binding Name}"
                                                 />
@@ -365,6 +376,7 @@
                                                 Background="{StaticResource AUU_Blue}"
                                                 Foreground="White"
                                                 FontFamily="Roboto"
+                                                Height="20"
                                                 Click="button_Click"
                                                 />
                                         </DataTemplate>
@@ -442,22 +454,220 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Border BorderBrush="{StaticResource BorderColor}"
-                                BorderThickness="1"
-                                Background="LightGray"
-                                CornerRadius="1">
-                            <ScrollViewer>
-                                <Image 
-                                    Name="imgBase64"
-                                    Margin="10"
-                                    Width="auto"
-                                    Height="auto"
-                                    VerticalAlignment="Top"
-                                    HorizontalAlignment="Left"
-                                    Stretch="None"
-                                    />
-                            </ScrollViewer>
-                        </Border>
+                        <DataGrid 
+                            Name="dgTerms" 
+                            VerticalScrollBarVisibility="Auto"
+                            EnableColumnVirtualization = "True"
+                            EnableRowVirtualization = "True"
+                            Margin="1"
+                            Background="#FFFFFF"
+                            BorderBrush="{StaticResource BorderColor}"
+                            BorderThickness="1"
+                            AutoGenerateColumns="False"    
+                            CanUserReorderColumns="False"    
+                            CanUserResizeColumns="False"    
+                            CanUserResizeRows="False"    
+                            CanUserSortColumns="False"   
+                            CanUserAddRows="False"
+                            RowHeaderWidth="0"
+                            SelectionMode="Single"
+                            RowEditEnding="dataGrid_RowEditEnding"  
+                            CellEditEnding="dataGrid_CellEditEnding"
+                            >
+                            <DataGrid.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#F0F0f0"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#F0F0F0"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black"/>
+                            </DataGrid.Resources>
+                            <DataGrid.CellStyle>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                                <Grid Background="{TemplateBinding Background}">
+                                                    <ContentPresenter VerticalAlignment="Center" />
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGrid.CellStyle>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" SortMemberPath="Name" Header="{x:Static p:Resources.name}" CanUserSort="true">
+                                    <DataGridTemplateColumn.CellTemplate >
+                                        <DataTemplate>
+                                            <TextBlock 
+                                                Padding="2"
+                                                Background="Transparent"
+                                                Text="{Binding Name}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                    <DataGridTemplateColumn.CellEditingTemplate >
+                                        <DataTemplate>
+                                            <TextBox 
+                                                BorderBrush="Transparent"
+                                                Padding="2"
+                                                BorderThickness="0"
+                                                Background="Transparent"
+                                                Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="90" SortMemberPath="MaterialsCount" Header="{x:Static p:Resources.definitions}" CanUserSort="true">
+                                    <DataGridTemplateColumn.CellTemplate >
+                                        <DataTemplate>
+                                            <TextBlock 
+                                                Padding="2"
+                                                Background="Transparent"
+                                                Text="{Binding MaterialsCount}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="90" SortMemberPath="ExamplesCount" Header="{x:Static p:Resources.examples}" CanUserSort="true">
+                                    <DataGridTemplateColumn.CellTemplate >
+                                        <DataTemplate>
+                                            <TextBlock 
+                                                Padding="2"
+                                                Background="Transparent"
+                                                Text="{Binding ExamplesCount}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="90" SortMemberPath="AssignmentsCount" Header="{x:Static p:Resources.assignments}" CanUserSort="true">
+                                    <DataGridTemplateColumn.CellTemplate >
+                                        <DataTemplate>
+                                            <TextBlock 
+                                                Padding="2"
+                                                Background="Transparent"
+                                                Text="{Binding AssignmentsCount}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="80" Header="{x:Static p:Resources.edit}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button
+                                                Name="btnEdit"
+                                                Content="{x:Static p:Resources.edit}"
+                                                Style="{StaticResource styleButtonHover}"
+                                                Background="{StaticResource AUU_Blue}"
+                                                Foreground="White"
+                                                Height="20"
+                                                FontFamily="Roboto"
+                                                Click="button_Click"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="80" Header="{x:Static p:Resources.remove}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button
+                                                Name="btnRemove"
+                                                Content="{x:Static p:Resources.remove}"
+                                                Style="{StaticResource styleButtonHover}"
+                                                Background="{StaticResource AUU_Blue}"
+                                                Foreground="White"
+                                                Height="20"
+                                                FontFamily="Roboto"
+                                                Click="button_Click"
+                                                Loaded="control_Loaded"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <DataGrid 
+                            Name="dgTopics" 
+                            Visibility="Collapsed"
+                            VerticalScrollBarVisibility="Auto"
+                            Margin="1"
+                            Background="#FFFFFF"
+                            BorderBrush="{StaticResource BorderColor}"
+                            BorderThickness="1"
+                            AutoGenerateColumns="False"    
+                            CanUserReorderColumns="False"    
+                            CanUserResizeColumns="False"    
+                            CanUserResizeRows="False"    
+                            CanUserSortColumns="True"   
+                            CanUserAddRows="False"
+                            RowHeaderWidth="0"
+                            SelectionMode="Single"
+                            >
+                            <DataGrid.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#F0F0f0"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#F0F0F0"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black"/>
+                            </DataGrid.Resources>
+                            <DataGrid.CellStyle>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                                <Grid Background="{TemplateBinding Background}">
+                                                    <ContentPresenter VerticalAlignment="Center" />
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGrid.CellStyle>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" SortMemberPath="Name" Header="{x:Static p:Resources.name}" CanUserSort="true">
+                                    <DataGridTemplateColumn.CellTemplate >
+                                        <DataTemplate>
+                                            <TextBlock 
+                                                Padding="2"
+                                                Background="Transparent"
+                                                Text="{Binding Name}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="80" Header="{x:Static p:Resources.edit}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button
+                                                Name="btnEdit"
+                                                Content="{x:Static p:Resources.edit}"
+                                                Style="{StaticResource styleButtonHover}"
+                                                Background="{StaticResource AUU_Blue}"
+                                                Foreground="White"
+                                                Height="20"
+                                                FontFamily="Roboto"
+                                                Click="button_Click"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="80" Header="{x:Static p:Resources.remove}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button
+                                                Name="btnRemove"
+                                                Content="{x:Static p:Resources.remove}"
+                                                Style="{StaticResource styleButtonHover}"
+                                                Background="{StaticResource AUU_Blue}"
+                                                Foreground="White"
+                                                Height="20"
+                                                FontFamily="Roboto"
+                                                Click="button_Click"
+                                                Loaded="control_Loaded"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
 
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
@@ -465,35 +675,46 @@
                                 <RowDefinition Height="35"/>
                                 <RowDefinition Height="35"/>
                             </Grid.RowDefinitions>
-                            
+
+                            <ComboBox
+                                Name="cbbTopics"
+                                Tag="Select topic"
+                                Margin="1"
+                                FontFamily="Roboto"
+                                FontSize="16"
+                                Foreground="White"
+                                BorderThickness="0, 1, 1, 1"
+                                Style="{StaticResource styleComboBox}"
+                                BorderBrush="{StaticResource BorderColor}"
+                                Background="{StaticResource AUU_Blue}"
+                                />
+
                             <Button
-                                Margin="2, 0, 0, 1"
-                                Name="btnConvertMaterial"  
+                                Name="btnNewTopic"  
                                 Background="{StaticResource AUU_Blue}"
                                 Style="{StaticResource styleButtonHover}"
                                 Foreground="#FFFFFF"
-                                FontSize="14"
-                                BorderBrush="{StaticResource BorderColor}"
-                                Content="{x:Static p:Resources.convert_material}"
-                                />
-
-                            <TextBox
-                                Name="tbBase64Image"  
+                                FontSize="13"
+                                Margin="1"
                                 Grid.Row="1"
-                                Style="{StaticResource styleWaterMark}"
-                                Tag="{x:Static p:Resources.insert_image}"
-                                VerticalContentAlignment="Center"
-                                Padding="5,2.5,5,2.5"
-                                BorderBrush="#000000"
-                                BorderThickness="1"
-                                Margin="2, 1, 0, 1"
-                                TextWrapping="Wrap"                
+                                BorderBrush="{StaticResource BorderColor}"
+                                Content="{x:Static p:Resources.new_topic}"
                                 />
 
-
-
+                            <Button
+                                Name="btnNewTerm"  
+                                Background="{StaticResource AUU_Blue}"
+                                Style="{StaticResource styleButtonHover}"
+                                Foreground="#FFFFFF"
+                                FontSize="13"
+                                Margin="1"
+                                Grid.Row="2"
+                                BorderBrush="{StaticResource BorderColor}"
+                                Content="{x:Static p:Resources.new_term}"
+                                />
 
                         </Grid>
+
                     </Grid>
 
                 </TabItem>

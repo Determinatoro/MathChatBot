@@ -23,7 +23,20 @@ namespace MathChatBot
         //*************************************************/
         #region Properties
 
-        public User User { get; set; }
+        private User _user;
+
+        public User User
+        {
+            get { return _user; }
+            set
+            {
+                _user = value;
+
+                if (MathChatBotHelper != null)
+                    MathChatBotHelper.User = _user;
+            }
+        }
+
         private SplashScreenWindow SplashScreenWindow { get; set; }
         private MathChatBotHelper MathChatBotHelper { get; set; }
 
@@ -65,9 +78,6 @@ namespace MathChatBot
                 {
                     MathChatBotHelper.WriteWelcome();
                     lbChat.ItemsSource = MathChatBotHelper.Messages;
-
-                    // CollectionChanged events
-                    MathChatBotHelper.Messages.CollectionChanged += Messages_CollectionChanged;
 
                     // Close splash screen
                     SplashScreenWindow.Close();
@@ -118,6 +128,7 @@ namespace MathChatBot
                 }
 
                 Show();
+                CustomDialog.Dismiss();
             }
             else
                 Close();
@@ -158,8 +169,14 @@ namespace MathChatBot
                 // Admin controls
                 case nameof(btnAdminControls):
                     {
-                        var adminControlsWindow = new AdminControlsWindow(User);
-                        adminControlsWindow.ShowDialog();
+                        var adminControlsWindow = new AdminControlsWindow();
+                        IsEnabled = false;
+                        adminControlsWindow.Closing += (s, a) =>
+                        {
+                            DatabaseUtility.RefreshEntity();
+                            IsEnabled = true;
+                        };
+                        adminControlsWindow.Show();
                     }
                     break;
                 // Log out
@@ -173,7 +190,13 @@ namespace MathChatBot
                 case nameof(btnSeeRequests):
                     {
                         HelpRequestsWindow helpRequestsWindow = new HelpRequestsWindow(User);
-                        helpRequestsWindow.ShowDialog();
+                        IsEnabled = false;
+                        helpRequestsWindow.Closing += (s, a) =>
+                        {
+                            DatabaseUtility.RefreshEntity();
+                            IsEnabled = true;
+                        };
+                        helpRequestsWindow.Show();
                     }
                     break;
             }
@@ -186,32 +209,7 @@ namespace MathChatBot
 
             MessageObject message = (MessageObject)btn.DataContext;
 
-            string content = btn.Content.ToString();
-
-            if (content == Properties.Resources.see_example)
-            {
-                MathChatBotHelper.SeeExample(message);
-            }
-            else if (content == Properties.Resources.see_terms)
-            {
-                MathChatBotHelper.SeeTerms(message);
-            }
-            else if (content == Properties.Resources.did_not_help || content == Properties.Resources.need_help)
-            {
-                MathChatBotHelper.DidNotHelp(User, message);
-            }
-            else if (content == Properties.Resources.see_definition)
-            {
-                MathChatBotHelper.SeeDefinition(message);
-            }
-            else if (content == Properties.Resources.see_assignments)
-            {
-                MathChatBotHelper.SeeAssignments(message);
-            }
-            else if (content == Properties.Resources.see_answers)
-            {
-                MathChatBotHelper.SeeAnswers(message);
-            }
+            MathChatBotHelper.RunCommand(btn.Content.ToString());
         }
 
         // ScrollViewer - OnPreviewMouseWheel
@@ -220,12 +218,6 @@ namespace MathChatBot
             var scv = (ScrollViewer)sender;
             scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
             e.Handled = true;
-        }
-
-        // MathChatBotHelper.Messages - CollectionChanged
-        private void Messages_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            lbChat.Items.Refresh();
         }
 
         // ListBox.ItemContainerGenerator - StatusChanged

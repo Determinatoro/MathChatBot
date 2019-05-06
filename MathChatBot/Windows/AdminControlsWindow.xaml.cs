@@ -3,7 +3,7 @@ using MathChatBot.Utilities;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -26,7 +26,10 @@ namespace MathChatBot
         private User User { get; set; }
         private List<User> Users { get; set; }
         public List<Class> Classes { get; set; }
-        private MathChatBotEntities MathChatBotEntities { get; set; }
+        public List<Topic> Topics { get; set; }
+        public List<Term> Terms { get; set; }
+
+        private MathChatBotEntities Entity { get { return DatabaseUtility.Entity; } }
 
         #endregion
 
@@ -35,37 +38,72 @@ namespace MathChatBot
         /****************************************************************/
         #region Constructor
 
-        public AdminControlsWindow(User user)
+        public AdminControlsWindow()
         {
             InitializeComponent();
 
-            // Get entity
-            MathChatBotEntities = DatabaseUtility.GetEntity();
-            // Get users
-            GetUsers();
-            // Get classes
-            GetClasses();
+            // Get topics
+            var topics = Entity.Topics.Select(x => x.Name).ToList();
+            // Insert a selection for all topics
+            topics.Insert(0, Properties.Resources.all_topics);
+            cbbTopics.ItemsSource = topics;
+            cbbTopics.SelectedIndex = 0;
 
             // Click events
             btnNewUser.Click += button_Click;
             btnAddUsersFromFile.Click += button_Click;
-            btnConvertMaterial.Click += button_Click;
+            btnNewTopic.Click += button_Click;
+            btnNewTerm.Click += button_Click;
 
             // TextChanged events
             tbSearchForUsers.TextChanged += textBox_TextChanged;
             tbSearchForClasses.TextChanged += textBox_TextChanged;
-            tbBase64Image.TextChanged += textBox_TextChanged;
+
+            // SelectionChanged events
+            cbbTopics.SelectionChanged += control_SelectionChanged;
 
             // Setup top border header
             this.SetupBorderHeader(Properties.Resources.admin_controls_title);
+
+            Loaded += window_Loaded;
         }
-        
+
+        private void window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Get users
+            GetUsers();
+            // Get classes
+            GetClasses();
+            // Get topics
+            GetTopics();
+        }
+
+        private void control_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+
+            switch (element.Name)
+            {
+                case nameof(cbbTopics):
+                    {
+                        var selectedItem = cbbTopics.SelectedItem.ToString();
+                        CustomDialog.ShowProgress(Properties.Resources.retrieving_data_please_wait);
+
+                        if (selectedItem == Properties.Resources.all_topics)
+                            GetTopics();
+                        else
+                            GetTerms(selectedItem);
+                        break;
+                    }
+            }
+        }
+
         #endregion
 
         /****************************************************************/
-        // FUNCTIONS
+        // METHODS
         /****************************************************************/
-        #region Functions
+        #region Methods
 
         /// <summary>
         /// Get users to show in the datagrid
@@ -73,7 +111,7 @@ namespace MathChatBot
         private void GetUsers()
         {
             // Get users
-            Users = MathChatBotEntities.Users.ToList();
+            Users = Entity.Users.ToList();
             // Order users
             Users = Users.OrderBy(x => x.FirstName,
                 Comparer<string>.Create((x, y) => string.Compare(x, y, StringComparison.OrdinalIgnoreCase)))
@@ -92,13 +130,53 @@ namespace MathChatBot
         private void GetClasses()
         {
             // Get classes
-            Classes = MathChatBotEntities.Classes.ToList();
+            Classes = Entity.Classes.ToList();
             // Order classes
             Classes = Classes.OrderBy(x => x.Name,
                 Comparer<string>.Create((x, y) => string.Compare(x, y, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             dgClasses.ItemsSource = Classes;
+        }
+
+        /// <summary>
+        /// Get topics to show in the datagrid
+        /// </summary>
+        private void GetTopics()
+        {
+            this.StartThread(() =>
+            {
+                Topics = DatabaseUtility.Entity.Topics.OrderBy(x => x.Name).ToList();
+
+                this.RunOnUIThread(() =>
+                {
+                    if (Topics.Count == 0)
+                        CustomDialog.Dismiss();
+                    dgTopics.ItemsSource = Topics;
+                    dgTopics.Visibility = Visibility.Visible;
+                    dgTerms.Visibility = Visibility.Collapsed;
+                });
+            });
+        }
+
+        /// <summary>
+        /// Get topics to show in the datagrid
+        /// </summary>
+        private void GetTerms(string topicName)
+        {
+            this.StartThread(() =>
+            {
+                Terms = DatabaseUtility.GetTermInformations(topicName);
+
+                this.RunOnUIThread(() =>
+                {
+                    if (!Terms.Any())
+                        CustomDialog.Dismiss();
+                    dgTerms.ItemsSource = Terms;
+                    dgTopics.Visibility = Visibility.Collapsed;
+                    dgTerms.Visibility = Visibility.Visible;
+                });
+            });
         }
 
         /// <summary>
@@ -148,20 +226,20 @@ namespace MathChatBot
                         continue;
 
                     // Add roles for the user
-                    if (dictionary[nameof(MathChatBotEntities.Roles)] != null)
+                    if (dictionary[nameof(Entity.Roles)] != null)
                     {
                         // Get roles from file entry
-                        var roles = Regex.Split(dictionary[nameof(MathChatBotEntities.Roles)], ",");
+                        var roles = Regex.Split(dictionary[nameof(Entity.Roles)], ",");
                         // Add roles for the user
                         if (!DatabaseUtility.AssignRolesByName(user, roles))
                             break;
                     }
 
                     // Add user to classes
-                    if (dictionary[nameof(MathChatBotEntities.Classes)] != null)
+                    if (dictionary[nameof(Entity.Classes)] != null)
                     {
                         // Get roles from file entry
-                        var classes = Regex.Split(dictionary[nameof(MathChatBotEntities.Classes)], ",");
+                        var classes = Regex.Split(dictionary[nameof(Entity.Classes)], ",");
                         // Add roles for the user
                         if (!DatabaseUtility.AddToClassesByName(user, classes))
                             break;
@@ -239,12 +317,6 @@ namespace MathChatBot
 
                         break;
                     }
-                case nameof(tbBase64Image):
-                    {
-                        var image = Utility.Base64ToImage(tbBase64Image.Text);
-                        imgBase64.Source = image;
-                        break;
-                    }
             }
         }
 
@@ -258,7 +330,7 @@ namespace MathChatBot
                 // New user
                 case nameof(btnNewUser):
                     {
-                        InputWindow inputWindow = new InputWindow(windowType: WindowTypes.NewUser);
+                        InputWindow inputWindow = new InputWindow(WindowTypes.NewUser);
                         // Closing event
                         inputWindow.Closing += window_Closing;
                         // Show the new user window
@@ -280,25 +352,23 @@ namespace MathChatBot
 
                         break;
                     }
-                case nameof(btnConvertMaterial):
+                // New topic
+                case nameof(btnNewTopic):
                     {
-                        OpenFileDialog openFileDialog = new OpenFileDialog();
-                        openFileDialog.Filter = "PNG files (*.png)|*.png";
-                        openFileDialog.Multiselect = true;
+                        InputWindow inputWindow = new InputWindow(WindowTypes.NewTopic);
+                        inputWindow.Show();
+                        IsEnabled = false;
+                        inputWindow.Closing += window_Closing;
 
-                        if (openFileDialog.ShowDialog() == true)
-                        {
-                            var fileNames = openFileDialog.FileNames;
-
-                            foreach (var fileName in fileNames)
-                            {
-                                var dir = Path.GetDirectoryName(fileName);
-                                var tempFileName = Path.GetFileNameWithoutExtension(fileName) + ".txt";
-                                var tempFullPath = Path.Combine(dir, tempFileName);
-
-                                File.WriteAllText(tempFullPath, Utility.ImageToBase64(fileName));
-                            }
-                        }
+                        break;
+                    }
+                // New term
+                case nameof(btnNewTerm):
+                    {
+                        InputWindow inputWindow = new InputWindow(WindowTypes.NewTerm);
+                        inputWindow.Show();
+                        IsEnabled = false;
+                        inputWindow.Closing += window_Closing;
 
                         break;
                     }
@@ -308,22 +378,94 @@ namespace MathChatBot
                         // Get the associated object
                         User user = ((FrameworkElement)sender).DataContext as User;
                         // Open a window containing more information about the user
-                        var inputWindow = new InputWindow(user, WindowTypes.UserInformation);
+                        var inputWindow = new InputWindow(WindowTypes.UserInformation, user);
                         // Closing event
                         inputWindow.Closing += window_Closing;
                         // Show the information window
                         inputWindow.ShowDialog();
                         break;
                     }
+                // Class object "See users"
                 case "btnSeeUsers":
                     {
                         // Get the associated object
-                        Class clas = ((FrameworkElement)sender).DataContext as Class;
-                        var inputWindow = new InputWindow(clas);
+                        Class @class = ((FrameworkElement)sender).DataContext as Class;
+                        var inputWindow = new InputWindow(WindowTypes.ClassOverview, @class);
                         // Closing event
                         inputWindow.Closing += window_Closing;
                         // Show the information window
                         inputWindow.ShowDialog();
+                        break;
+                    }
+                // Term and Topic object "Edit"
+                case "btnEdit":
+                    {
+                        var listObject = btn.DataContext;
+
+                        var selectedItem = cbbTopics.SelectedItem.ToString();
+
+                        if (listObject is Topic)
+                        {
+                            Topic topic = listObject as Topic;
+                            this.ShowInputWindow(WindowTypes.SeeTopicDefinitions, topic, () =>
+                            {
+                                GetTopics();
+                            });
+                        }
+                        else if (listObject is Term)
+                        {
+                            Term term = listObject as Term;
+                            this.ShowInputWindow(WindowTypes.SeeTermDefinitionsAndAssignments, term, () =>
+                            {
+                                var topicName = cbbTopics.SelectedItem.ToString();
+                                GetTerms(topicName);
+                            });
+                        }
+
+                        break;
+                    }
+                // Term and Topic object "Remove"
+                case "btnRemove":
+                    {
+                        // Get the object the user want to remove
+                        var listObject = btn.DataContext;
+
+                        // Get combobox selection
+                        var selectedItem = cbbTopics.SelectedItem.ToString();
+
+                        if (listObject is Topic)
+                        {
+                            var topic = listObject as Topic;
+
+                            // Ask user if they want to remove topic
+                            if (CustomDialog.ShowQuestion(string.Format(Properties.Resources.do_you_want_to_delete, topic.Name), CustomDialogQuestionTypes.YesNo) == CustomDialogQuestionResult.Yes)
+                            {
+                                if (!DatabaseUtility.DeleteTopic(topic))
+                                    CustomDialog.Show(Properties.Resources.could_not_remove_the_topic);
+                                else
+                                {
+                                    CustomDialog.Show(string.Format(Properties.Resources.item_removed, topic.Name));
+                                    GetTopics();
+                                }
+                            }
+                        }
+                        else if (listObject is Term)
+                        {
+                            var term = listObject as Term;
+
+                            // Ask user if they want to remove term
+                            if (CustomDialog.ShowQuestion(string.Format(Properties.Resources.do_you_want_to_delete, term.Name), CustomDialogQuestionTypes.YesNo) == CustomDialogQuestionResult.Yes)
+                            {
+                                if (!DatabaseUtility.DeleteTerm(term))
+                                    CustomDialog.Show(Properties.Resources.could_not_remove_the_term);
+                                else
+                                {
+                                    CustomDialog.Show(string.Format(Properties.Resources.item_removed, term.Name));
+                                    GetTerms(selectedItem);
+                                }
+                            }
+                        }
+
                         break;
                     }
 
@@ -333,8 +475,17 @@ namespace MathChatBot
         // Window - Closing
         private void window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            IsEnabled = true;
+            DatabaseUtility.RefreshEntity();
+
             GetUsers();
             GetClasses();
+
+            var selectedTopic = cbbTopics.SelectedItem.ToString();
+            if (selectedTopic == Properties.Resources.all_topics)
+                GetTopics();
+            else
+                GetTerms(selectedTopic);
         }
 
         // DataGrid - RowEditEnding
@@ -342,18 +493,25 @@ namespace MathChatBot
         {
             try
             {
-                MathChatBotEntities.SaveChanges();
+                Entity.SaveChanges();
             }
-            catch (Exception mes)
-            {
-                CustomDialog.Show(mes.Message);
-            }
+            catch { }
         }
 
         // DataGrid - CellEditEnding
         private void dataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-            var flag = MathChatBotEntities.SaveChanges();
+            try
+            {
+                Entity.SaveChanges();
+            }
+            catch { }
+        }
+
+        // Any - Loaded
+        private void control_Loaded(object sender, RoutedEventArgs e)
+        {
+            CustomDialog.Dismiss();
         }
 
         #endregion

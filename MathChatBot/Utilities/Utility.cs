@@ -44,7 +44,7 @@ namespace MathChatBot.Utilities
                 bi.EndInit();
                 return bi;
             }
-            catch (Exception mes)
+            catch 
             {
                 return null;
             }
@@ -103,6 +103,14 @@ namespace MathChatBot.Utilities
             return (T)Enum.Parse(typeof(T), value, true);
         }
 
+        public static string GetName<T>(this T @enum)
+        {
+            if (!typeof(T).IsEnum)
+                return null;
+            var temp = @enum as Enum;
+            return temp.ToString();
+        }
+
         /// <summary>
         /// A methpod that replaces words with other words, this function ignores case.
         /// </summary>
@@ -144,12 +152,22 @@ namespace MathChatBot.Utilities
                 element.RemoveHandler(routedEvent, routedEventHandler.Handler);
         }
 
+        public static void StartThread(this Window window, Action action)
+        {
+            new Thread(new ThreadStart(action)).Start();
+        }
+
         /// <summary>
         /// Run code on UI thread
         /// </summary>
         /// <param name="window">The window who has to run something on the UI thread</param>
         /// <param name="action">The action to invike</param>
         public static void RunOnUIThread(this Window window, Action action)
+        {
+            RunOnUIThread(action);
+        }
+
+        public static void RunOnUIThread(Action action)
         {
             // Are we on the UI thread
             if (Thread.CurrentThread == Application.Current.Dispatcher.Thread)

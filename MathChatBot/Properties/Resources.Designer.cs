@@ -79,11 +79,29 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string add {
+            get {
+                return ResourceManager.GetString("add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add users from file.
         /// </summary>
         public static string add_users_from_file {
             get {
                 return ResourceManager.GetString("add_users_from_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - Add Users to Class.
+        /// </summary>
+        public static string add_users_to_class {
+            get {
+                return ResourceManager.GetString("add_users_to_class", resourceCulture);
             }
         }
         
@@ -124,6 +142,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to and.
+        /// </summary>
+        public static string and {
+            get {
+                return ResourceManager.GetString("and", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Any news.
         /// </summary>
         public static string any_news {
@@ -133,7 +160,7 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Two students were arrested this morning for trying to smuggle 20 Gb of memes into Sweden. Both students are claiming they were only for “personal use”..
+        ///   Looks up a localized string similar to Two students were arrested this morning for trying to smuggle 20 GB of memes into Sweden. Both students are claiming they were only for “personal use”..
         /// </summary>
         public static string any_news_response {
             get {
@@ -160,11 +187,38 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Assignment no..
+        /// </summary>
+        public static string assignment_no {
+            get {
+                return ResourceManager.GetString("assignment_no", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assignments.
+        /// </summary>
+        public static string assignments {
+            get {
+                return ResourceManager.GetString("assignments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string cancel {
             get {
                 return ResourceManager.GetString("cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - Class Overview.
+        /// </summary>
+        public static string class_overview {
+            get {
+                return ResourceManager.GetString("class_overview", resourceCulture);
             }
         }
         
@@ -187,6 +241,24 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to clear result.
+        /// </summary>
+        public static string clear_result {
+            get {
+                return ResourceManager.GetString("clear_result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string close {
+            get {
+                return ResourceManager.GetString("close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Convert material.
         /// </summary>
         public static string convert_material {
@@ -196,11 +268,56 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not add the term.
+        /// </summary>
+        public static string could_not_add_the_term {
+            get {
+                return ResourceManager.GetString("could_not_add_the_term", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not add the topic.
+        /// </summary>
+        public static string could_not_add_the_topic {
+            get {
+                return ResourceManager.GetString("could_not_add_the_topic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not make a help request..
         /// </summary>
         public static string could_not_make_a_help_request {
             get {
                 return ResourceManager.GetString("could_not_make_a_help_request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not remove the definition. It still has some associations to other tables in the database..
+        /// </summary>
+        public static string could_not_remove_definition {
+            get {
+                return ResourceManager.GetString("could_not_remove_definition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not remove the term. It still has some associations to other tables in the database..
+        /// </summary>
+        public static string could_not_remove_the_term {
+            get {
+                return ResourceManager.GetString("could_not_remove_the_term", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not remove the topic. It still has some associations to other tables in the database..
+        /// </summary>
+        public static string could_not_remove_the_topic {
+            get {
+                return ResourceManager.GetString("could_not_remove_the_topic", resourceCulture);
             }
         }
         
@@ -235,11 +352,65 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Definitions.
+        /// </summary>
+        public static string definitions {
+            get {
+                return ResourceManager.GetString("definitions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - Definitions and Assignments.
+        /// </summary>
+        public static string defitions_and_assignments {
+            get {
+                return ResourceManager.GetString("defitions_and_assignments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Did not help?.
         /// </summary>
         public static string did_not_help {
             get {
                 return ResourceManager.GetString("did_not_help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to did not help.
+        /// </summary>
+        public static string did_not_help_command {
+            get {
+                return ResourceManager.GetString("did_not_help_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to divide.
+        /// </summary>
+        public static string divide {
+            get {
+                return ResourceManager.GetString("divide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to divide by.
+        /// </summary>
+        public static string divide_by {
+            get {
+                return ResourceManager.GetString("divide_by", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to delete {0}?.
+        /// </summary>
+        public static string do_you_want_to_delete {
+            get {
+                return ResourceManager.GetString("do_you_want_to_delete", resourceCulture);
             }
         }
         
@@ -267,6 +438,33 @@ namespace MathChatBot.Properties {
         public static string doing_setup_please_wait {
             get {
                 return ResourceManager.GetString("doing_setup_please_wait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Down.
+        /// </summary>
+        public static string down {
+            get {
+                return ResourceManager.GetString("down", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string edit {
+            get {
+                return ResourceManager.GetString("edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Examples.
+        /// </summary>
+        public static string examples {
+            get {
+                return ResourceManager.GetString("examples", resourceCulture);
             }
         }
         
@@ -422,11 +620,38 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ID.
+        /// </summary>
+        public static string id {
+            get {
+                return ResourceManager.GetString("id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Insert image....
         /// </summary>
         public static string insert_image {
             get {
                 return ResourceManager.GetString("insert_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It cannot be deleted because it is used in other tables.
+        /// </summary>
+        public static string it_cannot_be_deleted_because_it_is_used_in_other_tables {
+            get {
+                return ResourceManager.GetString("it_cannot_be_deleted_because_it_is_used_in_other_tables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} removed.
+        /// </summary>
+        public static string item_removed {
+            get {
+                return ResourceManager.GetString("item_removed", resourceCulture);
             }
         }
         
@@ -515,11 +740,47 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to minus.
+        /// </summary>
+        public static string minus {
+            get {
+                return ResourceManager.GetString("minus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to modulus.
+        /// </summary>
+        public static string modulus {
+            get {
+                return ResourceManager.GetString("modulus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to More.
         /// </summary>
         public static string more {
             get {
                 return ResourceManager.GetString("more", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to multiply.
+        /// </summary>
+        public static string multiply {
+            get {
+                return ResourceManager.GetString("multiply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to multiply by.
+        /// </summary>
+        public static string multiply_by {
+            get {
+                return ResourceManager.GetString("multiply_by", resourceCulture);
             }
         }
         
@@ -542,11 +803,38 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Need help.
+        /// </summary>
+        public static string need_help_command {
+            get {
+                return ResourceManager.GetString("need_help_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - New Assignment.
+        /// </summary>
+        public static string new_assignment {
+            get {
+                return ResourceManager.GetString("new_assignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New class.
         /// </summary>
         public static string new_class {
             get {
                 return ResourceManager.GetString("new_class", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New image.
+        /// </summary>
+        public static string new_image {
+            get {
+                return ResourceManager.GetString("new_image", resourceCulture);
             }
         }
         
@@ -569,6 +857,51 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New term.
+        /// </summary>
+        public static string new_term {
+            get {
+                return ResourceManager.GetString("new_term", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - New Term Definition.
+        /// </summary>
+        public static string new_term_definition {
+            get {
+                return ResourceManager.GetString("new_term_definition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - New Term Definition Example.
+        /// </summary>
+        public static string new_term_definition_example {
+            get {
+                return ResourceManager.GetString("new_term_definition_example", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New topic.
+        /// </summary>
+        public static string new_topic {
+            get {
+                return ResourceManager.GetString("new_topic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - New Topic Definition.
+        /// </summary>
+        public static string new_topic_definition {
+            get {
+                return ResourceManager.GetString("new_topic_definition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New user.
         /// </summary>
         public static string new_user {
@@ -587,6 +920,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        public static string no {
+            get {
+                return ResourceManager.GetString("no", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Number of help requests.
         /// </summary>
         public static string number_of_help_requests {
@@ -601,6 +943,60 @@ namespace MathChatBot.Properties {
         public static string ok {
             get {
                 return ResourceManager.GetString("ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Old image.
+        /// </summary>
+        public static string old_image {
+            get {
+                return ResourceManager.GetString("old_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overwrite.
+        /// </summary>
+        public static string overwrite {
+            get {
+                return ResourceManager.GetString("overwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - Overwrite Assignment.
+        /// </summary>
+        public static string overwrite_assignment {
+            get {
+                return ResourceManager.GetString("overwrite_assignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - Overwrite Term Definition.
+        /// </summary>
+        public static string overwrite_term_definition {
+            get {
+                return ResourceManager.GetString("overwrite_term_definition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - Overwrite Term Definition Example.
+        /// </summary>
+        public static string overwrite_term_definition_example {
+            get {
+                return ResourceManager.GetString("overwrite_term_definition_example", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - Overwrite Topic Definition.
+        /// </summary>
+        public static string overwrite_topic_definition {
+            get {
+                return ResourceManager.GetString("overwrite_topic_definition", resourceCulture);
             }
         }
         
@@ -628,6 +1024,15 @@ namespace MathChatBot.Properties {
         public static string please_enter_valid_input_in_functions {
             get {
                 return ResourceManager.GetString("please_enter_valid_input_in_functions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please fill out all fields.
+        /// </summary>
+        public static string please_fill_out_all_fields {
+            get {
+                return ResourceManager.GetString("please_fill_out_all_fields", resourceCulture);
             }
         }
         
@@ -668,6 +1073,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please select a topic, a term or an example before using this command..
+        /// </summary>
+        public static string please_select_a_topic_term_or_example_before_using_this_command {
+            get {
+                return ResourceManager.GetString("please_select_a_topic_term_or_example_before_using_this_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please select an assignment first before using this command..
         /// </summary>
         public static string please_select_an_assignment_first_before_using_this_command {
@@ -682,6 +1096,15 @@ namespace MathChatBot.Properties {
         public static string please_select_an_example_first_before_using_this_command {
             get {
                 return ResourceManager.GetString("please_select_an_example_first_before_using_this_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select an image.
+        /// </summary>
+        public static string please_select_an_image {
+            get {
+                return ResourceManager.GetString("please_select_an_image", resourceCulture);
             }
         }
         
@@ -715,6 +1138,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to plus.
+        /// </summary>
+        public static string plus {
+            get {
+                return ResourceManager.GetString("plus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Preparing MathChatBot.
         ///Please wait....
         /// </summary>
@@ -730,6 +1162,51 @@ namespace MathChatBot.Properties {
         public static string previous {
             get {
                 return ResourceManager.GetString("previous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        public static string remove {
+            get {
+                return ResourceManager.GetString("remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove assignment?.
+        /// </summary>
+        public static string remove_assignment {
+            get {
+                return ResourceManager.GetString("remove_assignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove definition?.
+        /// </summary>
+        public static string remove_definition {
+            get {
+                return ResourceManager.GetString("remove_definition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove example?.
+        /// </summary>
+        public static string remove_example {
+            get {
+                return ResourceManager.GetString("remove_example", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove user from class.
+        /// </summary>
+        public static string remove_user_from_class {
+            get {
+                return ResourceManager.GetString("remove_user_from_class", resourceCulture);
             }
         }
         
@@ -806,6 +1283,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to See.
+        /// </summary>
+        public static string see {
+            get {
+                return ResourceManager.GetString("see", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to See answers.
         /// </summary>
         public static string see_answers {
@@ -860,6 +1346,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to See Image.
+        /// </summary>
+        public static string see_image {
+            get {
+                return ResourceManager.GetString("see_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to See requests.
         /// </summary>
         public static string see_requests {
@@ -905,11 +1400,56 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select assignment.
+        /// </summary>
+        public static string select_assignment {
+            get {
+                return ResourceManager.GetString("select_assignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select image.
+        /// </summary>
+        public static string select_image {
+            get {
+                return ResourceManager.GetString("select_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select material.
+        /// </summary>
+        public static string select_material {
+            get {
+                return ResourceManager.GetString("select_material", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show order ID.
+        /// </summary>
+        public static string show_order_id {
+            get {
+                return ResourceManager.GetString("show_order_id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Something went wrong when saving changes to the database..
         /// </summary>
         public static string something_went_wrong_when_saving_changes_to_the_database {
             get {
                 return ResourceManager.GetString("something_went_wrong_when_saving_changes_to_the_database", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to substract.
+        /// </summary>
+        public static string substract {
+            get {
+                return ResourceManager.GetString("substract", resourceCulture);
             }
         }
         
@@ -950,6 +1490,24 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} - Term Definition Examples.
+        /// </summary>
+        public static string term_defition_examples {
+            get {
+                return ResourceManager.GetString("term_defition_examples", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Term name.
+        /// </summary>
+        public static string term_name {
+            get {
+                return ResourceManager.GetString("term_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Terms.
         /// </summary>
         public static string terms {
@@ -986,11 +1544,11 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are no assignments for this term..
+        ///   Looks up a localized string similar to There are no assignments for this..
         /// </summary>
-        public static string there_are_no_assignments_for_this_term {
+        public static string there_are_no_assignments_for_this {
             get {
-                return ResourceManager.GetString("there_are_no_assignments_for_this_term", resourceCulture);
+                return ResourceManager.GetString("there_are_no_assignments_for_this", resourceCulture);
             }
         }
         
@@ -1053,7 +1611,7 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This is the answers for the assignment:
+        ///   Looks up a localized string similar to This is the answer(s) for the assignment:
         ///
         ///{0}.
         /// </summary>
@@ -1073,7 +1631,7 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This is the definition I found for {0}..
+        ///   Looks up a localized string similar to This is the definition(s) I found for {0}..
         /// </summary>
         public static string this_is_what_i_found_about {
             get {
@@ -1091,11 +1649,38 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to times.
+        /// </summary>
+        public static string times {
+            get {
+                return ResourceManager.GetString("times", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Topic.
         /// </summary>
         public static string topic {
             get {
                 return ResourceManager.GetString("topic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - Topic Definitions.
+        /// </summary>
+        public static string topic_definitions {
+            get {
+                return ResourceManager.GetString("topic_definitions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Topic name.
+        /// </summary>
+        public static string topic_name {
+            get {
+                return ResourceManager.GetString("topic_name", resourceCulture);
             }
         }
         
@@ -1109,11 +1694,29 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Up.
+        /// </summary>
+        public static string up {
+            get {
+                return ResourceManager.GetString("up", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User Information.
         /// </summary>
         public static string user_information {
             get {
                 return ResourceManager.GetString("user_information", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User is deactivated. Contact your administrator to get more info..
+        /// </summary>
+        public static string user_is_deactivated_contact_your_administrator {
+            get {
+                return ResourceManager.GetString("user_is_deactivated_contact_your_administrator", resourceCulture);
             }
         }
         
@@ -1132,6 +1735,15 @@ namespace MathChatBot.Properties {
         public static string users {
             get {
                 return ResourceManager.GetString("users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string value {
+            get {
+                return ResourceManager.GetString("value", resourceCulture);
             }
         }
         
@@ -1192,6 +1804,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to What you searched for is both a topic and a term which one do you want?.
+        /// </summary>
+        public static string what_you_searched_for_is_both_a_topic_and_a_term_which_one_do_you_want {
+            get {
+                return ResourceManager.GetString("what_you_searched_for_is_both_a_topic_and_a_term_which_one_do_you_want", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Who is your creator.
         /// </summary>
         public static string who_is_your_creator {
@@ -1201,7 +1822,7 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to My creators are a group og people from Aalborg University..
+        ///   Looks up a localized string similar to My creators are a group of people from Aalborg University..
         /// </summary>
         public static string who_is_your_creator_response {
             get {
@@ -1215,6 +1836,24 @@ namespace MathChatBot.Properties {
         public static string wrong_username_or_password {
             get {
                 return ResourceManager.GetString("wrong_username_or_password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        public static string yes {
+            get {
+                return ResourceManager.GetString("yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can only use this command when having a selection..
+        /// </summary>
+        public static string you_can_only_use_this_command_when_having_a_selection {
+            get {
+                return ResourceManager.GetString("you_can_only_use_this_command_when_having_a_selection", resourceCulture);
             }
         }
         

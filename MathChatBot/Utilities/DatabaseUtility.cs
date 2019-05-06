@@ -32,12 +32,24 @@ namespace MathChatBot.Utilities
         private static MathChatBotEntities _mathChatBotEntities;
         private const string PassPhrase = "MathChatBot";
 
-        public static MathChatBotEntities GetEntity()
+        public static void RefreshEntity()
         {
-            if (_mathChatBotEntities == null)
-                _mathChatBotEntities = new MathChatBotEntities();
+            if (_mathChatBotEntities != null)
+            {
+                _mathChatBotEntities.Dispose();
+                _mathChatBotEntities = null;
+            }
+        }
 
-            return _mathChatBotEntities;
+        public static MathChatBotEntities Entity
+        {
+            get
+            {
+                if (_mathChatBotEntities == null)
+                    _mathChatBotEntities = new MathChatBotEntities();
+
+                return _mathChatBotEntities;
+            }
         }
 
         #endregion
@@ -58,8 +70,6 @@ namespace MathChatBot.Utilities
             if (firstName.Length < 2 || lastName.Length < 2)
                 return null;
 
-            var entities = GetEntity();
-
             Random random = new Random();
             var number = 0;
             var username = string.Empty;
@@ -72,7 +82,7 @@ namespace MathChatBot.Utilities
                 username = firstName.ToLower().Substring(0, 2) + lastName.ToLower().Substring(0, 2) + number.ToString();
             }
             // Retry if the username already exists
-            while (entities.Users.Any(x => x.Username == username));
+            while (Entity.Users.Any(x => x.Username == username));
 
             return username;
         }
@@ -98,14 +108,15 @@ namespace MathChatBot.Utilities
         /// <returns>A response with a success flag and the user object</returns>
         public static LoginResponse CheckLogin(string username, string password)
         {
-            var entities = GetEntity();
-
             // Get user
-            var user = entities.GetUserFromUsername(username);
+            var user = Entity.GetUserFromUsername(username);
 
             // User not found
             if (user == null)
                 return new LoginResponse(false, null);
+
+            if (!user.IsActivated)
+                return new LoginResponse(false, user);
 
             var decryptedPassword = EncryptUtility.Decrypt(user.Password, PassPhrase);
             if (decryptedPassword != password)
@@ -121,20 +132,14 @@ namespace MathChatBot.Utilities
         /// <returns>A list with the user's roles</returns>
         public static List<RoleTypes> GetUserRoles(string username)
         {
-            var entities = GetEntity();
-
-            // Check if user exist in the database
-            if (!entities.Users.Any(x => x.Username == username))
-                return null;
-
             // Get user
-            var user = entities.Users.Where(x => x.Username == username).FirstOrDefault();
+            var user = Entity.GetUserFromUsername(username);
 
             // If the user is null return false
             if (user == null)
                 return null;
 
-            var roles = user.UserRoleRelations.Select(x => x.Role).Select(x => x.RoleType).ToList();
+            var roles = user.UserRoleRelations.Select(x => x.Role.RoleType).ToList();
 
             return roles;
         }
@@ -144,8 +149,7 @@ namespace MathChatBot.Utilities
         /// </summary> 
         public static List<Role> GetRolesList()
         {
-            var entities = GetEntity();
-            return entities.Roles.ToList();
+            return Entity.Roles.ToList();
         }
 
         /// <summary>
@@ -156,10 +160,8 @@ namespace MathChatBot.Utilities
         /// <returns></returns>
         public static List<Role> GetRolesListForUser(string username)
         {
-            var entities = GetEntity();
-
             // Get user
-            var user = entities.GetUserFromUsername(username);
+            var user = Entity.GetUserFromUsername(username);
 
             // If the user is null return null
             if (user == null)
@@ -168,7 +170,7 @@ namespace MathChatBot.Utilities
             // Get all the roles that the user is assigned
             var roles = GetUserRoles(username);
             // Get all the roles in the database
-            var allRoles = entities.Roles.ToList();
+            var allRoles = Entity.Roles.ToList();
 
             // Set a flag for each of the roles that the user is assigned
             foreach (var role in allRoles)
@@ -188,17 +190,15 @@ namespace MathChatBot.Utilities
         /// <returns>The user </returns>
         public static User CreateUser(User user)
         {
-            var entities = GetEntity();
-
             // Get user from database
-            User tempUser = entities.GetUserFromUsername(user.Username);
+            User tempUser = Entity.GetUserFromUsername(user.Username);
 
             // Return the current user if it already exists
             if (tempUser != null)
                 return tempUser;
 
             // Create a new user and add it to the database
-            tempUser = entities.Users.Add(new User()
+            tempUser = Entity.Users.Add(new User()
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -212,7 +212,7 @@ namespace MathChatBot.Utilities
                 return null;
 
             // Save changes
-            var flag = entities.SaveChanges();
+            var flag = Entity.SaveChanges();
             // If the flag is 1 return true
             if (flag == 1)
                 return tempUser;
@@ -239,10 +239,8 @@ namespace MathChatBot.Utilities
         /// <returns></returns>
         public static bool AddToClassesByName(string username, string[] classes)
         {
-            var entities = GetEntity();
-
             // Get user
-            var user = entities.GetUserFromUsername(username);
+            var user = Entity.GetUserFromUsername(username);
 
             // If the user is null return false
             if (user == null)
@@ -250,25 +248,25 @@ namespace MathChatBot.Utilities
 
             foreach (var @class in classes)
             {
-                var databaseClass = entities.Classes.FirstOrDefault(x => x.Name == @class);
+                var databaseClass = Entity.Classes.FirstOrDefault(x => x.Name == @class);
 
                 if (databaseClass == null)
                 {
-                    databaseClass = entities.Classes.Add(new Class()
+                    databaseClass = Entity.Classes.Add(new Class()
                     {
                         Name = @class
                     });
 
-                    var flag = entities.SaveChanges();
+                    var flag = Entity.SaveChanges();
                     if (flag != 1)
                         return false;
                 }
 
                 // Check if the class exist in the database and 
                 // the relation between the class and the user has not been made
-                if (databaseClass != null && !entities.UserClassRelations.Any(x => x.UserId == user.Id && x.ClassId == databaseClass.Id))
+                if (databaseClass != null && !Entity.UserClassRelations.Any(x => x.UserId == user.Id && x.ClassId == databaseClass.Id))
                 {
-                    entities.UserClassRelations.Add(new UserClassRelation()
+                    Entity.UserClassRelations.Add(new UserClassRelation()
                     {
                         UserId = user.Id,
                         ClassId = databaseClass.Id
@@ -276,7 +274,7 @@ namespace MathChatBot.Utilities
                 }
             }
 
-            entities.SaveChanges();
+            Entity.SaveChanges();
 
             return true;
         }
@@ -300,10 +298,8 @@ namespace MathChatBot.Utilities
         /// <returns></returns>
         public static bool AssignRolesByName(string username, string[] roles)
         {
-            var entities = GetEntity();
-
             // Get user
-            var user = entities.GetUserFromUsername(username);
+            var user = Entity.GetUserFromUsername(username);
 
             // If the user is null return false
             if (user == null)
@@ -312,12 +308,12 @@ namespace MathChatBot.Utilities
             foreach (var role in roles)
             {
                 // Get role from database
-                var databaseRole = entities.Roles.FirstOrDefault(x => x.Name == role);
+                var databaseRole = Entity.Roles.FirstOrDefault(x => x.Name == role);
 
                 // Check the role exists and the relation has not been made yet
-                if (databaseRole != null && !entities.UserRoleRelations.Any(x => x.UserId == user.Id && x.RoleId == databaseRole.Id))
+                if (databaseRole != null && !Entity.UserRoleRelations.Any(x => x.UserId == user.Id && x.RoleId == databaseRole.Id))
                 {
-                    entities.UserRoleRelations.Add(new UserRoleRelation()
+                    Entity.UserRoleRelations.Add(new UserRoleRelation()
                     {
                         UserId = user.Id,
                         RoleId = databaseRole.Id
@@ -325,7 +321,7 @@ namespace MathChatBot.Utilities
                 }
             }
 
-            entities.SaveChanges();
+            Entity.SaveChanges();
 
             return true;
         }
@@ -338,10 +334,8 @@ namespace MathChatBot.Utilities
         /// <returns></returns>
         public static bool ResetUserPassword(string newPassword, string username)
         {
-            var entities = GetEntity();
-
             // Get the user
-            var user = entities.GetUserFromUsername(username);
+            var user = Entity.GetUserFromUsername(username);
 
             // If the user is null return false
             if (user == null)
@@ -351,7 +345,7 @@ namespace MathChatBot.Utilities
             user.Password = EncryptUtility.Encrypt(newPassword, PassPhrase);
 
             // Save the changes
-            var flag = entities.SaveChanges();
+            var flag = Entity.SaveChanges();
 
             // If the flag is 1 return true
             if (flag == 1)
@@ -367,7 +361,7 @@ namespace MathChatBot.Utilities
         /// <returns>A list with all the term names</returns>
         public static List<string> GetTermNames(string topicName)
         {
-            return GetEntity().Terms
+            return Entity.Terms
                 .Where(x => x.Topic.Name == topicName)
                 .Select(x => x.Name)
                 .ToList();
@@ -379,7 +373,7 @@ namespace MathChatBot.Utilities
         /// <returns>A list with all the topic names</returns>
         public static List<string> GetTopicNames()
         {
-            return GetEntity().Topics
+            return Entity.Topics
                 .Select(x => x.Name)
                 .ToList();
         }
@@ -390,35 +384,273 @@ namespace MathChatBot.Utilities
         /// <param name="class">The class object</param>
         /// <param name="roleType">The specified role</param>
         /// <returns>A list with the users</returns>
-        public static List<User> GetUsersInClass(Class @class, RoleTypes roleType)
+        public static List<User> GetUsersInClass(Class @class, RoleTypes[] roleTypes, bool setStringRoles)
         {
-            return @class.UserClassRelations
-                .Select(x => x.User)
-                .Where(x => x.UserRoleRelations.Any(x2 => x2.Role.RoleType == roleType))
-                .OrderBy(x => x.Name)
-                .ToList();
+            PerformanceTester.StartMET("GetUsersInClass");
+
+            List<User> usersInClass = new List<User>();
+            // Role relations
+            var roleRelations = Entity.UserRoleRelations.ToList();
+
+            if (roleTypes != null)
+            {
+                var roles = roleTypes.Select(x => x.GetName()).ToList();
+                usersInClass = Entity.Users
+                    .Where(x => x.UserClassRelations.Any(x2 => x2.ClassId == @class.Id) && x.UserRoleRelations.Any(x2 => roles.Contains(x2.Role.Name)))
+                    .ToList();
+            }
+            else
+            {
+                usersInClass = Entity.Users
+                    .Where(x => x.UserClassRelations.Any(x2 => x2.ClassId == @class.Id))
+                    .ToList();
+            }
+
+            // Set string roles
+            if (setStringRoles)
+                usersInClass.ForEach(x => x.SetStringRole(roleRelations.Where(x2 => x2.UserId == x.Id).ToList()));
+
+            PerformanceTester.StopMET("GetUsersInClass");
+
+            return usersInClass.OrderBy(x => x.Name).ToList();
+        }
+
+        public static List<User> GetUsersWithHelpRequests(Class @class, string topicName = null)
+        {
+            PerformanceTester.StartMET("GetUsersWithHelpRequests");
+
+            List<User> users = null;
+            if (string.IsNullOrEmpty(topicName))
+            {
+                users = Entity.Users
+                    .Where(x => x.UserClassRelations.Any(x2 => x2.ClassId == @class.Id) && x.HelpRequests.Any())
+                    .ToList()
+                    .OrderBy(x => x.Name)
+                    .ToList();
+            }
+            else
+            {
+                users = Entity.Users
+                    .Where(x => x.UserClassRelations.Any(x2 => x2.ClassId == @class.Id) && x.HelpRequests.Any(x2 => x2.Term.Topic.Name == topicName))
+                    .ToList()
+                    .OrderBy(x => x.Name)
+                    .ToList();
+            }
+
+            PerformanceTester.StopMET("GetUsersWithHelpRequests");
+
+            return users;
+        }
+
+        public static List<IGrouping<Topic, HelpRequest>> GetHelpRequestsFromUsers(List<User> users, string topicName = null)
+        {
+            PerformanceTester.StartMET("GetHelpRequestsFromUsers");
+
+            var ids = users.Select(x2 => x2.Id).ToList();
+            var groups = Entity.HelpRequests.Where(x => ids.Contains(x.UserId) && (topicName == null || (x.Term.Topic.Name == topicName))).GroupBy(x => x.Term.Topic).ToList();
+
+            PerformanceTester.StopMET("GetHelpRequestsFromUsers");
+
+            return groups;
+        }
+
+        public static List<IGrouping<Topic, HelpRequest>> GetHelpRequestsFromUser(User user, string topicName = null)
+        {
+            PerformanceTester.StartMET("GetHelpRequestsFromUser");
+
+            var groups = user.HelpRequests.Where(x => topicName == null || (x.Term.Topic.Name == topicName)).GroupBy(x => x.Term.Topic).ToList();
+
+            PerformanceTester.StopMET("GetHelpRequestsFromUser");
+
+            return groups;
         }
 
         /// <summary>
-        /// Set get roles in a list representation of nouns
+        /// Get users not in class
         /// </summary>
-        /// <param name="list">The list of users</param>
-        public static void SetStringRolesForUsers(this List<User> list)
+        /// <param name="class">The class object</param>
+        /// <returns>A list of users</returns>
+        public static List<User> GetUsersNotInClass(Class @class)
         {
-            foreach (var user in list)
-            {
-                var roles = user.UserRoleRelations.Select(x => x.Role).ToList();
+            PerformanceTester.StartMET("GetUsersNotInClass");
 
-                if (roles == null)
+            var studentRole = RoleTypes.Student.GetName();
+            var teacherRole = RoleTypes.Teacher.GetName();
+
+            var users = Entity.Users.Where(x => x.UserClassRelations.All(x2 => x2.ClassId != @class.Id) &&
+                ((!x.UserClassRelations.Any() && x.UserRoleRelations.Any(x2 => x2.Role.Name == studentRole)) ||
+                x.UserRoleRelations.Any(x2 => x2.Role.Name == teacherRole))
+            ).ToList();
+
+            // Role relations
+            var roleRelations = Entity.UserRoleRelations.ToList();
+            // Set string roles
+            users.ForEach(x => x.SetStringRole(roleRelations.Where(x2 => x2.UserId == x.Id).ToList()));
+
+            PerformanceTester.StopMET("GetUsersNotInClass");
+
+            return users;
+        }
+
+        /// <summary>
+        /// Set string roles for all the users
+        /// </summary>
+        /// <param name="user">The user object</param>
+        /// <param name="userRoleRelations">The users relations</param>
+        public static void SetStringRole(this User user, List<UserRoleRelation> userRoleRelations)
+        {
+            var roles = userRoleRelations.Select(x => x.Role).ToList();
+            var names = roles.OrderBy(x => x.Name).Select(x => x.Name).ToList();
+            var strRoles = string.Join(", ", names);
+            user.Roles = strRoles;
+        }
+
+        /// <summary>
+        /// Get information about terms related to a given topic
+        /// </summary>
+        /// <param name="topicName">Name of the topic</param>
+        /// <returns>A list of terms</returns>
+        public static List<Term> GetTermInformations(string topicName)
+        {
+            PerformanceTester.StartMET("GetTermInformations");
+
+            var terms = Entity.Terms
+                .Where(x => x.Topic.Name == topicName)
+                .Select(x => new
                 {
-                    user.Roles = "";
-                    continue;
-                }
+                    Id = x.Id,
+                    Name = x.Name,
+                    Topic = x.Topic,
+                    Assignments = (List<Assignment>)x.Assignments,
+                    Materials = (List<Material>)x.Materials,
+                    TopicId = x.TopicId,
+                    HelpRequests = (List<HelpRequest>)x.HelpRequests,
+                    MaterialsCount = (int?)x.Materials.Count ?? 0,
+                    ExamplesCount = (int?)x.Materials.Sum(x2 => x2.MaterialExamples.Count) ?? 0,
+                    AssignmentsCount = (int?)x.Assignments.Count ?? 0
+                });
+            var list = terms.AsEnumerable().Select(x =>
+                 new Term
+                 {
+                     Id = x.Id,
+                     Name = x.Name,
+                     Topic = x.Topic,
+                     Assignments = x.Assignments,
+                     Materials = x.Materials,
+                     TopicId = x.TopicId,
+                     HelpRequests = x.HelpRequests,
+                     MaterialsCount = x.MaterialsCount,
+                     ExamplesCount = x.ExamplesCount,
+                     AssignmentsCount = x.AssignmentsCount
+                 }).ToList();
 
-                var names = roles.OrderBy(x => x.Name).Select(x => x.Name).ToList();
+            PerformanceTester.StopMET("GetTermInformations");
 
-                var strRoles = string.Join(", ", names);
-                user.Roles = strRoles;
+            return list;
+        }
+
+        /// <summary>
+        /// Add new topic to the database
+        /// </summary>
+        /// <param name="topicName">Name for the topic</param>
+        /// <returns>True if the topic is already in the database or it has been added else false</returns>
+        public static bool AddNewTopic(string topicName)
+        {
+            // Give a valid topic name
+            if (string.IsNullOrEmpty(topicName))
+                return false;
+
+            // Is the topic already in the database
+            if (Entity.Topics.Any(x => x.Name == topicName))
+                return true;
+
+            var topic = new Topic()
+            {
+                Name = topicName
+            };
+
+            Entity.Topics.Add(topic);
+            var flag = Entity.SaveChanges();
+            return flag == 1;
+        }
+
+        /// <summary>
+        /// Add new term to the database
+        /// </summary>
+        /// <param name="topic">The topic object</param>
+        /// <param name="termName">The name for the term</param>
+        /// <returns></returns>
+        public static bool AddNewTerm(Topic topic, string termName)
+        {
+            // Give a valid topic and term name
+            if (topic == null || string.IsNullOrEmpty(termName))
+                return false;
+
+            // Is the term already in the database for the selected topic
+            if (Entity.Terms.Any(x => x.Name == termName && x.Topic.Name == topic.Name))
+                return true;
+
+            var term = new Term()
+            {
+                Name = termName,
+                Topic = topic
+            };
+
+            Entity.Terms.Add(term);
+            var flag = Entity.SaveChanges();
+            return flag == 1;
+        }
+
+        /// <summary>
+        /// Delete a topic from the database
+        /// </summary>
+        /// <param name="topic">The topic object</param>
+        /// <returns>True if topic was deleted else false</returns>
+        public static bool DeleteTopic(Topic topic)
+        {
+            if (topic == null)
+                return false;
+
+            if (topic.Terms.Any() ||
+                topic.Materials.Any())
+                return false;
+
+            Entity.Entry(topic).State = System.Data.Entity.EntityState.Deleted;
+
+            try
+            {
+                return Entity.SaveChanges() == 1;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Delete term from the database
+        /// </summary>
+        /// <param name="term">The term object</param>
+        /// <returns>True if term was deleted else false</returns>
+        public static bool DeleteTerm(Term term)
+        {
+            if (term == null)
+                return false;
+
+            if (term.HelpRequests.Any() ||
+                term.Materials.Any() ||
+                term.Assignments.Any())
+                return false;
+
+            Entity.Entry(term).State = System.Data.Entity.EntityState.Deleted;
+
+            try
+            {
+                return Entity.SaveChanges() == 1;
+            }
+            catch
+            {
+                return false;
             }
         }
 

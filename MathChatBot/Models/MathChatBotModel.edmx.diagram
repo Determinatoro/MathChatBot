@@ -29,6 +29,7 @@
         <EntityTypeShape EntityType="MathChatBotModel.Assignment" Width="1.5" PointX="9.75" PointY="11.25" />
         <AssociationConnector Association="MathChatBotModel.FK__Assignmen__Answe__3552E9B6" />
         <AssociationConnector Association="MathChatBotModel.FK__HelpReque__Assig__36470DEF" />
+        <AssociationConnector Association="MathChatBotModel.FK__HelpReque__TermI__382F5661" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

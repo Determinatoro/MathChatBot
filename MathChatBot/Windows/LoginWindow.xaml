@@ -23,10 +23,7 @@
 
         <Border 
             Name="borderHeader"
-            Background="{StaticResource AUU_Blue}"            
-            CornerRadius="1, 1, 0, 0"
-            BorderBrush="{StaticResource BorderColor}"
-            BorderThickness="1, 1, 1, 0.5"
+            Style="{StaticResource styleBorderHeader}"
             >
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -100,14 +97,14 @@
                 </Grid.RowDefinitions>
 
                 <Label
-            Content="{x:Static p:Resources.username}"
-            Margin="25, 1, 25, 1"
-            Padding="0"
-            VerticalContentAlignment="Center"
-            FontSize="16"
-            FontFamily="Roboto"
-            Grid.Row="1"
-            />
+                    Content="{x:Static p:Resources.username}"
+                    Margin="25, 1, 25, 1"
+                    Padding="0"
+                    VerticalContentAlignment="Center"
+                    FontSize="16"
+                    FontFamily="Roboto"
+                    Grid.Row="1"
+                    />
 
                 <TextBox
             Name="tbUsername"  

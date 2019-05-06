@@ -25,10 +25,7 @@
 
         <Border 
             Name="borderHeader"
-            Background="{StaticResource AUU_Blue}"
-            CornerRadius="1, 0.5, 0, 0"
-            BorderBrush="{StaticResource BorderColor}"
-            BorderThickness="1, 1, 1, 0.5"
+            Style="{StaticResource styleBorderHeader}"
             >
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -125,9 +122,66 @@
                     />
 
                 </Grid>
-            
-                <Grid Name="gridProgressDialog"
+
+                <Grid Name="gridQuestionDialog"
                       Visibility="Visible">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="80"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox
+                    Name="tbQuestion"
+                    BorderThickness="0"
+                    TextWrapping="Wrap"
+                    Margin="50, 10, 50, 10"
+                    Grid.Row="1"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Text="Do you want to delete something?"
+                    FontFamily="Roboto"
+                    FontSize="14"
+                    />
+
+                    <StackPanel Grid.Row="3" 
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                >
+
+                        <Button
+                            Name="btnQuestionCancel"  
+                            Background="{StaticResource AUU_Blue}"
+                            Style="{StaticResource styleButtonHover}"
+                            Foreground="#FFFFFF"
+                            BorderBrush="{StaticResource BorderColor}"
+                            FontSize="14"
+                            Grid.Column="0" 
+                            Margin="0, 0, 1, 0"
+                            Height="33"
+                            Content="No"
+                            Width="100"
+                            />
+
+                        <Button
+                            Name="btnQuestionOk"  
+                            Background="{StaticResource AUU_Blue}"
+                            Style="{StaticResource styleButtonHover}"
+                            Foreground="#FFFFFF"
+                            Margin="1, 0, 0, 0"
+                            BorderBrush="{StaticResource BorderColor}"
+                            FontSize="14"
+                            Grid.Column="0" 
+                            Height="33"
+                            Content="Yes"
+                            Width="100"
+                            />
+                    </StackPanel>
+
+                </Grid>
+
+                <Grid Name="gridProgressDialog"
+                      Visibility="Collapsed">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="auto"/>
