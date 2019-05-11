@@ -32,6 +32,8 @@ namespace MathChatBot
         {
             InitializeComponent();
 
+            DatabaseUtility.DisposeEntity();
+
             // Get saved login information
             GetSavedLogin();
 
@@ -80,12 +82,11 @@ namespace MathChatBot
             CustomDialog.ShowProgress(Properties.Resources.logging_in_please_wait, hideCancelButton: true);
             bool saveCredentials = cbSaveCredentials.IsChecked.Value;
 
-            new Thread(() =>
+            this.StartThread(() =>
             {
                 try
                 {
                     var response = DatabaseUtility.CheckLogin(username, password);
-
                     if (response.Success)
                     {
                         if (saveCredentials)
@@ -97,35 +98,20 @@ namespace MathChatBot
                         this.RunOnUIThread(() =>
                         {
                             DialogResult = true;
-                            User = response.User;
+                            User = (User)response.Data;
                             // Close this window
                             Close();
                         });
                     }
-                    else if (response.User != null && !response.User.IsActivated)
-                    {
-                        this.RunOnUIThread(() =>
-                        {
-                            CustomDialog.Show(Properties.Resources.user_is_deactivated_contact_your_administrator);
-                        });
-                    }
                     else
-                    {
-                        this.RunOnUIThread(() =>
-                        {
-                            CustomDialog.Show(Properties.Resources.wrong_username_or_password);
-                        });
-                    }
+                        CustomDialog.Show(response.ErrorMessage);
                 }
                 catch (Exception mes)
                 {
-                    this.RunOnUIThread(() =>
-                    {
-                        // Show error to the user
-                        CustomDialog.Show(mes.Message);
-                    });
+                    // Show error to the user
+                    CustomDialog.Show(mes.Message);
                 }
-            }).Start();
+            });
         }
 
         #endregion

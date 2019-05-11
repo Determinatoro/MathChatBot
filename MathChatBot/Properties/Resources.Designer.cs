@@ -214,6 +214,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Class name.
+        /// </summary>
+        public static string class_name {
+            get {
+                return ResourceManager.GetString("class_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} - Class Overview.
         /// </summary>
         public static string class_overview {
@@ -268,6 +277,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not add class.
+        /// </summary>
+        public static string could_not_add_class {
+            get {
+                return ResourceManager.GetString("could_not_add_class", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not add the term.
         /// </summary>
         public static string could_not_add_the_term {
@@ -295,7 +313,7 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not remove the definition. It still has some associations to other tables in the database..
+        ///   Looks up a localized string similar to Cannot not remove the definition. It still has some associations to other tables in the database..
         /// </summary>
         public static string could_not_remove_definition {
             get {
@@ -304,7 +322,7 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not remove the term. It still has some associations to other tables in the database..
+        ///   Looks up a localized string similar to Cannot not remove the term. It still has some associations to other tables in the database..
         /// </summary>
         public static string could_not_remove_the_term {
             get {
@@ -313,7 +331,7 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not remove the topic. It still has some associations to other tables in the database..
+        ///   Looks up a localized string similar to Cannot not remove the topic. It still has some associations to other tables in the database..
         /// </summary>
         public static string could_not_remove_the_topic {
             get {
@@ -536,6 +554,15 @@ namespace MathChatBot.Properties {
         public static string help_requests {
             get {
                 return ResourceManager.GetString("help_requests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help requests reset.
+        /// </summary>
+        public static string help_requests_reset {
+            get {
+                return ResourceManager.GetString("help_requests_reset", resourceCulture);
             }
         }
         
@@ -821,7 +848,7 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New class.
+        ///   Looks up a localized string similar to New Class.
         /// </summary>
         public static string new_class {
             get {
@@ -925,6 +952,15 @@ namespace MathChatBot.Properties {
         public static string no {
             get {
                 return ResourceManager.GetString("no", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No help requests for this term.
+        /// </summary>
+        public static string no_help_requests_for_this_term {
+            get {
+                return ResourceManager.GetString("no_help_requests_for_this_term", resourceCulture);
             }
         }
         
@@ -1229,6 +1265,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset requests.
+        /// </summary>
+        public static string reset_requests {
+            get {
+                return ResourceManager.GetString("reset_requests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retrieving data. Please wait....
         /// </summary>
         public static string retrieving_data_please_wait {
@@ -1445,6 +1490,24 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Source requests.
+        /// </summary>
+        public static string source_requests {
+            get {
+                return ResourceManager.GetString("source_requests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Source type.
+        /// </summary>
+        public static string source_type {
+            get {
+                return ResourceManager.GetString("source_type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to substract.
         /// </summary>
         public static string substract {
@@ -1499,6 +1562,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} - Help Request Sources.
+        /// </summary>
+        public static string term_help_request_sources {
+            get {
+                return ResourceManager.GetString("term_help_request_sources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Term name.
         /// </summary>
         public static string term_name {
@@ -1513,6 +1585,15 @@ namespace MathChatBot.Properties {
         public static string terms {
             get {
                 return ResourceManager.GetString("terms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The class already exists.
+        /// </summary>
+        public static string the_class_already_exists {
+            get {
+                return ResourceManager.GetString("the_class_already_exists", resourceCulture);
             }
         }
         

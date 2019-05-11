@@ -112,6 +112,7 @@ namespace MathChatBot.Helpers
                     case POSTag.JJ:
                     case POSTag.JJR:
                     case POSTag.JJS:
+                    case POSTag.VBG:
                         return true;
                 }
 

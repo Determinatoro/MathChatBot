@@ -59,9 +59,13 @@ namespace MathChatBot
 
             // Click events
             btnSeeForWholeClass.Click += button_Click;
+            btnResetRequests.Click += button_Click;
+
+            // Layout
+            btnResetRequests.Visibility = Visibility.Collapsed;
 
             // Get user roles
-            var roles = DatabaseUtility.GetUserRoles(user.Username);
+            var roles = Entity.GetUserRoles(user.Username);
             List<Class> classes = null;
 
             // Get classes
@@ -131,12 +135,21 @@ namespace MathChatBot
                 // Get flag
                 bool isShowingAllTopics = topicName == Properties.Resources.all_topics;
 
+                var y = (int)Math.Round((s as BarSeries).InverseTransform(e.Position).Y);
+                var list = YAxis.ItemsSource as List<string>;
+
                 if (isShowingAllTopics)
                 {
-                    var y = (int)Math.Round((s as BarSeries).InverseTransform(e.Position).Y);
-                    var list = YAxis.ItemsSource as List<string>;
                     var item = list[y];
                     cbbTopics.SelectedItem = item;
+                }
+                else
+                {
+                    var termName = list[y];
+                    this.ShowInputWindow(WindowTypes.SeeHelpRequestSources, termName, () =>
+                    {
+                        SetData(filter: false, keepUserSelected: dgUsers.SelectedValue != null);
+                    });
                 }
             };
 
@@ -200,10 +213,15 @@ namespace MathChatBot
                     // Filter users
                     if (filter)
                     {
-                        users = isShowingAllTopics ?
-                        DatabaseUtility.GetUsersWithHelpRequests(@class) :
-                        DatabaseUtility.GetUsersWithHelpRequests(@class, topicName);
-                    } 
+                        if (@class == null)
+                            users = new List<User>();
+                        else
+                        {
+                            users = isShowingAllTopics ?
+                            DatabaseUtility.GetUsersWithHelpRequests(@class) :
+                            DatabaseUtility.GetUsersWithHelpRequests(@class, topicName);
+                        }
+                    }
                     else if (users == null)
                         users = DatabaseUtility.GetUsersInClass(@class, new Role.RoleTypes[] { Role.RoleTypes.Student }, false);
 
@@ -216,11 +234,11 @@ namespace MathChatBot
                     if (isShowingAllTopics)
                     {
                         // Get topics from database
-                        var topics = DatabaseUtility.Entity.Topics.ToList();
+                        var topics = DatabaseUtility.GetTopicNames();
 
-                        foreach (var topic in topics)
+                        foreach (var name in topics)
                         {
-                            var helpRequests = groups.FirstOrDefault(x => x.Key == topic);
+                            var helpRequests = groups.FirstOrDefault(x => x.Key.Name == name);
                             var value = 0;
                             if (helpRequests != null)
                                 value = helpRequests.ToList().Count;
@@ -228,14 +246,14 @@ namespace MathChatBot
                             barItems.Add(new BarItem
                             {
                                 Value = value,
-                                CategoryIndex = (YAxis.ItemsSource as List<string>).IndexOf(topic.Name)
+                                CategoryIndex = (YAxis.ItemsSource as List<string>).IndexOf(name)
                             });
                         }
                     }
                     else
                     {
                         // Get all terms for the specific topic
-                        var terms = DatabaseUtility.Entity.Terms.Where(x => x.Topic.Name == topicName).ToList();
+                        var terms = DatabaseUtility.GetTermNames(topicName);
                         var helpRequests = groups.FirstOrDefault(x => x.Key.Name == topicName);
                         foreach (var term in terms)
                         {
@@ -243,14 +261,14 @@ namespace MathChatBot
                             if (helpRequests != null)
                             {
                                 value = helpRequests
-                                            .Where(x => x.TermId == term.Id)
+                                            .Where(x => x.Term.Name == term)
                                             .Count();
                             }
 
                             barItems.Add(new BarItem
                             {
                                 Value = value,
-                                CategoryIndex = (YAxis.ItemsSource as List<string>).IndexOf(term.Name)
+                                CategoryIndex = (YAxis.ItemsSource as List<string>).IndexOf(term)
                             });
                         }
                     }
@@ -271,6 +289,8 @@ namespace MathChatBot
                         }
                         Series.ItemsSource = barItems;
                         opHelpRequests.InvalidatePlot();
+
+                        btnResetRequests.Visibility = Visibility.Visible;
 
                         CustomDialog.Dismiss();
                     });
@@ -310,6 +330,19 @@ namespace MathChatBot
                             return;
 
                         SetData(filter: false);
+
+                        break;
+                    }
+                case nameof(btnResetRequests):
+                    {
+                        if (cbbClasses.SelectedItem == null)
+                            return;
+                        var @class = cbbClasses.SelectedItem as Class;
+                        var response = DatabaseUtility.ResetHelpRequests(@class);
+                        if (!response.Success)
+                            CustomDialog.Show(response.ErrorMessage);
+                        else
+                            SetData(@class);
 
                         break;
                     }

@@ -109,7 +109,7 @@ namespace MathChatBot
             if (result ?? false)
             {
                 User = loginWindow.User;
-                var roles = DatabaseUtility.GetUserRoles(User.Username);
+                var roles = DatabaseUtility.Entity.GetUserRoles(User.Username);
 
                 if (roles.Any(x => x == Role.RoleTypes.Administrator))
                 {
@@ -127,6 +127,7 @@ namespace MathChatBot
                     btnSeeRequests.Visibility = Visibility.Collapsed;
                 }
 
+                DatabaseUtility.DisposeEntity();
                 Show();
                 CustomDialog.Dismiss();
             }
@@ -173,7 +174,7 @@ namespace MathChatBot
                         IsEnabled = false;
                         adminControlsWindow.Closing += (s, a) =>
                         {
-                            DatabaseUtility.RefreshEntity();
+                            DatabaseUtility.DisposeEntity();
                             IsEnabled = true;
                         };
                         adminControlsWindow.Show();
@@ -193,7 +194,7 @@ namespace MathChatBot
                         IsEnabled = false;
                         helpRequestsWindow.Closing += (s, a) =>
                         {
-                            DatabaseUtility.RefreshEntity();
+                            DatabaseUtility.DisposeEntity();
                             IsEnabled = true;
                         };
                         helpRequestsWindow.Show();
@@ -209,7 +210,7 @@ namespace MathChatBot
 
             MessageObject message = (MessageObject)btn.DataContext;
 
-            MathChatBotHelper.RunCommand(btn.Content.ToString());
+            MathChatBotHelper.RunCommand(btn.Content.ToString(), message);
         }
 
         // ScrollViewer - OnPreviewMouseWheel

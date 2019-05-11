@@ -97,6 +97,7 @@ namespace MathChatBot.Helpers
     /// </summary>
     public class MathChatBotHelper
     {
+        private MessageObject _lastBotMessage;
 
         //*************************************************/
         // PROPERTIES
@@ -108,7 +109,21 @@ namespace MathChatBot.Helpers
         public SimpleCalculatorHelper SimpleCalculatorHelper { get; set; }
         private MathChatBotEntities Entity { get { return DatabaseUtility.Entity; } }
         public List<MessageObject> LastBotMessagesAdded { get; set; }
-        public MessageObject LastBotMessage { get; set; }
+        private MessageObject SelectedMessage { get; set; }
+        public MessageObject LastBotMessage
+        {
+            get
+            {
+                if (SelectedMessage == null)
+                    return _lastBotMessage;
+                else
+                    return SelectedMessage;
+            }
+            set
+            {
+                _lastBotMessage = value;
+            }
+        }
         public ObservableCollection<MessageObject> Messages { get; private set; }
 
         public Assignment CurrentAssignment { get; private set; }
@@ -388,60 +403,17 @@ namespace MathChatBot.Helpers
         /// <param name="message">The message object</param>
         public void DidNotHelp(MessageObject message)
         {
-            var userRoles = DatabaseUtility.GetUserRoles(User.Username);
+            var userId = User.Id;
+            var termId = message.Term?.Id;
+            int? materialId = message.Material?.Id;
+            int? materialExampleId = message.MaterialExample?.Id;
+            int? assignmentId = message.Assignment?.Id;
 
-            // If you are not a student you cannot make help requests
-            if (!userRoles.Any(x => x == Role.RoleTypes.Student))
-            {
-                WriteMessageToUser(Properties.Resources.you_need_to_be_a_student_to_make_help_requests);
-                return;
-            }
-
-            // Create help request
-            var helpRequest = new HelpRequest()
-            {
-                User = User,
-                Material = !message.IsMaterial ? null : message.Material,
-                MaterialExample = !message.IsExample ? null : message.MaterialExample,
-                Assignment = !message.IsAssignment ? null : message.Assignment
-            };
-
-            int termId = helpRequest.Material != null ? helpRequest.Material.TermId.Value : 0;
-            if (termId == 0)
-                termId = helpRequest.MaterialExample != null ? helpRequest.MaterialExample.Material.TermId.Value : 0;
-            if (termId == 0)
-                termId = helpRequest.Assignment != null ? helpRequest.Assignment.TermId : 0;
-
-            if (termId == 0)
-            {
-                WriteMessageToUser(Properties.Resources.could_not_make_a_help_request);
-                return;
-            }
-
-            helpRequest.TermId = termId;
-
-            // You cannot use null propagation in linq so therefore there is used temp values
-            var materialId = helpRequest.Material?.Id;
-            var materialExampleId = helpRequest.MaterialExample?.Id;
-            var assignmentId = helpRequest.Assignment?.Id;
-
-            if (!Entity.HelpRequests.Any(
-                x => x.UserId == helpRequest.User.Id &&
-                x.MaterialId == materialId &&
-                x.MaterialExampleId == materialExampleId &&
-                x.AssignmentId == assignmentId)
-                )
-            {
-                Entity.HelpRequests.Add(helpRequest);
-                if (Entity.SaveChanges() == 1)
-                    WriteMessageToUser(Properties.Resources.help_request_has_been_sent_to_your_teacher);
-                else
-                    WriteMessageToUser(Properties.Resources.could_not_make_a_help_request);
-
-                return;
-            }
-
-            WriteMessageToUser(Properties.Resources.you_have_already_sent_a_help_request_for_this_material);
+            var response = DatabaseUtility.MakeHelpRequest(userId, termId, materialId, materialExampleId, assignmentId);
+            if (response.Success)
+                WriteMessageToUser(Properties.Resources.help_request_has_been_sent_to_your_teacher);
+            else
+                WriteMessageToUser(response.ErrorMessage);
         }
 
         /// <summary>
@@ -509,7 +481,7 @@ namespace MathChatBot.Helpers
 
             if (message.IsTermDefinition || message.IsExample)
             {
-                assignments = message.Material.Term.Assignments
+                assignments = Entity.Assignments.Where(x => x.TermId == message.Material.Term.Id)
                 .OrderBy(x => x.AssignmentNo)
                 .ToList();
 
@@ -519,13 +491,9 @@ namespace MathChatBot.Helpers
             else if (message.IsTopicDefinition)
             {
                 assignments = new List<Assignment>();
-                message.Topic.Terms.OrderBy(x => x.Name)
-                    .Select(x =>
-                    {
-                        var a = x.Assignments.OrderBy(x2 => x2.AssignmentNo);
-                        assignments.AddRange(a);
-                        return x;
-                    })
+                assignments = Entity.Assignments
+                    .Where(x => x.Term.TopicId == message.Topic.Id)
+                    .OrderBy(x => x.Term.Name)
                     .ToList();
 
                 if (assignments.Any())
@@ -571,17 +539,30 @@ namespace MathChatBot.Helpers
 
             var text = string.Empty;
 
-            // Get all answers for the assignment
-            foreach (var member in members)
-            {
-                var value = message.Assignment.GetPropertyValue(member.Name);
-                if (value != null)
-                {
-                    var assignmentLetter = member.Name.ReplaceIgnoreCase("answer", "").ToLower();
-                    var strValue = value.ToString();
+            var values = members.Select(x => message.Assignment.GetPropertyValue(x.Name)).Where(x => x != null).ToList();
 
-                    text += string.Format("{0}{1}) {2}", text == string.Empty ? string.Empty : "\n", assignmentLetter, strValue);
+            // More than 1 one answer
+            if (values.Count > 1)
+            {
+                // Get all answers for the assignment
+                foreach (var member in members)
+                {
+                    var value = message.Assignment.GetPropertyValue(member.Name);
+                    if (value != null)
+                    {
+                        var assignmentLetter = member.Name.ReplaceIgnoreCase("answer", "").ToLower();
+                        var strValue = value.ToString();
+
+                        text += string.Format("{0}{1}) {2}", text == string.Empty ? string.Empty : "\n", assignmentLetter, strValue);
+                    }
                 }
+            }
+            // Only one answer
+            else if (values.Count == 1)
+            {
+                var member = members[0];
+                var strValue = values[0].ToString();
+                text += string.Format("{0}", strValue);
             }
 
             // Check if there are any answers
@@ -774,7 +755,7 @@ namespace MathChatBot.Helpers
                 {
                     var word = range[i];
 
-                    if (word.IsAdjective)
+                    if (word.IsAdjective && !word.IsVerb)
                     {
                         var nextIndex = i + 1;
                         // If not a noun or an adjective follows an adjective the sentence is not proper
@@ -925,7 +906,7 @@ namespace MathChatBot.Helpers
         /// </summary>
         /// <param name="text">The message text</param>
         /// <returns>A string output for the given command</returns>
-        public bool RunCommand(string text)
+        public bool RunCommand(string text, MessageObject selectedMessage = null)
         {
             text = text.ToLower().Replace("?", "");
             var command = Commands.FirstOrDefault(x => x.CommandTexts.Contains(text));
@@ -933,7 +914,16 @@ namespace MathChatBot.Helpers
             if (command == null)
                 return false;
 
-            command.RunAction();
+            if (selectedMessage != null)
+            {
+                // Select temporary the message
+                SelectedMessage = selectedMessage;
+                command.RunAction();
+                SelectedMessage = null;
+            }
+            else
+                command.RunAction();
+
             return true;
         }
 

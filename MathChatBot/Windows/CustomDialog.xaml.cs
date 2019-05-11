@@ -184,10 +184,9 @@ namespace MathChatBot
         /// <param name="clickEvent">An optional click event if you want to do anything when the user presses "OK"</param>
         public static void Show(string message, RoutedEventHandler clickEvent = null)
         {
-            Dismiss();
-
             Utility.RunOnUIThread(() =>
             {
+                Dismiss();
                 customDialog = new CustomDialog(CustomDialogTypes.Message, message, clickEvent: clickEvent);
                 customDialog.Show();
             });
@@ -222,9 +221,12 @@ namespace MathChatBot
         /// <param name="clickEvent">An optional click event if you want to do anything when the user presses "Cancel"</param>
         public static void ShowProgress(string message, double maximum, RoutedEventHandler clickEvent = null)
         {
-            Dismiss();
-            customDialog = new CustomDialog(CustomDialogTypes.Progress, message, false, maximum, clickEvent);
-            customDialog.Show();
+            Utility.RunOnUIThread(() =>
+            {
+                Dismiss();
+                customDialog = new CustomDialog(CustomDialogTypes.Progress, message, false, maximum, clickEvent);
+                customDialog.Show();
+            });
         }
 
         /// <summary>
@@ -243,8 +245,11 @@ namespace MathChatBot
         /// <param name="increment">The increment value</param>
         public static void IncrementProgress(double increment)
         {
-            if (customDialog != null && customDialog.IsShown && customDialog.DialogType == CustomDialogTypes.Progress)
-                customDialog.pbProgress.Value += increment;
+            Utility.RunOnUIThread(() =>
+            {
+                if (customDialog != null && customDialog.IsShown && customDialog.DialogType == CustomDialogTypes.Progress)
+                    customDialog.pbProgress.Value += increment;
+            });
         }
 
         /// <summary>

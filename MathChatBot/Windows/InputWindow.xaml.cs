@@ -1,4 +1,5 @@
 ﻿using MathChatBot.Models;
+using MathChatBot.Objects;
 using MathChatBot.Utilities;
 using Microsoft.Win32;
 using System;
@@ -17,6 +18,13 @@ namespace MathChatBot
     public enum WindowTypes
     {
         NewUser,
+        NewClass,
+        NewTopicMaterial,
+        NewTermMaterial,
+        NewTermMaterialExample,
+        NewAssignment,
+        NewTopic,
+        NewTerm,
         ResetPassword,
         UserInformation,
         MaterialOverview,
@@ -25,28 +33,28 @@ namespace MathChatBot
         SeeTopicDefinitions,
         SeeTermDefinitionsAndAssignments,
         SeeTermMaterialExamples,
-        NewTopicDefinition,
-        NewTermMaterial,
-        NewTermMaterialExample,
-        NewAssignment,
-        NewTopic,
-        NewTerm,
         OverwriteAssignment,
         OverwriteMaterial,
         OverwriteMaterialExample,
-        SeeMaterial
+        SeeMaterial,
+        SeeHelpRequestSources
     }
 
+    /// <summary>
+    /// Helper functions for the input window
+    /// </summary>
     public static class InputWindowHelper
     {
-        public static void ShowInputWindow(this Window window, WindowTypes windowTypes, object obj, Action action = null)
+        public static void ShowInputWindow(this Window window, WindowTypes windowTypes, object obj = null, Action action = null)
         {
             InputWindow inputWindow = new InputWindow(windowTypes, obj);
             window.IsEnabled = false;
             inputWindow.Closing += (s, a) =>
             {
                 window.IsEnabled = true;
-                DatabaseUtility.RefreshEntity();
+                window.BringIntoView();
+                window.Focus();
+                DatabaseUtility.DisposeEntity();
                 action?.Invoke();
             };
             inputWindow.Show();
@@ -74,10 +82,11 @@ namespace MathChatBot
         //*************************************************/
         #region Properties
 
-        private MathChatBotEntities Entity { get { return DatabaseUtility.Entity; } }
+
         private WindowTypes WindowType { get; set; }
+        private MathChatBotEntities Entity { get { return DatabaseUtility.Entity; } }
+        
         public User User { get; set; }
-        public List<Role> RolesListForUser { get; set; }
         private Topic Topic { get; set; }
         private Term Term { get; set; }
         private Material Material { get; set; }
@@ -85,6 +94,8 @@ namespace MathChatBot
         private Assignment Assignment { get; set; }
         private Class Class { get; set; }
         private string Source { get; set; }
+
+        public List<Role> RolesListForUser { get; set; }
         private string SelectedSource { get; set; }
 
         #endregion
@@ -98,6 +109,9 @@ namespace MathChatBot
         {
             InitializeComponent();
 
+            // Refresh entity framework
+            DatabaseUtility.DisposeEntity();
+
             // Visibility
             spResetPassword.Visibility = Visibility.Collapsed;
             spUser.Visibility = Visibility.Collapsed;
@@ -109,6 +123,9 @@ namespace MathChatBot
             spNewTerm.Visibility = Visibility.Collapsed;
             spAddAssignment.Visibility = Visibility.Collapsed;
             spOverwriteMaterial.Visibility = Visibility.Collapsed;
+            spNewClass.Visibility = Visibility.Collapsed;
+            spHelpRequestSources.Visibility = Visibility.Collapsed;
+
             dgAssignments.Visibility = Visibility.Collapsed;
             dgMaterial.Visibility = Visibility.Collapsed;
 
@@ -128,6 +145,7 @@ namespace MathChatBot
                 case WindowTypes.ResetPassword:
                     {
                         User = (User)obj;
+                        GetUser();
 
                         // Visibility
                         spResetPassword.Visibility = Visibility.Visible;
@@ -146,6 +164,7 @@ namespace MathChatBot
                 case WindowTypes.UserInformation:
                     {
                         User = (User)obj;
+                        GetUser();
 
                         // Visibility
                         spUser.Visibility = Visibility.Visible;
@@ -154,6 +173,7 @@ namespace MathChatBot
 
                         // Texts
                         btnOk.Content = Properties.Resources.save;
+                        btnCancel.Content = Properties.Resources.close;
 
                         // Get roles for user
                         RolesListForUser = DatabaseUtility.GetRolesListForUser(User.Username);
@@ -227,12 +247,14 @@ namespace MathChatBot
                 case WindowTypes.ClassOverview:
                     {
                         Class = (Class)obj;
+                        GetClass();
 
                         // Visibility
                         spClassOverview.Visibility = Visibility.Visible;
 
                         // Texts
                         btnOk.Content = Properties.Resources.add;
+                        btnCancel.Content = Properties.Resources.close;
 
                         SeeUsersInClass();
 
@@ -240,9 +262,11 @@ namespace MathChatBot
                         this.SetupBorderHeader(string.Format(Properties.Resources.class_overview, Class.Name));
                         break;
                     }
+                // Add users to class
                 case WindowTypes.AddUsersToClass:
                     {
                         Class = (Class)obj;
+                        GetClass();
 
                         // Visibility
                         spClassOverview.Visibility = Visibility.Visible;
@@ -259,10 +283,25 @@ namespace MathChatBot
                         this.SetupBorderHeader(string.Format(Properties.Resources.add_users_to_class, Class.Name));
                         break;
                     }
+                // Add new class
+                case WindowTypes.NewClass:
+                    {
+                        // Visibility
+                        spNewClass.Visibility = Visibility.Visible;
+
+                        // Texts
+                        btnOk.Content = Properties.Resources.add;
+
+                        // Set border
+                        this.SetupBorderHeader(string.Format(Properties.Resources.new_class));
+
+                        break;
+                    }
                 // See term definitions and assignments
                 case WindowTypes.SeeTermDefinitionsAndAssignments:
                     {
                         Term = (Term)obj;
+                        GetTerm();
 
                         // Visibility
                         spMaterial.Visibility = Visibility.Visible;
@@ -271,6 +310,7 @@ namespace MathChatBot
 
                         // Texts
                         btnOk.Content = Properties.Resources.add;
+                        btnCancel.Content = Properties.Resources.close;
 
                         // Set combobox items
                         cbbMaterialAssignment.ItemsSource = new string[] { Properties.Resources.definitions, Properties.Resources.assignments };
@@ -295,6 +335,7 @@ namespace MathChatBot
                 case WindowTypes.SeeTopicDefinitions:
                     {
                         Topic = (Topic)obj;
+                        GetTopic();
 
                         // Visibility
                         spMaterial.Visibility = Visibility.Visible;
@@ -304,6 +345,7 @@ namespace MathChatBot
 
                         // Texts
                         btnOk.Content = Properties.Resources.add;
+                        btnCancel.Content = Properties.Resources.close;
 
                         // Layout
                         dgMaterial.Width = 500;
@@ -316,9 +358,10 @@ namespace MathChatBot
                         break;
                     }
                 // Add new topic definition
-                case WindowTypes.NewTopicDefinition:
+                case WindowTypes.NewTopicMaterial:
                     {
                         Topic = (Topic)obj;
+                        GetTopic();
 
                         // Visibility
                         spAddMaterial.Visibility = Visibility.Visible;
@@ -335,6 +378,7 @@ namespace MathChatBot
                 case WindowTypes.NewAssignment:
                     {
                         Term = (Term)obj;
+                        GetTerm();
 
                         // Visibility
                         spAddAssignment.Visibility = Visibility.Visible;
@@ -354,6 +398,7 @@ namespace MathChatBot
                 case WindowTypes.NewTermMaterial:
                     {
                         Term = (Term)obj;
+                        GetTerm();
 
                         // Visibility
                         spAddMaterial.Visibility = Visibility.Visible;
@@ -370,6 +415,7 @@ namespace MathChatBot
                 case WindowTypes.SeeTermMaterialExamples:
                     {
                         Material = (Material)obj;
+                        GetMaterial();
 
                         // Visibility
                         spMaterial.Visibility = Visibility.Visible;
@@ -378,18 +424,20 @@ namespace MathChatBot
 
                         // Texts
                         btnOk.Content = Properties.Resources.add;
+                        btnCancel.Content = Properties.Resources.close;
 
                         // Show examples for a definition
                         SeeExamples();
 
                         // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.term_defition_examples, Material.Term.Name));
+                        this.SetupBorderHeader(string.Format(Properties.Resources.term_defition_examples, DatabaseUtility.GetTermName(material: Material)));
                         break;
                     }
                 // Add new term material example
                 case WindowTypes.NewTermMaterialExample:
                     {
                         Material = (Material)obj;
+                        GetMaterial();
 
                         // Visibility
                         spAddMaterial.Visibility = Visibility.Visible;
@@ -399,13 +447,14 @@ namespace MathChatBot
                         btnOk.Content = Properties.Resources.add;
 
                         // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.new_term_definition_example, Material.Term.Name));
+                        this.SetupBorderHeader(string.Format(Properties.Resources.new_term_definition_example, DatabaseUtility.GetTermName(material: Material)));
                         break;
                     }
                 // Overwrite assignments
                 case WindowTypes.OverwriteAssignment:
                     {
                         Assignment = (Assignment)obj;
+                        GetAssignment();
 
                         // Visibility
                         spAddMaterial.Visibility = Visibility.Visible;
@@ -421,13 +470,14 @@ namespace MathChatBot
                         imgOverwriteMaterial.Source = currentImage;
 
                         // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_assignment, Assignment.Term.Name));
+                        this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_assignment, DatabaseUtility.GetTermName(assignment: Assignment)));
                         break;
                     }
                 // Overwrite material    
                 case WindowTypes.OverwriteMaterial:
                     {
                         Material = (Material)obj;
+                        GetMaterial();
 
                         // Visibility
                         spAddMaterial.Visibility = Visibility.Visible;
@@ -443,16 +493,17 @@ namespace MathChatBot
                         imgOverwriteMaterial.Source = currentImage;
 
                         // Set border
-                        if (Material.Term == null)
-                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_topic_definition, Material.Topic.Name));
+                        if (Material.TermId == null)
+                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_topic_definition, DatabaseUtility.GetTopicName(Material)));
                         else
-                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition, Material.Term.Name));
+                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition, DatabaseUtility.GetTermName(material: Material)));
                         break;
                     }
                 // Overwrite material example
                 case WindowTypes.OverwriteMaterialExample:
                     {
                         MaterialExample = (MaterialExample)obj;
+                        GetMaterialExample();
 
                         // Visilibity
                         spAddMaterial.Visibility = Visibility.Visible;
@@ -468,7 +519,7 @@ namespace MathChatBot
                         imgOverwriteMaterial.Source = currentImage;
 
                         // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition_example, MaterialExample.Material.Term.Name));
+                        this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition_example, DatabaseUtility.GetTermName(materialExample: MaterialExample)));
                         break;
                     }
                 // See source material
@@ -491,6 +542,24 @@ namespace MathChatBot
                         this.SetupBorderHeader(Properties.Resources.see_image);
                         break;
                     }
+                case WindowTypes.SeeHelpRequestSources:
+                    {
+                        var termName = (string)obj;
+                        Term = Entity.Terms.FirstOrDefault(x => x.Name == termName);
+
+                        // Visibility
+                        spHelpRequestSources.Visibility = Visibility.Visible;
+                        btnOk.Visibility = Visibility.Collapsed;
+
+                        // Texts
+                        btnCancel.Content = Properties.Resources.close;
+
+                        SeeHelpRequestSources();
+
+                        // Set border
+                        this.SetupBorderHeader(string.Format(Properties.Resources.term_help_request_sources, termName));
+                        break;
+                    }
             }
         }
 
@@ -501,6 +570,41 @@ namespace MathChatBot
         //*************************************************/
         #region Methods
 
+        private void GetTerm()
+        {
+            Term = Entity.Terms.FirstOrDefault(x => x.Id == Term.Id);
+        }
+
+        private void GetTopic()
+        {
+            Topic = Entity.Topics.FirstOrDefault(x => x.Id == Topic.Id);
+        }
+
+        private void GetUser()
+        {
+            User = Entity.Users.FirstOrDefault(x => x.Id == User.Id);
+        }
+
+        private void GetClass()
+        {
+            Class = Entity.Classes.FirstOrDefault(x => x.Id == Class.Id);
+        }
+
+        private void GetMaterial()
+        {
+            Material = Entity.Materials.FirstOrDefault(x => x.Id == Material.Id);
+        }
+
+        private void GetMaterialExample()
+        {
+            MaterialExample = Entity.MaterialExamples.FirstOrDefault(x => x.Id == MaterialExample.Id);
+        }
+
+        private void GetAssignment()
+        {
+            Assignment = Entity.Assignments.FirstOrDefault(x => x.Id == Assignment.Id);
+        }
+
         /// <summary>
         /// See definitions for a topic
         /// </summary>
@@ -508,7 +612,7 @@ namespace MathChatBot
         private void SeeTopicDefinitions()
         {
             var materials = Entity.Materials
-                .Where(x => x.Topic.Name == Topic.Name)
+                .Where(x => x.TopicId == Topic.Id)
                 .OrderBy(x => x.ShowOrderId)
                 .ToList();
             dgMaterial.ItemsSource = materials;
@@ -523,7 +627,7 @@ namespace MathChatBot
         private void SeeTermDefinitions()
         {
             var materials = Entity.Materials
-                .Where(x => x.Term.Name == Term.Name)
+                .Where(x => x.TermId == Term.Id)
                 .OrderBy(x => x.ShowOrderId)
                 .ToList();
             dgMaterial.ItemsSource = materials;
@@ -539,7 +643,7 @@ namespace MathChatBot
         private void SeeAssignments()
         {
             var assignments = Entity.Assignments
-                .Where(x => x.Term.Name == Term.Name)
+                .Where(x => x.TermId == Term.Id)
                 .OrderBy(x => x.AssignmentNo)
                 .ToList();
             dgAssignments.ItemsSource = assignments;
@@ -556,11 +660,43 @@ namespace MathChatBot
         {
             var examples = Entity.MaterialExamples
                 .Where(x => x.MaterialId == Material.Id)
+                .OrderBy(x => x.ShowOrderId)
                 .ToList();
             dgMaterial.ItemsSource = examples;
 
             dgAssignments.Visibility = Visibility.Collapsed;
             dgMaterial.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// See help request sources
+        /// </summary>
+        private void SeeHelpRequestSources()
+        {
+            var response = DatabaseUtility.GetHelpRequestSources(Term.Name);
+            if (response.Success)
+                dgHelpRequestSources.ItemsSource = (List<SourceObject>)response.Data;
+        }
+
+        /// <summary>
+        /// Get users in a class
+        /// </summary>
+        private void SeeUsersInClass()
+        {
+            var users = DatabaseUtility.GetUsersInClass(Class, new Role.RoleTypes[] { Role.RoleTypes.Student, Role.RoleTypes.Teacher }, true);
+            // Show users
+            dgUsers.ItemsSource = users;
+        }
+
+        /// <summary>
+        /// Get users not in the class
+        /// </summary>
+        private void SeeUsersNotInClass()
+        {
+            // Get users not in class
+            var users = DatabaseUtility.GetUsersNotInClass(Class);
+            // Show users
+            dgUsers.ItemsSource = users;
         }
 
         /// <summary>
@@ -596,6 +732,14 @@ namespace MathChatBot
             return false;
         }
 
+        /// <summary>
+        /// Change order of items in list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="up">If true move item up</param>
+        /// <param name="list">The list</param>
+        /// <param name="obj">Object to be moved</param>
+        /// <returns></returns>
         private bool ChangeOrder<T>(bool up, List<T> list, T obj)
         {
             int index = list.IndexOf(obj);
@@ -618,24 +762,6 @@ namespace MathChatBot
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Get users in a class
-        /// </summary>
-        private void SeeUsersInClass()
-        {
-            var users = DatabaseUtility.GetUsersInClass(Class, new Role.RoleTypes[] { Role.RoleTypes.Student, Role.RoleTypes.Teacher }, true);
-            // Show users
-            dgUsers.ItemsSource = users;
-        }
-
-        private void SeeUsersNotInClass()
-        {
-            // Get users not in class
-            var users = DatabaseUtility.GetUsersNotInClass(Class);
-            // Show users
-            dgUsers.ItemsSource = users;
         }
 
         #endregion
@@ -685,8 +811,10 @@ namespace MathChatBot
                 {
                     case nameof(btnUserResetPassword):
                         {
-                            InputWindow inputWindow = new InputWindow(WindowTypes.ResetPassword, User);
-                            inputWindow.ShowDialog();
+                            this.ShowInputWindow(WindowTypes.ResetPassword, User, () =>
+                            {
+                                GetUser();
+                            });
                             return;
                         }
                     case nameof(btnOk):
@@ -702,24 +830,7 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        User = DatabaseUtility.CreateUser(User);
-                                        if (User is User)
-                                        {
-                                            foreach (var role in RolesListForUser)
-                                            {
-                                                if (role.IsAssigned)
-                                                {
-                                                    Entity.UserRoleRelations.Add(new UserRoleRelation()
-                                                    {
-                                                        UserId = User.Id,
-                                                        RoleId = role.Id
-                                                    });
-                                                }
-                                            }
-
-                                            Entity.SaveChanges();
-                                        }
-
+                                        DatabaseUtility.CreateUser(User, RolesListForUser);
                                         break;
                                     }
                                 // Reset        
@@ -733,52 +844,59 @@ namespace MathChatBot
                                             CustomDialog.Show(Properties.Resources.the_passwords_need_to_match);
                                             return;
                                         }
-                                        else if (newPassword.Length < 8)
-                                        {
-                                            CustomDialog.Show(Properties.Resources.the_password_has_to_be_at_least_eight_characters_long);
-                                            return;
-                                        }
 
-                                        DatabaseUtility.ResetUserPassword(newPassword, User.Username);
+                                        string errorMessage = "";
+                                        DatabaseUtility.ResetUserPassword(ref errorMessage, newPassword, User.Username);
+                                        if (errorMessage != string.Empty)
+                                            CustomDialog.Show(errorMessage);
 
                                         break;
                                     }
                                 // Save
                                 case WindowTypes.UserInformation:
                                     {
-                                        var userRoleRelations = User.UserRoleRelations;
-
-                                        foreach (var role in RolesListForUser)
-                                        {
-                                            var userRoleRelation = userRoleRelations.FirstOrDefault(x => x.RoleId == role.Id);
-
-                                            if ((role.IsAssigned && userRoleRelation != null) || (!role.IsAssigned && userRoleRelation == null))
-                                                continue;
-
-                                            if (role.IsAssigned)
-                                            {
-                                                Entity.UserRoleRelations.Add(new UserRoleRelation()
-                                                {
-                                                    UserId = User.Id,
-                                                    RoleId = role.Id
-                                                });
-                                            }
-                                            else
-                                                Entity.Entry(userRoleRelation).State = System.Data.Entity.EntityState.Deleted;
-                                        }
-
-                                        Entity.SaveChanges();
-
+                                        DatabaseUtility.UpdateUserInformation(User, RolesListForUser);
                                         break;
                                     }
                                 // Add
                                 case WindowTypes.ClassOverview:
                                     {
-                                        this.ShowInputWindow(WindowTypes.AddUsersToClass, Class);
+                                        this.ShowInputWindow(WindowTypes.AddUsersToClass, Class, () =>
+                                        {
+                                            GetClass();
+                                            SeeUsersInClass();
+                                        });
                                         return;
                                     }
                                 // Add
-                                case WindowTypes.NewTopicDefinition:
+                                case WindowTypes.AddUsersToClass:
+                                    {
+                                        var users = dgUsers.SelectedItems.OfType<User>().ToList();
+                                        DatabaseUtility.AddUsersToClass(Class, users);
+                                        break;
+                                    }
+                                // Add
+                                case WindowTypes.NewClass:
+                                    {
+                                        var className = tbClassName.Text;
+                                        if (string.IsNullOrEmpty(className))
+                                        {
+                                            CustomDialog.Show(Properties.Resources.please_fill_out_all_fields);
+                                            return;
+                                        }
+
+                                        string errorMessage = string.Empty;
+                                        DatabaseUtility.AddClass(ref errorMessage, className);
+                                        if (errorMessage != string.Empty)
+                                        {
+                                            CustomDialog.Show(errorMessage);
+                                            return;
+                                        }
+
+                                        break;
+                                    }
+                                // Add
+                                case WindowTypes.NewTopicMaterial:
                                     {
                                         if (SelectedSource == null)
                                         {
@@ -786,13 +904,7 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        var material = new Material()
-                                        {
-                                            TopicId = Topic.Id,
-                                            Source = SelectedSource
-                                        };
-                                        Entity.Materials.Add(material);
-                                        Entity.SaveChanges();
+                                        DatabaseUtility.AddTopicMaterial(Topic, SelectedSource);
                                         break;
                                     }
                                 // Add
@@ -804,13 +916,7 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        var material = new Material()
-                                        {
-                                            TermId = Term.Id,
-                                            Source = SelectedSource
-                                        };
-                                        Entity.Materials.Add(material);
-                                        Entity.SaveChanges();
+                                        DatabaseUtility.AddTermMaterial(Term, SelectedSource);
                                         break;
                                     }
                                 // Add
@@ -822,13 +928,7 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        var materialExample = new MaterialExample()
-                                        {
-                                            Source = SelectedSource,
-                                            MaterialId = Material.Id
-                                        };
-                                        Entity.MaterialExamples.Add(materialExample);
-                                        Entity.SaveChanges();
+                                        DatabaseUtility.AddTermMaterialExample(Material, SelectedSource);
                                         break;
                                     }
                                 // Add
@@ -840,36 +940,16 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        Func<string, string> func = (s) =>
-                                        {
-                                            return string.IsNullOrEmpty(s.Trim()) ? null : s;
-                                        };
-
-                                        var answerA = func(tbAssignmentAnswerA.Text);
-                                        var answerB = func(tbAssignmentAnswerB.Text);
-                                        var answerC = func(tbAssignmentAnswerC.Text);
-                                        var answerD = func(tbAssignmentAnswerD.Text);
-                                        var answerE = func(tbAssignmentAnswerE.Text);
-                                        var answerF = func(tbAssignmentAnswerF.Text);
-                                        var answerG = func(tbAssignmentAnswerG.Text);
-
-                                        var assignment = new Assignment()
-                                        {
-                                            AnswerA = answerA,
-                                            AnswerB = answerB,
-                                            AnswerC = answerC,
-                                            AnswerD = answerD,
-                                            AnswerE = answerE,
-                                            AnswerF = answerF,
-                                            AnswerG = answerG,
-                                            TermId = Term.Id
-                                        };
-
-                                        Entity.Assignments.Add(assignment);
-                                        Entity.SaveChanges();
-
-                                        SeeAssignments();
-
+                                        DatabaseUtility.AddAssignment(Term,
+                                            SelectedSource,
+                                            tbAssignmentAnswerA.Text,
+                                            tbAssignmentAnswerB.Text,
+                                            tbAssignmentAnswerC.Text,
+                                            tbAssignmentAnswerD.Text,
+                                            tbAssignmentAnswerE.Text,
+                                            tbAssignmentAnswerF.Text,
+                                            tbAssignmentAnswerG.Text
+                                            );
                                         break;
                                     }
                                 // Add
@@ -896,7 +976,7 @@ namespace MathChatBot
                                 // Add
                                 case WindowTypes.SeeTopicDefinitions:
                                     {
-                                        this.ShowInputWindow(WindowTypes.NewTopicDefinition, Topic, () =>
+                                        this.ShowInputWindow(WindowTypes.NewTopicMaterial, Topic, () =>
                                         {
                                             SeeTopicDefinitions();
                                         });
@@ -1060,6 +1140,17 @@ namespace MathChatBot
 
                                         break;
                                     }
+                                case WindowTypes.SeeHelpRequestSources:
+                                    {
+                                        var listObject = btn.DataContext;
+                                        var sourceObject = (SourceObject)listObject;
+
+                                        this.ShowInputWindow(WindowTypes.SeeMaterial, sourceObject.Source, () =>
+                                        {
+                                            SeeHelpRequestSources();
+                                        });
+                                        break;
+                                    }
                             }
 
                             break;
@@ -1149,6 +1240,11 @@ namespace MathChatBot
 
                                         break;
                                     }
+                                case WindowTypes.SeeTermMaterialExamples:
+                                    {
+                                        message = Properties.Resources.remove_example;
+                                        break;
+                                    }
                                 case WindowTypes.ClassOverview:
                                     {
                                         message = Properties.Resources.remove_user_from_class;
@@ -1230,11 +1326,10 @@ namespace MathChatBot
                                     var user = (User)listObject;
 
                                     var userClassRelation = Class.UserClassRelations.FirstOrDefault(x => x.UserId == user.Id);
-                                    Class.UserClassRelations.Remove(userClassRelation);
                                     Entity.Entry(userClassRelation).State = System.Data.Entity.EntityState.Deleted;
 
-                                    var flag = Entity.SaveChanges();
-                                    
+                                    Entity.SaveChanges();
+
                                     SeeUsersInClass();
                                 }
                             }

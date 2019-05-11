@@ -7,12 +7,6 @@ namespace MathChatBot.Test
     [TestClass]
     public class UnitTest1
     {
-        private void InitializeComponent()
-        {
-            var app = new App();
-            app.InitializeComponent();
-        }
-
         #region EncryptionUtility
 
         [TestMethod]       

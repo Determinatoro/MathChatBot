@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -42,18 +41,14 @@ namespace MathChatBot
         {
             InitializeComponent();
 
-            // Get topics
-            var topics = Entity.Topics.Select(x => x.Name).ToList();
-            // Insert a selection for all topics
-            topics.Insert(0, Properties.Resources.all_topics);
-            cbbTopics.ItemsSource = topics;
-            cbbTopics.SelectedIndex = 0;
+            SetComboBoxTopics();
 
             // Click events
             btnNewUser.Click += button_Click;
             btnAddUsersFromFile.Click += button_Click;
             btnNewTopic.Click += button_Click;
             btnNewTerm.Click += button_Click;
+            btnNewClass.Click += button_Click;
 
             // TextChanged events
             tbSearchForUsers.TextChanged += textBox_TextChanged;
@@ -68,14 +63,19 @@ namespace MathChatBot
             Loaded += window_Loaded;
         }
 
+        private void SetComboBoxTopics()
+        {
+            // Get topics
+            var topics = Entity.Topics.Select(x => x.Name).ToList();
+            // Insert a selection for all topics
+            topics.Insert(0, Properties.Resources.all_topics);
+            cbbTopics.ItemsSource = topics;
+            cbbTopics.SelectedIndex = 0;
+        }
+
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
-            // Get users
-            GetUsers();
-            // Get classes
-            GetClasses();
-            // Get topics
-            GetTopics();
+            GetData();
         }
 
         private void control_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -105,22 +105,26 @@ namespace MathChatBot
         /****************************************************************/
         #region Methods
 
+        private void GetData()
+        {
+            GetUsers();
+            GetClasses();
+
+            var selectedTopic = cbbTopics.SelectedItem.ToString();
+            if (selectedTopic == Properties.Resources.all_topics)
+                GetTopics();
+            else
+                GetTerms(selectedTopic);
+        }
+
         /// <summary>
         /// Get users to show in the datagrid
         /// </summary>
         private void GetUsers()
         {
-            // Get users
-            Users = Entity.Users.ToList();
-            // Order users
-            Users = Users.OrderBy(x => x.FirstName,
-                Comparer<string>.Create((x, y) => string.Compare(x, y, StringComparison.OrdinalIgnoreCase)))
-                .ThenBy(x => x.LastName,
-                Comparer<string>.Create((x, y) => string.Compare(x, y, StringComparison.OrdinalIgnoreCase)))
-                .ToList();
-            // Set item source
+            Users = DatabaseUtility.GetUsersOrderedAlphabetically();
             dgUsers.ItemsSource = Users;
-
+            // Do filtering
             textBox_TextChanged(tbSearchForUsers, null);
         }
 
@@ -129,14 +133,10 @@ namespace MathChatBot
         /// </summary>
         private void GetClasses()
         {
-            // Get classes
-            Classes = Entity.Classes.ToList();
-            // Order classes
-            Classes = Classes.OrderBy(x => x.Name,
-                Comparer<string>.Create((x, y) => string.Compare(x, y, StringComparison.OrdinalIgnoreCase)))
-                .ToList();
-
+            Classes = DatabaseUtility.GetClassesOrderedAlphabetically();
             dgClasses.ItemsSource = Classes;
+            // Do filtering
+            textBox_TextChanged(tbSearchForClasses, null);
         }
 
         /// <summary>
@@ -146,12 +146,13 @@ namespace MathChatBot
         {
             this.StartThread(() =>
             {
-                Topics = DatabaseUtility.Entity.Topics.OrderBy(x => x.Name).ToList();
+                Topics = DatabaseUtility.Entity.Topics
+                .OrderBy(x => x.Name)
+                .ToList();
 
                 this.RunOnUIThread(() =>
                 {
-                    if (Topics.Count == 0)
-                        CustomDialog.Dismiss();
+                    CustomDialog.Dismiss();
                     dgTopics.ItemsSource = Topics;
                     dgTopics.Visibility = Visibility.Visible;
                     dgTerms.Visibility = Visibility.Collapsed;
@@ -170,8 +171,7 @@ namespace MathChatBot
 
                 this.RunOnUIThread(() =>
                 {
-                    if (!Terms.Any())
-                        CustomDialog.Dismiss();
+                    CustomDialog.Dismiss();
                     dgTerms.ItemsSource = Terms;
                     dgTopics.Visibility = Visibility.Collapsed;
                     dgTerms.Visibility = Visibility.Visible;
@@ -193,14 +193,11 @@ namespace MathChatBot
                 // Parse CSV file and get a list with all the user entries
                 var list = CSVUtility.ParseCSV((string)filePath);
 
-                this.RunOnUIThread(() =>
+                // Show progress dialog
+                CustomDialog.ShowProgress(Properties.Resources.adding_users_from_file_please_wait, list.Count, (o, e) =>
                 {
-                    // Show progress dialog
-                    CustomDialog.ShowProgress(Properties.Resources.adding_users_from_file_please_wait, list.Count, (o, e) =>
-                    {
-                        // Stop thread by removing flag
-                        runThread = false;
-                    });
+                    // Stop thread by removing flag
+                    runThread = false;
                 });
 
                 // For each entry in the CSV file
@@ -212,18 +209,21 @@ namespace MathChatBot
 
                     // Set values from file
                     var tempUser = new User();
-                    // Generate username
-                    var username = DatabaseUtility.GenerateUsername(tempUser.FirstName, tempUser.LastName);
                     // Set properties from file entry through reflection
                     CSVUtility.SetObjectValues(dictionary, tempUser);
-                    // Set username
-                    tempUser.Username = username;
+                    // Generate username
+                    if (tempUser.Username == null)
+                        tempUser.Username = DatabaseUtility.GenerateUsername(tempUser.FirstName, tempUser.LastName);
                     // Create the user and get the user
                     var user = DatabaseUtility.CreateUser(tempUser);
 
                     // Check if we have a user
                     if (!(user is User))
+                    {
+                        // Increment progress by one
+                        CustomDialog.IncrementProgress(1);
                         continue;
+                    }
 
                     // Add roles for the user
                     if (dictionary[nameof(Entity.Roles)] != null)
@@ -231,7 +231,7 @@ namespace MathChatBot
                         // Get roles from file entry
                         var roles = Regex.Split(dictionary[nameof(Entity.Roles)], ",");
                         // Add roles for the user
-                        if (!DatabaseUtility.AssignRolesByName(user, roles))
+                        if (!DatabaseUtility.AssignRolesByName(user, new HashSet<string>(roles)))
                             break;
                     }
 
@@ -241,15 +241,12 @@ namespace MathChatBot
                         // Get roles from file entry
                         var classes = Regex.Split(dictionary[nameof(Entity.Classes)], ",");
                         // Add roles for the user
-                        if (!DatabaseUtility.AddToClassesByName(user, classes))
+                        if (!DatabaseUtility.AddToClassesByName(user, new HashSet<string>(classes)))
                             break;
                     }
 
                     // Increment progress by one
-                    this.RunOnUIThread(() =>
-                    {
-                        CustomDialog.IncrementProgress(1);
-                    });
+                    CustomDialog.IncrementProgress(1);
                 }
 
                 // Stop if flag has been removed
@@ -257,18 +254,17 @@ namespace MathChatBot
                     return;
 
                 // Show message to the user
+                CustomDialog.Show(Properties.Resources.successfully_gone_through_file);
+
                 this.RunOnUIThread(() =>
                 {
-                    CustomDialog.Show(Properties.Resources.successfully_gone_through_file);
+                    GetData();
                 });
             }
             catch (Exception mes)
             {
                 // Show error message to user
-                this.RunOnUIThread(() =>
-                {
-                    CustomDialog.Show(mes.Message);
-                });
+                CustomDialog.Show(mes.Message);
             }
         }
 
@@ -330,11 +326,10 @@ namespace MathChatBot
                 // New user
                 case nameof(btnNewUser):
                     {
-                        InputWindow inputWindow = new InputWindow(WindowTypes.NewUser);
-                        // Closing event
-                        inputWindow.Closing += window_Closing;
-                        // Show the new user window
-                        inputWindow.ShowDialog();
+                        this.ShowInputWindow(WindowTypes.NewUser, action: () =>
+                        {
+                            GetData();
+                        });
                         break;
                     }
                 // Add users from file
@@ -345,9 +340,10 @@ namespace MathChatBot
                         openFileDialog.Filter = "CSV files (*.csv)|*.csv";
                         if (openFileDialog.ShowDialog() == true)
                         {
-                            // Going through the file in a thread to avoid blocking the UI thread
-                            Thread thread = new Thread(new ParameterizedThreadStart(AddUsersFromFile));
-                            thread.Start(openFileDialog.FileName);
+                            this.StartThread(() =>
+                            {
+                                AddUsersFromFile(openFileDialog.FileName);
+                            });
                         }
 
                         break;
@@ -355,20 +351,30 @@ namespace MathChatBot
                 // New topic
                 case nameof(btnNewTopic):
                     {
-                        InputWindow inputWindow = new InputWindow(WindowTypes.NewTopic);
-                        inputWindow.Show();
-                        IsEnabled = false;
-                        inputWindow.Closing += window_Closing;
+                        this.ShowInputWindow(WindowTypes.NewTopic, action: () =>
+                        {
+                            GetData();
+                        });
 
                         break;
                     }
                 // New term
                 case nameof(btnNewTerm):
                     {
-                        InputWindow inputWindow = new InputWindow(WindowTypes.NewTerm);
-                        inputWindow.Show();
-                        IsEnabled = false;
-                        inputWindow.Closing += window_Closing;
+                        this.ShowInputWindow(WindowTypes.NewTerm, action: () =>
+                        {
+                            GetData();
+                        });
+
+                        break;
+                    }
+                // New class
+                case nameof(btnNewClass):
+                    {
+                        this.ShowInputWindow(WindowTypes.NewClass, action: () =>
+                        {
+                            GetData();
+                        });
 
                         break;
                     }
@@ -377,12 +383,11 @@ namespace MathChatBot
                     {
                         // Get the associated object
                         User user = ((FrameworkElement)sender).DataContext as User;
-                        // Open a window containing more information about the user
-                        var inputWindow = new InputWindow(WindowTypes.UserInformation, user);
-                        // Closing event
-                        inputWindow.Closing += window_Closing;
-                        // Show the information window
-                        inputWindow.ShowDialog();
+
+                        this.ShowInputWindow(WindowTypes.UserInformation, user, () =>
+                        {
+                            GetData();
+                        });
                         break;
                     }
                 // Class object "See users"
@@ -390,11 +395,10 @@ namespace MathChatBot
                     {
                         // Get the associated object
                         Class @class = ((FrameworkElement)sender).DataContext as Class;
-                        var inputWindow = new InputWindow(WindowTypes.ClassOverview, @class);
-                        // Closing event
-                        inputWindow.Closing += window_Closing;
-                        // Show the information window
-                        inputWindow.ShowDialog();
+                        this.ShowInputWindow(WindowTypes.ClassOverview, @class, () =>
+                        {
+                            GetData();
+                        });
                         break;
                     }
                 // Term and Topic object "Edit"
@@ -409,7 +413,7 @@ namespace MathChatBot
                             Topic topic = listObject as Topic;
                             this.ShowInputWindow(WindowTypes.SeeTopicDefinitions, topic, () =>
                             {
-                                GetTopics();
+                                GetData();
                             });
                         }
                         else if (listObject is Term)
@@ -417,8 +421,7 @@ namespace MathChatBot
                             Term term = listObject as Term;
                             this.ShowInputWindow(WindowTypes.SeeTermDefinitionsAndAssignments, term, () =>
                             {
-                                var topicName = cbbTopics.SelectedItem.ToString();
-                                GetTerms(topicName);
+                                GetData();
                             });
                         }
 
@@ -443,10 +446,7 @@ namespace MathChatBot
                                 if (!DatabaseUtility.DeleteTopic(topic))
                                     CustomDialog.Show(Properties.Resources.could_not_remove_the_topic);
                                 else
-                                {
-                                    CustomDialog.Show(string.Format(Properties.Resources.item_removed, topic.Name));
                                     GetTopics();
-                                }
                             }
                         }
                         else if (listObject is Term)
@@ -459,10 +459,7 @@ namespace MathChatBot
                                 if (!DatabaseUtility.DeleteTerm(term))
                                     CustomDialog.Show(Properties.Resources.could_not_remove_the_term);
                                 else
-                                {
-                                    CustomDialog.Show(string.Format(Properties.Resources.item_removed, term.Name));
                                     GetTerms(selectedItem);
-                                }
                             }
                         }
 
@@ -472,46 +469,32 @@ namespace MathChatBot
             }
         }
 
-        // Window - Closing
-        private void window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            IsEnabled = true;
-            DatabaseUtility.RefreshEntity();
-
-            GetUsers();
-            GetClasses();
-
-            var selectedTopic = cbbTopics.SelectedItem.ToString();
-            if (selectedTopic == Properties.Resources.all_topics)
-                GetTopics();
-            else
-                GetTerms(selectedTopic);
-        }
-
-        // DataGrid - RowEditEnding
-        private void dataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
-        {
-            try
-            {
-                Entity.SaveChanges();
-            }
-            catch { }
-        }
-
         // DataGrid - CellEditEnding
         private void dataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             try
             {
-                Entity.SaveChanges();
-            }
-            catch { }
-        }
+                var dataGrid = sender as DataGrid;
 
-        // Any - Loaded
-        private void control_Loaded(object sender, RoutedEventArgs e)
-        {
-            CustomDialog.Dismiss();
+                if (dataGrid.SelectedValue != null)
+                    Entity.Entry(dataGrid.SelectedValue).State = System.Data.Entity.EntityState.Modified;
+
+                if (Entity.ChangeTracker.HasChanges())
+                {
+                    Entity.SaveChanges();
+
+                    var dg = sender as DataGrid;
+                    if (dg == dgTopics)
+                    {
+                        SetComboBoxTopics();
+                        GetTopics();
+                    }
+                }
+            }
+            catch (Exception mes)
+            {
+                CustomDialog.Show(mes.Message);
+            }
         }
 
         #endregion

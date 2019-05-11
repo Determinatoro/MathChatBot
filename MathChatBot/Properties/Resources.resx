@@ -221,7 +221,7 @@
     <value>Name</value>
   </data>
   <data name="new_class" xml:space="preserve">
-    <value>New class</value>
+    <value>New Class</value>
   </data>
   <data name="new_password" xml:space="preserve">
     <value>New password</value>
@@ -619,10 +619,10 @@ How to use the calculator:
     <value>clear result</value>
   </data>
   <data name="could_not_remove_the_term" xml:space="preserve">
-    <value>Could not remove the term. It still has some associations to other tables in the database.</value>
+    <value>Cannot not remove the term. It still has some associations to other tables in the database.</value>
   </data>
   <data name="could_not_remove_the_topic" xml:space="preserve">
-    <value>Could not remove the topic. It still has some associations to other tables in the database.</value>
+    <value>Cannot not remove the topic. It still has some associations to other tables in the database.</value>
   </data>
   <data name="divide" xml:space="preserve">
     <value>divide</value>
@@ -670,7 +670,7 @@ How to use the calculator:
     <value>Select assignment</value>
   </data>
   <data name="could_not_remove_definition" xml:space="preserve">
-    <value>Could not remove the definition. It still has some associations to other tables in the database.</value>
+    <value>Cannot not remove the definition. It still has some associations to other tables in the database.</value>
   </data>
   <data name="new_image" xml:space="preserve">
     <value>New image</value>
@@ -749,5 +749,32 @@ How to use the calculator:
   </data>
   <data name="remove_user_from_class" xml:space="preserve">
     <value>Remove user from class</value>
+  </data>
+  <data name="class_name" xml:space="preserve">
+    <value>Class name</value>
+  </data>
+  <data name="could_not_add_class" xml:space="preserve">
+    <value>Could not add class</value>
+  </data>
+  <data name="help_requests_reset" xml:space="preserve">
+    <value>Help requests reset</value>
+  </data>
+  <data name="no_help_requests_for_this_term" xml:space="preserve">
+    <value>No help requests for this term</value>
+  </data>
+  <data name="reset_requests" xml:space="preserve">
+    <value>Reset requests</value>
+  </data>
+  <data name="source_requests" xml:space="preserve">
+    <value>Source requests</value>
+  </data>
+  <data name="source_type" xml:space="preserve">
+    <value>Source type</value>
+  </data>
+  <data name="term_help_request_sources" xml:space="preserve">
+    <value>{0} - Help Request Sources</value>
+  </data>
+  <data name="the_class_already_exists" xml:space="preserve">
+    <value>The class already exists</value>
   </data>
 </root>

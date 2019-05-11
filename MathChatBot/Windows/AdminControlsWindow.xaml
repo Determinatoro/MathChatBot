@@ -99,6 +99,8 @@
                         <StackPanel>
                             <!--IKON-->
                             <Image Source="/Resources/icon_users.png" 
+                                   UseLayoutRounding="True"
+                                   RenderOptions.BitmapScalingMode="HighQuality"
                                    Height="40"
                                    Width="40"   
                                    Margin="0, 10, 0, 0"
@@ -137,8 +139,7 @@
                             CanUserSortColumns="True"   
                             CanUserAddRows="False"
                             RowHeaderWidth="0"
-                            SelectionMode="Extended"
-                            RowEditEnding="dataGrid_RowEditEnding"  
+                            SelectionMode="Single"
                             CellEditEnding="dataGrid_CellEditEnding"
                             >
                             <DataGrid.Resources>
@@ -294,7 +295,9 @@
                             <!-- ICON -->
                             <Image Source="/Resources/icon_classes.png" 
                                    Height="40"
-                                   Width="40"   
+                                   Width="40"  
+                                   UseLayoutRounding="True"
+                                   RenderOptions.BitmapScalingMode="HighQuality"
                                    Margin="0, 10, 0, 0"
                                    />
                             <!-- TEXT -->
@@ -332,7 +335,6 @@
                             CanUserAddRows="False"
                             RowHeaderWidth="0"
                             SelectionMode="Single"
-                            RowEditEnding="dataGrid_RowEditEnding"  
                             CellEditEnding="dataGrid_CellEditEnding"
                             >
                             <DataGrid.Resources>
@@ -431,6 +433,8 @@
                         <StackPanel>
                             <!-- ICON -->
                             <Image Source="/Resources/icon_materials.png" 
+                                   UseLayoutRounding="True"
+                                   RenderOptions.BitmapScalingMode="HighQuality"
                                    Height="40"
                                    Width="40"   
                                    Margin="0, 10, 0, 0"
@@ -467,11 +471,10 @@
                             CanUserReorderColumns="False"    
                             CanUserResizeColumns="False"    
                             CanUserResizeRows="False"    
-                            CanUserSortColumns="False"   
+                            CanUserSortColumns="True"   
                             CanUserAddRows="False"
                             RowHeaderWidth="0"
                             SelectionMode="Single"
-                            RowEditEnding="dataGrid_RowEditEnding"  
                             CellEditEnding="dataGrid_CellEditEnding"
                             >
                             <DataGrid.Resources>
@@ -577,7 +580,6 @@
                                                 Height="20"
                                                 FontFamily="Roboto"
                                                 Click="button_Click"
-                                                Loaded="control_Loaded"
                                                 />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -601,6 +603,7 @@
                             CanUserAddRows="False"
                             RowHeaderWidth="0"
                             SelectionMode="Single"
+                            CellEditEnding="dataGrid_CellEditEnding"
                             >
                             <DataGrid.Resources>
                                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#F0F0f0"/>
@@ -632,6 +635,17 @@
                                                 />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
+                                    <DataGridTemplateColumn.CellEditingTemplate >
+                                        <DataTemplate>
+                                            <TextBox 
+                                                BorderBrush="Transparent"
+                                                Padding="2"
+                                                BorderThickness="0"
+                                                Background="Transparent"
+                                                Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTemplateColumn Width="80" Header="{x:Static p:Resources.edit}">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -661,7 +675,6 @@
                                                 Height="20"
                                                 FontFamily="Roboto"
                                                 Click="button_Click"
-                                                Loaded="control_Loaded"
                                                 />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>

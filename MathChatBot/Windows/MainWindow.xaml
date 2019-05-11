@@ -41,9 +41,10 @@
                             Margin="10"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
-                            MaxWidth="355"
+                            MaxWidth="320"
                             Source="{Binding Image}"
-                            Stretch="None"
+                            Stretch="Uniform"
+                            StretchDirection="DownOnly"
                             />
 
                         <Grid Grid.Row="1">
@@ -112,9 +113,10 @@
                         Background="{Binding MessageBackground}"
                         Foreground="{Binding MessageForeground}"
                         FontSize="12"                    
+                        Margin="0"
                         HorizontalAlignment="{Binding MessageHorizontalAlignment}"
-                        Padding="7"
                         VerticalContentAlignment="Center"
+                        Padding="7"
                         >
                         <TextBox.Style>
                             <Style TargetType="TextBox">

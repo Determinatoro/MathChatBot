@@ -235,6 +235,7 @@
     <Compile Include="Models\UserRoleRelation.cs">
       <DependentUpon>MathChatBotModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Objects\SourceObject.cs" />
     <Compile Include="Utilities\PerformanceTester.cs" />
     <Compile Include="Windows\HelpRequestsWindow.xaml.cs">
       <DependentUpon>HelpRequestsWindow.xaml</DependentUpon>

@@ -70,14 +70,14 @@ namespace MathChatBot.Objects
         {
             get
             {
-                return Topic != null;
+                return Topic != null && IsMaterial;
             }
         }
         public bool IsTermDefinition
         {
             get
             {
-                return Term != null;
+                return Term != null && IsMaterial;
             }
         }
         public bool IsAssignment

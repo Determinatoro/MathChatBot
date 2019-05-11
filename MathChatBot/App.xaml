@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:MathChatBot"
              xmlns:core="clr-namespace:System;assembly=mscorlib"
+             Exit="Application_Exit"
              StartupUri="Windows\MainWindow.xaml">
     <Application.Resources>
         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#33002456"/>
@@ -879,13 +880,13 @@
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="background" Property="Fill" Value="{StaticResource ResourceKey=AAU_DarkBlue}"/>
                             </Trigger>
-                            <!--IsEnabled false-->
-                            <Trigger Property="IsEnabled" Value="false">
-                                <Setter TargetName="background" Property="Fill" Value="{StaticResource ResourceKey=DisabledColor}"/>
-                            </Trigger>
                             <!--IsFocused true-->
                             <Trigger Property="IsFocused" Value="true">
                                 <Setter TargetName="background" Property="Fill" Value="{StaticResource AAU_DarkBlue}"/>
+                            </Trigger>
+                            <!--IsEnabled false-->
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="background" Property="Fill" Value="{StaticResource ResourceKey=DisabledColor}"/>
                             </Trigger>
                             <!--IsMouseOver-->
                             <Trigger Property="IsMouseOver" Value="True">
