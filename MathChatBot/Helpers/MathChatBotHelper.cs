@@ -357,12 +357,12 @@ namespace MathChatBot.Helpers
                 return;
             }
 
-            string text = string.Format(Properties.Resources.this_is_what_i_found_about, message.Material.Term.Name.ToLower());
+            string text = string.Format(Properties.Resources.this_is_what_i_found_about, message.MaterialExample.Material.Term.Name.ToLower());
 
             AddBotMessages(new MessageObject[]
             {
                 new MessageObject(text),
-                new MessageObject(message.Material)
+                new MessageObject(message.MaterialExample.Material)
             }.ToList());
         }
 
@@ -734,8 +734,8 @@ namespace MathChatBot.Helpers
             if (IsCommand(joined))
                 return new AnalyzeResult((new string[] { joined }).ToList());
 
-            // No words or nouns entered by the user
-            if (onlyWordsList.Count == 0 || onlyNounsList.Count == 0)
+            // No nouns entered by the user
+            if (onlyNounsList.Count == 0)
                 return new AnalyzeResult(Properties.Resources.i_did_not_understand_that_sentence);
 
             // Using hashset to avoid having search string dublets
@@ -765,7 +765,10 @@ namespace MathChatBot.Helpers
                 }
             }
 
-            // Get indexes of all the commas
+            // Flag for proper list representation
+            var properListRepresentation = true;
+
+            // Get indexes of all the commas in the range
             var indexes = range.Select(x =>
             {
                 return x.Word == "," ? range.IndexOf(x) : -1;
@@ -778,27 +781,30 @@ namespace MathChatBot.Helpers
             {
                 // If the index difference is 1 then they are written beside each other
                 if (indexes[i + 1] - indexes[i] == 1)
-                    return new AnalyzeResult(Properties.Resources.please_write_a_proper_list_representation_of_nouns);
+                {
+                    properListRepresentation = false;
+                    break;
+                }
             }
 
-            // Check for a proper list representation of nouns
-            var notNounsAndAdjectives = range.Where(x => !x.IsAdjective && !x.IsNoun).ToList();
-            if (notNounsAndAdjectives.Any(x => x.Word == "," || x.Word == Properties.Resources.and))
+            if (properListRepresentation)
             {
+                // Check for a proper list representation of nouns
+                var onlyCommasAnd = range.Where(x => x.Word == "," || x.Word == Properties.Resources.and).ToList();
                 // Error if the last word is not "and"
-                if (notNounsAndAdjectives.Last().Word != Properties.Resources.and)
-                    return new AnalyzeResult(Properties.Resources.please_write_a_proper_list_representation_of_nouns);
-                // Error if there is commas but it ends with more than just one "and" like (dog, bird and bee and tiger)
-                else if (notNounsAndAdjectives.Count > 1 && notNounsAndAdjectives.SkipWhile(x => x.Word == ",").ToList().Count != 1)
-                    return new AnalyzeResult(Properties.Resources.please_write_a_proper_list_representation_of_nouns);
+                if (onlyCommasAnd.Any(x => x.Word == "," || x.Word == Properties.Resources.and) && onlyCommasAnd.Last().Word != Properties.Resources.and)
+                    properListRepresentation = false;
             }
 
-            // Join words
-            var nounCollection = string.Join("", range.Select(x => x.OriginalText));
-            // Remove white space before comma
-            nounCollection = nounCollection.Replace(" ,", ",");
-            // Add noun collection search string
-            hashSet.Add(nounCollection.ToLower());
+            if (properListRepresentation)
+            {
+                // Join words
+                var nounCollection = string.Join("", range.Select(x => x.OriginalText));
+                // Remove white space before comma
+                nounCollection = nounCollection.Replace(" ,", ",");
+                // Add noun collection search string
+                hashSet.Add(nounCollection.ToLower());
+            }
 
             // Get remaining nouns and adjective collections
             var tempRange = range;
@@ -808,17 +814,19 @@ namespace MathChatBot.Helpers
                 var collection = tempRange.TakeWhile(x => x.IsNoun || x.IsAdjective).ToList();
                 // Join them
                 var join = string.Join(string.Empty, collection.Select(x => x.OriginalText)).Trim();
-                // Add them list hashset
-                hashSet.Add(join);
-                // If the collection consists of only nouns and there 
-                // are several then add each of them to the hashset
-                if (collection.Count > 1 && collection.All(x => x.IsNoun))
-                    collection.ForEach(x => hashSet.Add(x.Word));
+                if (join != string.Empty) {
+                    // Add them list hashset
+                    hashSet.Add(join);
+                    // If the collection consists of only nouns and there 
+                    // are several then add each of them to the hashset
+                    if (collection.Count > 1 && collection.All(x => x.IsNoun))
+                        collection.ForEach(x => hashSet.Add(x.Word));
+                }
                 // Skip them plus the seperator
                 tempRange = tempRange.Skip(collection.Count + 1).ToList();
             } while (tempRange.Any());
 
-            stringList = hashSet.ToList();
+            stringList = hashSet.ToList().ToList();
 
             return new AnalyzeResult(stringList);
         }
@@ -838,14 +846,17 @@ namespace MathChatBot.Helpers
                 if (RunCommand(str))
                     return new MessageResult();
 
+                PerformanceTester.StartMET("Term and Topic");
                 Term term = Entity.Terms.FirstOrDefault(x => x.Name.ToLower() == str);
                 Topic topic = Entity.Topics.FirstOrDefault(x => x.Name.ToLower() == str);
+                PerformanceTester.StopMET("Term and Topic");
                 if (topic == null && term == null)
                     continue;
 
                 List<MessageObject> messages = new List<MessageObject>();
                 List<Material> materials = null;
 
+                PerformanceTester.StartMET("Get materials");
                 // A term and a topic has the same name
                 if (term != null && topic != null)
                     messages.Add(new MessageObject(term, topic));
@@ -854,6 +865,7 @@ namespace MathChatBot.Helpers
                 {
                     materials = Entity.Materials
                         .Where(x => x.TopicId == topic.Id)
+                        .ToList()
                         .OrderBy(x => x.ShowOrderId)
                         .ToList();
                 }
@@ -862,9 +874,11 @@ namespace MathChatBot.Helpers
                 {
                     materials = Entity.Materials
                         .Where(x => x.TermId == term.Id)
+                        .ToList()
                         .OrderBy(x => x.ShowOrderId)
                         .ToList();
                 }
+                PerformanceTester.StopMET("Get materials");
 
                 if (materials != null)
                 {

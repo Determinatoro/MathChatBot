@@ -191,6 +191,12 @@ namespace MathChatBot.Utilities
             return roles;
         }
 
+        /// <summary>
+        /// Check if user is a student
+        /// </summary>
+        /// <param name="entity">The entity</param>
+        /// <param name="userId">The user's ID</param>
+        /// <returns></returns>
         private static bool IsStudent(this Entity entity, int userId)
         {
             var studentRole = RoleTypes.Student.GetName();
@@ -519,6 +525,11 @@ namespace MathChatBot.Utilities
                 .ToList();
         }
 
+        /// <summary>
+        /// Get topic name from material
+        /// </summary>
+        /// <param name="material">Material object</param>
+        /// <returns></returns>
         public static string GetTopicName(Material material)
         {
             return Entity.Materials.Find(material.Id).Topic?.Name;

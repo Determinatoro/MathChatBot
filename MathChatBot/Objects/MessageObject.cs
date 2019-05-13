@@ -34,7 +34,6 @@ namespace MathChatBot.Objects
 
         public MessageObject(MaterialExample materialExample)
         {
-            Material = materialExample.Material;
             MaterialExample = materialExample;
             Source = MaterialExample.Source;
             MessageType = MessageTypes.BotHelp;
@@ -117,7 +116,7 @@ namespace MathChatBot.Objects
                 else if (IsAssignment)
                     return Assignment.Term;
                 else if (IsExample)
-                    return Material.Term;
+                    return MaterialExample.Material.Term;
 
                 return null;
             }
