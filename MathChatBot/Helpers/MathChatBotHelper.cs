@@ -753,9 +753,7 @@ namespace MathChatBot.Helpers
                 // Checking range
                 for (int i = 0; i < range.Count; i++)
                 {
-                    var word = range[i];
-
-                    if (word.IsAdjective && !word.IsVerb)
+                    if (range[i].IsAdjective)
                     {
                         var nextIndex = i + 1;
                         // If not a noun or an adjective follows an adjective the sentence is not proper
@@ -790,20 +788,19 @@ namespace MathChatBot.Helpers
             if (properListRepresentation)
             {
                 // Check for a proper list representation of nouns
-                var onlyCommasAnd = range.Where(x => x.Word == "," || x.Word == Properties.Resources.and).ToList();
                 // Error if the last word is not "and"
-                if (onlyCommasAnd.Any(x => x.Word == "," || x.Word == Properties.Resources.and) && onlyCommasAnd.Last().Word != Properties.Resources.and)
+                if (range.Any(x => x.Word == "," || x.Word == Properties.Resources.and) && range.Last(x => x.Word == "," || x.Word == Properties.Resources.and).Word != Properties.Resources.and)
                     properListRepresentation = false;
-            }
 
-            if (properListRepresentation)
-            {
-                // Join words
-                var nounCollection = string.Join("", range.Select(x => x.OriginalText));
-                // Remove white space before comma
-                nounCollection = nounCollection.Replace(" ,", ",");
-                // Add noun collection search string
-                hashSet.Add(nounCollection.ToLower());
+                if (properListRepresentation)
+                {
+                    // Join words
+                    var nounCollection = string.Join(string.Empty, range.Select(x => x.OriginalText));
+                    // Remove white space before comma
+                    nounCollection = nounCollection.Replace(" ,", ",");
+                    // Add noun collection search string
+                    hashSet.Add(nounCollection.ToLower());
+                }
             }
 
             // Get remaining nouns and adjective collections

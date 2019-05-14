@@ -1,7 +1,10 @@
-﻿using MathChatBot.Models;
+﻿using Effort;
+using Effort.DataLoaders;
+using MathChatBot.Models;
 using MathChatBot.Objects;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using static MathChatBot.Models.Role;
 using Entity = MathChatBot.Models.MathChatBotEntities;
@@ -91,7 +94,6 @@ namespace MathChatBot.Utilities
         // METHODS
         //*************************************************/
         #region Methods
-
 
         /// <summary>
         /// Dispose entity
