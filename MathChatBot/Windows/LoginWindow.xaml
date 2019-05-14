@@ -107,41 +107,41 @@
                     />
 
                 <TextBox
-            Name="tbUsername"  
-            Style="{StaticResource styleWaterMark}"                
-            VerticalContentAlignment="Center"
-            Padding="5,2.5,5,2.5"
-            BorderBrush="#000000"
-            BorderThickness="1"
-            Margin="25, 1, 25, 1"
-            TextWrapping="Wrap"    
-            FontFamily="Roboto"
-            FontSize="14"
-            Grid.Row="2"
-            />
+                    Name="tbUsername"  
+                    Style="{StaticResource styleWaterMark}"                
+                    VerticalContentAlignment="Center"
+                    Padding="5,2.5,5,2.5"
+                    BorderBrush="#000000"
+                    BorderThickness="1"
+                    Margin="25, 1, 25, 1"
+                    TextWrapping="Wrap"    
+                    FontFamily="Roboto"
+                    FontSize="14"
+                    Grid.Row="2"
+                    />
 
                 <Label
-            Content="{x:Static p:Resources.password}"
-            Margin="25, 1, 25, 1"
-            Padding="0"
-            VerticalContentAlignment="Center"
-            FontSize="16"
-            FontFamily="Roboto"
-            Grid.Row="3"
-            />
+                    Content="{x:Static p:Resources.password}"
+                    Margin="25, 1, 25, 1"
+                    Padding="0"
+                    VerticalContentAlignment="Center"
+                    FontSize="16"
+                    FontFamily="Roboto"
+                    Grid.Row="3"
+                    />
 
                 <PasswordBox
-            Name="tbPassword"  
-            Style="{StaticResource styleCustomPasswordBox}"
-            VerticalContentAlignment="Center"
-            Padding="5,2.5,5,2.5"
-            BorderBrush="#000000"
-            BorderThickness="1"
-            Margin="25, 1, 25, 1"
-            FontFamily="Roboto"
-            FontSize="14"
-            Grid.Row="4"            
-            />
+                    Name="tbPassword"  
+                    Style="{StaticResource styleCustomPasswordBox}"
+                    VerticalContentAlignment="Center"
+                    Padding="5,2.5,5,2.5"
+                    BorderBrush="#000000"
+                    BorderThickness="1"
+                    Margin="25, 1, 25, 1"
+                    FontFamily="Roboto"
+                    FontSize="14"
+                    Grid.Row="4"            
+                    />
 
                 <CheckBox
                     Name="cbSaveCredentials"

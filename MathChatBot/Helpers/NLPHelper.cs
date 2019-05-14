@@ -8,6 +8,7 @@ using MathChatBot.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
@@ -166,7 +167,14 @@ namespace MathChatBot.Helpers
                 POSStringIdentifier = splitted[1]
             };
         }
+    }
 
+    public static class NLPUtility
+    {
+        public static string ListToString(this List<TaggedWord> list)
+        {
+            return string.Join(string.Empty, list.Select(x => x.OriginalText)).Trim();
+        }
     }
 
     /// <summary>

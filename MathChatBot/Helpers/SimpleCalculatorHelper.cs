@@ -119,8 +119,6 @@ namespace MathChatBot.Helpers
             set
             {
                 _input = value;
-                // Replaces the input from the user with valid input to make sure our library can calculate the result
-                _input = ReplaceNaturalLanguage(_input);
 
                 // If the inputstring starts with '=' it will overwrite the current result
                 if (_input.StartsWith("="))

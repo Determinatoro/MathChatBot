@@ -1,4 +1,5 @@
-﻿using MathChatBot.Utilities;
+﻿using Effort.Provider;
+using MathChatBot.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -22,6 +23,27 @@ namespace MathChatBot.Test
             var encryptedText = EncryptUtility.Encrypt("test1234", "test1234");
             var decryptedText = EncryptUtility.Decrypt(encryptedText, "test1234");
             Assert.AreEqual("test1234", decryptedText);
+        }
+
+
+
+        [TestInitialize]
+        public void Setup()
+        {
+            EffortProviderConfiguration.RegisterProvider();
+        }
+        
+        public void SetupContext()
+        {
+            var connection = Effort.EntityConnectionFactory.CreatePersistent("name=MathChatBotEntities");
+            var context = new Models.MathChatBotEntities(connection, true);
+        }
+
+        [TestMethod]
+        public void TestConnection()
+        {
+            var connection = Effort.EntityConnectionFactory.CreatePersistent("name=MathChatBotEntities");
+            var context = new Models.MathChatBotEntities(connection, true);
         }
 
         #endregion

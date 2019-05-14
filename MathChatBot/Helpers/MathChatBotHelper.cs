@@ -812,33 +812,22 @@ namespace MathChatBot.Helpers
                 var collectionCount = collection.Count;
                 // Join them
                 var join = string.Join(string.Empty, collection.Select(x => x.OriginalText)).Trim();
-                if (join != string.Empty) {
+                if (join != string.Empty)
+                {
                     // Add them list hashset
                     hashSet.Add(join);
-                    // If the collection consists of only nouns and there 
-                    // are several then add each of them to the hashset
-                    if (collection.Count > 1 && collection.Count(x => x.IsNoun) > 1)
+                    // If the collection consists of several nouns
+                    if (collection.Count > 1)
                     {
-                        do
-                        {
-                            // Take while not noun
-                            var count = collection.TakeWhile(x => !x.IsNoun).Count();
-                            // Take count plus one from collection
-                            var tempCollection = collection.Take(count + 1).ToList();
-                            // Get original text
-                            join = string.Join(string.Empty, tempCollection.Select(x => x.OriginalText)).Trim();
-                            // Add string to hashset
-                            hashSet.Add(join);
-                            // Skip in collection
-                            collection = collection.Skip(tempCollection.Count).ToList();
-                        } while (collection.Any());
+                        foreach (var word in collection)
+                            hashSet.Add(collection.Skip(collection.IndexOf(word)).ToList().ListToString());
                     }
                 }
                 // Skip them plus the seperator
                 range = range.Skip(collectionCount + 1).ToList();
             } while (range.Any());
 
-            stringList = hashSet.ToList();
+            stringList = hashSet.OrderByDescending(x => x.Length).ToList();
 
             return new AnalyzeResult(stringList);
         }
