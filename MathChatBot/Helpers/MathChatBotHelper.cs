@@ -730,7 +730,7 @@ namespace MathChatBot.Helpers
             var onlyNounsList = wordList.Where(x => x.IsNoun).ToList();
 
             // Check if there has been given a command
-            string joined = string.Join(string.Empty, onlyWordsList.Select(x => x.OriginalText));
+            string joined = onlyWordsList.ListToString();
             if (IsCommand(joined))
                 return new AnalyzeResult((new string[] { joined }).ToList());
 
@@ -811,7 +811,7 @@ namespace MathChatBot.Helpers
                 // Get count of collection
                 var collectionCount = collection.Count;
                 // Join them
-                var join = string.Join(string.Empty, collection.Select(x => x.OriginalText)).Trim();
+                var join = collection.ListToString();
                 if (join != string.Empty)
                 {
                     // Add them list hashset
