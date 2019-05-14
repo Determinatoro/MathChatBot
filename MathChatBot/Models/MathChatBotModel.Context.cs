@@ -15,6 +15,13 @@ namespace MathChatBot.Models
     
     public partial class MathChatBotEntities : DbContext
     {
+    	// I added this constructor so I could inject a db-connection into the context:
+        public MathChatBotEntities(System.Data.Common.DbConnection dbConnection, bool contextOwnsConnection) 
+            : base(dbConnection, contextOwnsConnection)
+            {
+        }
+    
+        // Original constructor
         public MathChatBotEntities()
             : base("name=MathChatBotEntities")
         {

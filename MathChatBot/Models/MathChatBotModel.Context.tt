@@ -55,6 +55,13 @@ using System.Linq;
 
 <#=Accessibility.ForType(container)#> partial class <#=code.Escape(container)#> : DbContext
 {
+	// I added this constructor so I could inject a db-connection into the context:
+    public <#=code.Escape(container)#>(System.Data.Common.DbConnection dbConnection, bool contextOwnsConnection) 
+        : base(dbConnection, contextOwnsConnection)
+        {
+    }
+
+    // Original constructor
     public <#=code.Escape(container)#>()
         : base("name=<#=container.Name#>")
     {

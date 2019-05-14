@@ -481,7 +481,7 @@ namespace MathChatBot.Helpers
 
             if (message.IsTermDefinition || message.IsExample)
             {
-                assignments = Entity.Assignments.Where(x => x.TermId == message.Material.Term.Id)
+                assignments = Entity.Assignments.Where(x => x.TermId == message.Term.Id)
                 .OrderBy(x => x.AssignmentNo)
                 .ToList();
 
@@ -804,11 +804,12 @@ namespace MathChatBot.Helpers
             }
 
             // Get remaining nouns and adjective collections
-            var tempRange = range;
             do
             {
                 // First nouns and adjectives in range
-                var collection = tempRange.TakeWhile(x => x.IsNoun || x.IsAdjective).ToList();
+                var collection = range.TakeWhile(x => x.IsNoun || x.IsAdjective).ToList();
+                // Get count of collection
+                var collectionCount = collection.Count;
                 // Join them
                 var join = string.Join(string.Empty, collection.Select(x => x.OriginalText)).Trim();
                 if (join != string.Empty) {
@@ -816,14 +817,28 @@ namespace MathChatBot.Helpers
                     hashSet.Add(join);
                     // If the collection consists of only nouns and there 
                     // are several then add each of them to the hashset
-                    if (collection.Count > 1 && collection.All(x => x.IsNoun))
-                        collection.ForEach(x => hashSet.Add(x.Word));
+                    if (collection.Count > 1 && collection.Count(x => x.IsNoun) > 1)
+                    {
+                        do
+                        {
+                            // Take while not noun
+                            var count = collection.TakeWhile(x => !x.IsNoun).Count();
+                            // Take count plus one from collection
+                            var tempCollection = collection.Take(count + 1).ToList();
+                            // Get original text
+                            join = string.Join(string.Empty, tempCollection.Select(x => x.OriginalText)).Trim();
+                            // Add string to hashset
+                            hashSet.Add(join);
+                            // Skip in collection
+                            collection = collection.Skip(tempCollection.Count).ToList();
+                        } while (collection.Any());
+                    }
                 }
                 // Skip them plus the seperator
-                tempRange = tempRange.Skip(collection.Count + 1).ToList();
-            } while (tempRange.Any());
+                range = range.Skip(collectionCount + 1).ToList();
+            } while (range.Any());
 
-            stringList = hashSet.ToList().ToList();
+            stringList = hashSet.ToList();
 
             return new AnalyzeResult(stringList);
         }
