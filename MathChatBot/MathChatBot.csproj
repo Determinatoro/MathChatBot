@@ -243,6 +243,7 @@
     </Compile>
     <Compile Include="Objects\SourceObject.cs" />
     <Compile Include="Utilities\PerformanceTester.cs" />
+    <Compile Include="Utilities\TestUtility.cs" />
     <Compile Include="Windows\HelpRequestsWindow.xaml.cs">
       <DependentUpon>HelpRequestsWindow.xaml</DependentUpon>
     </Compile>

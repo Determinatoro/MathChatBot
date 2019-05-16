@@ -624,6 +624,9 @@ namespace MathChatBot.Helpers
         /// <returns>A message result</returns>
         private MessageResult AnalyzeText(string text)
         {
+            if (string.IsNullOrEmpty(text))
+                return new MessageResult(Properties.Resources.please_write_a_proper_sentence);
+
             var tempText = text.ToLower();
 
             PerformanceTester.StartMET("GetSentences");
@@ -847,10 +850,12 @@ namespace MathChatBot.Helpers
                 if (RunCommand(str))
                     return new MessageResult();
 
-                PerformanceTester.StartMET("Term and Topic");
+                PerformanceTester.StartMET("Term");
                 Term term = Entity.Terms.FirstOrDefault(x => x.Name.ToLower() == str);
+                PerformanceTester.StopMET("Term");
+                PerformanceTester.StartMET("Topic");
                 Topic topic = Entity.Topics.FirstOrDefault(x => x.Name.ToLower() == str);
-                PerformanceTester.StopMET("Term and Topic");
+                PerformanceTester.StopMET("Topic");
                 if (topic == null && term == null)
                     continue;
 

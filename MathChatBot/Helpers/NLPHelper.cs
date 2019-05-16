@@ -188,8 +188,8 @@ namespace MathChatBot.Helpers
         //*************************************************/
         #region Variables
 
-        private static string AppFolderPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-        private static string ResourcesFolderPath = Path.Combine(Directory.GetParent(AppFolderPath).Parent.FullName, "Resources\\{0}");
+        //private static string AppFolderPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        //private static string ResourcesFolderPath = Path.Combine(Directory.GetParent(AppFolderPath).Parent.FullName, "Resources\\{0}");
 
         #endregion
 
@@ -212,7 +212,7 @@ namespace MathChatBot.Helpers
         {
             PerformanceTester.StartMET("NLP");
             // Get path to Stanford NLP models
-            var jarRoot = string.Format(ResourcesFolderPath, @"stanford-corenlp-3.9.2-models");
+            var jarRoot = Path.Combine(Utility.GetResourcesFolder(), @"stanford-corenlp-3.9.2-models");
             // Turn off logging
             RedwoodConfiguration.current().clear().apply();
             var props = new java.util.Properties();

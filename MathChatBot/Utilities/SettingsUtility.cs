@@ -14,7 +14,7 @@ namespace MathChatBot.Utilities
         /// </summary>
         /// <param name="username">The user's username</param>
         /// <param name="password">The user's password</param>
-        public static void SaveLoginCredentials(string username, string password)
+        public static void SaveLoginCredentials(string username = null, string password = null)
         {
             Properties.Settings.Default.Username = username;
             Properties.Settings.Default.Password = password;

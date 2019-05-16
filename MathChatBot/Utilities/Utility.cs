@@ -21,6 +21,24 @@ namespace MathChatBot.Utilities
         //*************************************************/
         #region Methods
 
+        public static string GetProjectFolder()
+        {
+            string startupPath = AppDomain.CurrentDomain.BaseDirectory;
+            var pathItems = startupPath.Split(Path.DirectorySeparatorChar);
+            Assembly assy = typeof(App).Assembly;
+            var pos = pathItems.ToList().FindIndex(x => x == assy.GetName().Name);
+            string projectPath = string.Join(Path.DirectorySeparatorChar.ToString(), pathItems.Take(pos + 1));
+            return projectPath;
+        }
+
+        public static string GetResourcesFolder()
+        {
+            Assembly assy = typeof(App).Assembly;
+            var projectFolder = GetProjectFolder();
+            var resourcesFolder = Path.Combine(projectFolder, assy.GetName().Name, nameof(App.Resources));
+            return resourcesFolder;
+        }
+
         public static object GetPropertyValue(this object src, string propName)
         {
             return src.GetType().GetProperty(propName).GetValue(src, null);

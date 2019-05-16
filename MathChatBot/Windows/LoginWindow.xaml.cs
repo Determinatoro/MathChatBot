@@ -93,13 +93,12 @@ namespace MathChatBot
                             // Save the login credentials for later use
                             SettingsUtility.SaveLoginCredentials(username, password);
                         else
-                            SettingsUtility.SaveLoginCredentials(null, null);
+                            SettingsUtility.SaveLoginCredentials();
 
                         this.RunOnUIThread(() =>
                         {
                             DialogResult = true;
                             User = (User)response.Data;
-                            // Close this window
                             Close();
                         });
                     }

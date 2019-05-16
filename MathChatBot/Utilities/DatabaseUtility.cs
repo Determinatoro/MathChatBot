@@ -4,8 +4,9 @@ using MathChatBot.Models;
 using MathChatBot.Objects;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using static MathChatBot.Models.Role;
 using Entity = MathChatBot.Models.MathChatBotEntities;
 
@@ -47,6 +48,16 @@ namespace MathChatBot.Utilities
     /// </summary>
     public class CustomEntity : Entity
     {
+        public CustomEntity()
+            : base()
+        {
+        }
+
+        public CustomEntity(System.Data.Common.DbConnection dbConnection, bool contextOwnsConnection)
+            : base(dbConnection, contextOwnsConnection)
+        {
+        }
+
         public bool IsDisposed { get; set; }
 
         protected override void Dispose(bool disposing)
@@ -61,7 +72,6 @@ namespace MathChatBot.Utilities
     /// </summary>
     public static class DatabaseUtility
     {
-
         //*************************************************/
         // VARIABLES
         //*************************************************/
@@ -69,6 +79,7 @@ namespace MathChatBot.Utilities
 
         private static CustomEntity _mathChatBotEntities;
         private const string PassPhrase = "MathChatBot";
+        private static bool RunningTest;
 
         #endregion
 
@@ -82,7 +93,12 @@ namespace MathChatBot.Utilities
             get
             {
                 if (_mathChatBotEntities == null || _mathChatBotEntities.IsDisposed)
-                    _mathChatBotEntities = new CustomEntity();
+                {
+                    if (RunningTest)
+                        _mathChatBotEntities = (CustomEntity)TestUtility.GetInMemoryContext();
+                    else
+                        _mathChatBotEntities = new CustomEntity();
+                }
 
                 return _mathChatBotEntities;
             }
@@ -96,6 +112,14 @@ namespace MathChatBot.Utilities
         #region Methods
 
         /// <summary>
+        /// Set the utility into test state
+        /// </summary>
+        public static void RunTest()
+        {
+            RunningTest = true;
+        }
+
+        /// <summary>
         /// Dispose entity
         /// </summary>
         public static void DisposeEntity()
@@ -105,6 +129,15 @@ namespace MathChatBot.Utilities
                 _mathChatBotEntities.Dispose();
                 _mathChatBotEntities = null;
             }
+        }
+
+        /// <summary>
+        /// Get users from database
+        /// </summary>
+        /// <returns>A list of user objects</returns>
+        public static List<User> GetUsers()
+        {
+            return Entity.Users.ToList();
         }
 
         /// <summary>

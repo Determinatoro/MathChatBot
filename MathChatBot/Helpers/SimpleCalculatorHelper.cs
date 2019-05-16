@@ -88,6 +88,68 @@ namespace MathChatBot.Helpers
             {
                 // This instance calculates the result for the string "value" which is entered by the user
                 Expression e = new Expression(value, EvaluateOptions.IgnoreCase);
+                e.EvaluateFunction += (sender, args) =>
+                {
+                    try
+                    {
+                        var functionName = sender.ToLower();
+
+                        switch (functionName)
+                        {
+                            case "cos":
+                            case "tan":
+                            case "sin":
+                                {
+                                    // Get method for the function
+                                    var methodInfo = typeof(Math).GetMethods().FirstOrDefault(x => !x.Name.Contains("_") && x.Name.ToLower() == functionName);
+                                    // Get input
+                                    var input = args.Parameters[0].Evaluate();
+
+                                    // Convert to radians
+                                    var v = Convert.ToDouble(input);
+                                    var radians = (v * Math.PI) / 180;
+
+                                    // Calculate
+                                    var result = methodInfo.Invoke(null, new object[] { radians });
+
+                                    // Value
+                                    var val = Convert.ToDouble(result);
+                                    val = Math.Round(val, 5);
+
+                                    // Set result
+                                    args.Result = val;
+
+                                    break;
+                                }
+                            case "acos":
+                            case "asin":
+                            case "atan":
+                                {
+                                    // Get method for the function
+                                    var methodInfo = typeof(Math).GetMethods().FirstOrDefault(x => !x.Name.Contains("_") && x.Name.ToLower() == functionName);
+                                    // Get input
+                                    var input = args.Parameters[0].Evaluate();
+
+                                    // Convert to double
+                                    var v = Convert.ToDouble(input);
+
+                                    // Calculate
+                                    var result = methodInfo.Invoke(null, new object[] { v });
+
+                                    // Convert to degrees
+                                    var radians = Convert.ToDouble(result);
+                                    var degrees = Math.Round((radians * 180) / Math.PI, 5);
+                                    args.Result = degrees;
+
+                                    break;
+                                }
+                        }
+                    }
+                    catch
+                    {
+                        args.Result = double.NaN;
+                    }
+                };
                 var res = e.Evaluate();
 
                 // Checking for wrongful math and throws exceptions accordingly
@@ -179,7 +241,7 @@ namespace MathChatBot.Helpers
                 input = ReplaceNaturalLanguage(input, removeSpaces: false);
                 return true;
             }
-            
+
             return false;
         }
 
