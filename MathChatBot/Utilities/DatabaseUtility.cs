@@ -145,7 +145,9 @@ namespace MathChatBot.Utilities
         /// <returns>A list of user objects</returns>
         public static List<User> GetUsers()
         {
-            return Entity.Users.Where(x => x.FirstName == "John").ToList();
+            return Entity.Users
+                         .Where(x => x.FirstName == "John")
+                         .ToList();
         }
 
         /// <summary>

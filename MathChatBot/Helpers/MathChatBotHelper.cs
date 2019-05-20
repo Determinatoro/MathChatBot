@@ -867,13 +867,15 @@ namespace MathChatBot.Helpers
                         // Function to add subsets of collection
                         Action AddSubSets = () =>
                         {
-                            foreach (var word in collection)
-                                hashSet.Add(collection.Skip(collection.IndexOf(word)).ToList().ListToString());
+                            for (int i = 0; i < collection.Count; i++)
+                                hashSet.Add(collection.Skip(i).ToList().ListToString());
                         };
 
                         // If the collection consists of several nouns
                         if (collection.Count > 1)
                         {
+                            AddSubSets();
+
                             if (collection.Count(x => x.IsNoun) > 1)
                             {
                                 AddSubSets();
