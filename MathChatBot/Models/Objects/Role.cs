@@ -4,14 +4,6 @@ using static MathChatBot.Models.Role;
 
 namespace MathChatBot.Models
 {
-    public static class RoleHelper
-    {
-        /*public static string GetName(this RoleTypes roleTypes)
-        {
-            return Enum.GetName(typeof(RoleTypes), (int)roleTypes);
-        }*/
-    }
-
     public partial class Role
     {
         public enum RoleTypes

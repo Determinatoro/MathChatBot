@@ -25,5 +25,22 @@ namespace MathChatBot.Utilities
             var inMemoryContext = new CustomEntity(inMemoryConnection, false);
             return inMemoryContext;
         }
+
+        public static void CreateHelpRequests()
+        {
+            var @class = DatabaseUtility.Entity.Classes.FirstOrDefault(x => x.Name == "B100");
+
+            var users = DatabaseUtility.GetUsersInClass(@class, new Role.RoleTypes[] { Role.RoleTypes.Student }, false);
+            var materials = DatabaseUtility.Entity.Materials.ToList();
+
+            for (int i = 0; i < users.Count; i++)
+            {
+                var user = users[i];
+                var material = materials[(i + 3) % materials.Count];
+
+                DatabaseUtility.MakeHelpRequest(user.Id, material.TermId, material.Id, null, null);
+            }
+        }
+
     }
 }

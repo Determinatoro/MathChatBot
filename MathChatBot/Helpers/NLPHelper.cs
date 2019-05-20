@@ -198,7 +198,7 @@ namespace MathChatBot.Helpers
         //*************************************************/
         #region Properties
 
-        private StanfordCoreNLP ExtendedTagger { get; set; }
+        private StanfordCoreNLP Tagger { get; set; }
         private ArrayList Sentences { get; set; }
 
         #endregion
@@ -210,26 +210,7 @@ namespace MathChatBot.Helpers
 
         public NLPHelper()
         {
-            PerformanceTester.StartMET("NLP");
-            // Get path to Stanford NLP models
-            var jarRoot = Path.Combine(Utility.GetResourcesFolder(), @"stanford-corenlp-3.9.2-models");
-            // Turn off logging
-            RedwoodConfiguration.current().clear().apply();
-            var props = new java.util.Properties();
-            //props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner");
-            props.setProperty("annotators", "tokenize, ssplit, pos");
-            // Makes Named Entity Recognition work in the library
-            //props.setProperty("ner.useSUTime", "0");
-            //props.put("ner.applyFineGrained", "0");
-            //props.put("ner.fine.regexner.mapping", jarRoot + @"\edu\stanford\nlp\models\kbp\english\");
-            // Set current directory
-            var curDir = Environment.CurrentDirectory;
-            var modelsDirectory = curDir + "\\" + jarRoot + @"\edu\stanford\nlp\models";
-            Directory.SetCurrentDirectory(jarRoot);
-
-            // Load Stanford NLP
-            ExtendedTagger = new StanfordCoreNLP(props);
-            PerformanceTester.StopMET("NLP");
+            SetupTagger();
         }
 
         #endregion
@@ -240,16 +221,65 @@ namespace MathChatBot.Helpers
         #region Methods
 
         /// <summary>
+        /// Setup tagger including POS
+        /// </summary>
+        private void SetupTagger()
+        {
+            PerformanceTester.StartMET("NLP");
+            // Get path to Stanford NLP models
+            var jarRoot = Path.Combine(Utility.GetResourcesFolder(), @"stanford-corenlp-3.9.2-models");
+            // Turn off logging
+            RedwoodConfiguration.current().clear().apply();
+            // Set properties
+            var props = new java.util.Properties();
+            props.setProperty("annotators", "tokenize, ssplit, pos");
+            // Set current directory
+            var curDir = Environment.CurrentDirectory;
+            var modelsDirectory = curDir + "\\" + jarRoot + @"\edu\stanford\nlp\models";
+            Directory.SetCurrentDirectory(jarRoot);
+            // Load Stanford NLP
+            Tagger = new StanfordCoreNLP(props);
+            PerformanceTester.StopMET("NLP");
+        }
+
+        /// <summary>
+        /// Setup extended tagger that includes POS, lemma and entity analysis
+        /// </summary>
+        private void SetupExtendedTagger()
+        {
+            PerformanceTester.StartMET("NLP");
+            // Get path to Stanford NLP models
+            var jarRoot = Path.Combine(Utility.GetResourcesFolder(), @"stanford-corenlp-3.9.2-models");
+            // Turn off logging
+            RedwoodConfiguration.current().clear().apply();
+            var props = new java.util.Properties();
+            props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner");
+            // Makes Named Entity Recognition work in the library
+            props.setProperty("ner.useSUTime", "0");
+            props.put("ner.applyFineGrained", "0");
+            props.put("ner.fine.regexner.mapping", jarRoot + @"\edu\stanford\nlp\models\kbp\english\");
+            // Set current directory
+            var curDir = Environment.CurrentDirectory;
+            var modelsDirectory = curDir + "\\" + jarRoot + @"\edu\stanford\nlp\models";
+            Directory.SetCurrentDirectory(jarRoot);
+
+            // Load Stanford NLP
+            Tagger = new StanfordCoreNLP(props);
+            PerformanceTester.StopMET("NLP");
+        }
+
+        /// <summary>
         /// Get sentences from the given message text
         /// </summary>
         /// <param name="text">The message text</param>
         /// <returns>A list with the sentences</returns>
         public List<object> GetSentences(string text)
         {
+            PerformanceTester.StartMET("GetSentences");
             var annotation = new Annotation(text);
-            ExtendedTagger.annotate(annotation);
+            Tagger.annotate(annotation);
             Sentences = annotation.get(new CoreAnnotations.SentencesAnnotation().getClass()) as ArrayList;
-            //Sentences = MaxentTagger.tokenizeText(new java.io.StringReader(text)) as ArrayList;
+            PerformanceTester.StopMET("GetSentences");
             return new List<object>(Sentences.toArray());
         }
 
@@ -260,6 +290,7 @@ namespace MathChatBot.Helpers
         /// <returns>A list with the tagged words</returns>
         public List<TaggedWord> Tag(string text, bool useSavedSentences = false)
         {
+            PerformanceTester.StartMET("Tagging");
             var list = new List<TaggedWord>();
 
             ArrayList sentences = null;
@@ -268,7 +299,7 @@ namespace MathChatBot.Helpers
             else
             {
                 var annotation = new Annotation(text);
-                ExtendedTagger.annotate(annotation);
+                Tagger.annotate(annotation);
                 sentences = annotation.get(new CoreAnnotations.SentencesAnnotation().getClass()) as ArrayList;
             }
             foreach (CoreMap sentence in sentences)
@@ -298,6 +329,8 @@ namespace MathChatBot.Helpers
                     list.Add(taggedWord);
                 }
             }
+
+            PerformanceTester.StopMET("Tagging");
 
             return list;
         }

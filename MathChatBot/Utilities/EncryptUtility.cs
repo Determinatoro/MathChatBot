@@ -10,7 +10,8 @@ namespace MathChatBot.Utilities
 {
 
     /// <summary>
-    /// Encryption functions found on the web
+    /// Encryption functions found on the web https://stackoverflow.com/questions/10168240/encrypting-decrypting-a-string-in-c-sharp
+    /// Credits goes to CraigTP and Kolappan Nathan
     /// </summary>
     public class EncryptUtility
     {

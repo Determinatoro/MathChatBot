@@ -43,6 +43,8 @@ namespace MathChatBot
             tbPassword.KeyDown += textBox_KeyDown;
             tbUsername.KeyDown += textBox_KeyDown;
 
+            DatabaseUtility.GetUsers();
+
             // Set border
             this.SetupBorderHeader(Properties.Resources.login);
         }

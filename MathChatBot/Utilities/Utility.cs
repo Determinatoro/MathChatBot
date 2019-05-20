@@ -26,8 +26,8 @@ namespace MathChatBot.Utilities
             string startupPath = AppDomain.CurrentDomain.BaseDirectory;
             var pathItems = startupPath.Split(Path.DirectorySeparatorChar);
             Assembly assy = typeof(App).Assembly;
-            var pos = pathItems.Reverse().ToList().FindIndex(x => x == assy.GetName().Name);
-            string projectPath = string.Join(Path.DirectorySeparatorChar.ToString(), pathItems.Take(pathItems.Count() - pos - 1));
+            var pos = pathItems.Reverse().ToList().FindIndex(x => x == "bin");
+            string projectPath = string.Join(Path.DirectorySeparatorChar.ToString(), pathItems.Take(pathItems.Count() - pos - 2));
             return projectPath;
         }
 

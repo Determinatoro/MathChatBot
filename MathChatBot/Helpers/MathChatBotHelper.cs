@@ -106,7 +106,7 @@ namespace MathChatBot.Helpers
 
         public User User { get; set; }
         private NLPHelper NLPHelper { get; set; }
-        public SimpleCalculatorHelper SimpleCalculatorHelper { get; set; }
+        private SimpleCalculatorHelper SimpleCalculatorHelper { get; set; }
         private MathChatBotEntities Entity { get { return DatabaseUtility.Entity; } }
         public List<MessageObject> LastBotMessagesAdded { get; set; }
         private MessageObject SelectedMessage { get; set; }
@@ -126,10 +126,10 @@ namespace MathChatBot.Helpers
         }
         public ObservableCollection<MessageObject> Messages { get; private set; }
 
-        public Assignment CurrentAssignment { get; private set; }
-        public List<Assignment> SelectedAssignments { get; private set; }
+        private Assignment CurrentAssignment { get; set; }
+        private List<Assignment> SelectedAssignments { get; set; }
 
-        public List<ChatBotCommand> Commands { get; set; }
+        private List<ChatBotCommand> Commands { get; set; }
 
         #endregion
 
@@ -157,7 +157,7 @@ namespace MathChatBot.Helpers
         /// <summary>
         /// Get commands for the chatbot
         /// </summary>
-        public void GetCommands()
+        private void GetCommands()
         {
             Commands = new List<ChatBotCommand>();
 
@@ -296,104 +296,124 @@ namespace MathChatBot.Helpers
         /// Used for the seeing the terms for a given topic
         /// </summary>
         /// <param name="message">The message object for the topic</param>
-        public void SeeTerms(MessageObject message)
+        private void SeeTerms(MessageObject message)
         {
-            if (!message.IsTopicDefinition)
+            try
             {
-                WriteMessageToUser(Properties.Resources.please_select_a_topic_first_before_using_this_command);
-                return;
+                if (!message.IsTopicDefinition)
+                {
+                    WriteMessageToUser(Properties.Resources.please_select_a_topic_first_before_using_this_command);
+                    return;
+                }
+
+                WriteMessageToUser(string.Format(
+                    Properties.Resources.these_are_the_terms_under, message.Topic.Name.ToLower(),
+                    string.Join("\n", DatabaseUtility.GetTermNames(message.Topic.Name))));
             }
-
-            var terms = message.Topic.Terms.Select(x => x.Name);
-            var joined = string.Join("\n", terms);
-
-            var text = string.Format(Properties.Resources.these_are_the_terms_under, message.Topic.Name.ToLower(), joined);
-
-            WriteMessageToUser(text);
+            catch (Exception mes)
+            {
+                WriteMessageToUser(mes.Message);
+            }
         }
 
         /// <summary>
         /// See example for a term
         /// </summary>
         /// <param name="message">The message object</param>
-        public void SeeExample(MessageObject message)
+        private void SeeExample(MessageObject message)
         {
-            if (message == null || !message.IsMaterial)
+            try
             {
-                WriteMessageToUser(Properties.Resources.please_select_a_term_first_before_using_this_command);
-                return;
+                if (message == null || !message.IsMaterial)
+                {
+                    WriteMessageToUser(Properties.Resources.please_select_a_term_first_before_using_this_command);
+                    return;
+                }
+
+                var examples = DatabaseUtility.GetExamples(message.Material.Id);
+                if (!examples.Any())
+                {
+                    WriteMessageToUser(Properties.Resources.this_term_has_no_examples);
+                    return;
+                }
+
+                var messages = new List<MessageObject>();
+
+                // Bot message
+                messages.Add(new MessageObject(string.Format(Properties.Resources.this_is_the_examples_i_found_for, message.Material.Term.Name.ToLower())));
+                // Examples
+                foreach (var example in examples)
+                    messages.Add(new MessageObject(example));
+                AddBotMessages(messages);
             }
-
-            var examples = message.Material.MaterialExamples
-                .OrderBy(x => x.ShowOrderId)
-                .ToList();
-
-            if (!examples.Any())
+            catch (Exception mes)
             {
-                WriteMessageToUser(Properties.Resources.this_term_has_no_examples);
-                return;
+                WriteMessageToUser(mes.Message);
             }
-
-            var messages = new List<MessageObject>();
-
-            // Bot message
-            messages.Add(new MessageObject(string.Format(Properties.Resources.this_is_the_examples_i_found_for, message.Material.Term.Name.ToLower())));
-            // Examples
-            foreach (var example in examples)
-                messages.Add(new MessageObject(example));
-
-            AddBotMessages(messages);
         }
 
         /// <summary>
         /// See definition for an example
         /// </summary>
         /// <param name="message">The message object</param>
-        public void SeeDefinition(MessageObject message)
+        private void SeeDefinition(MessageObject message)
         {
-            if (!message.IsExample)
+            try
             {
-                WriteMessageToUser(Properties.Resources.please_select_an_example_first_before_using_this_command);
-                return;
-            }
+                if (!message.IsExample)
+                {
+                    WriteMessageToUser(Properties.Resources.please_select_an_example_first_before_using_this_command);
+                    return;
+                }
 
-            string text = string.Format(Properties.Resources.this_is_what_i_found_about, message.MaterialExample.Material.Term.Name.ToLower());
+                string text = string.Format(Properties.Resources.this_is_what_i_found_about, message.MaterialExample.Material.Term.Name.ToLower());
 
-            AddBotMessages(new MessageObject[]
-            {
+                AddBotMessages(new MessageObject[]
+                {
                 new MessageObject(text),
                 new MessageObject(message.MaterialExample.Material)
-            }.ToList());
+                }.ToList());
+            }
+            catch (Exception mes)
+            {
+                WriteMessageToUser(mes.Message);
+            }
         }
 
-        public void SeeDefinitions(MessageObject message, bool selectedTopic)
+        /// <summary>
+        /// See definitions for either term or topic
+        /// </summary>
+        /// <param name="message">Message object</param>
+        /// <param name="selectedTopic">Flag</param>
+        private void SeeDefinitions(MessageObject message, bool selectedTopic)
         {
-            if (!message.IsSelection)
+            try
             {
-                WriteMessageToUser(Properties.Resources.you_can_only_use_this_command_when_having_a_selection);
-                return;
-            }
+                if (!message.IsSelection)
+                {
+                    WriteMessageToUser(Properties.Resources.you_can_only_use_this_command_when_having_a_selection);
+                    return;
+                }
 
-            var messages = new List<MessageObject>();
+                // Get materials for term or topic
+                var materials = new List<Material>();
+                if (!selectedTopic)
+                    materials = DatabaseUtility.GetMaterials(message.Term.Id);
+                else
+                    materials = DatabaseUtility.GetMaterials(topicId: message.Topic.Id);
 
-            string text = string.Format(Properties.Resources.this_is_what_i_found_about, selectedTopic ? message.Topic.Name : message.Term.Name);
-            // Add bot message
-            messages.Add(new MessageObject(text));
-
-            if (!selectedTopic)
-            {
-                // Add bot help
-                foreach (var material in message.Term.Materials)
+                var messages = new List<MessageObject>();
+                // Add bot message
+                messages.Add(new MessageObject(string.Format(Properties.Resources.this_is_what_i_found_about, selectedTopic ? message.Topic.Name : message.Term.Name)));
+                // Show materials to the user
+                foreach (var material in materials)
                     messages.Add(new MessageObject(material));
+                AddBotMessages(messages);
             }
-            else
+            catch (Exception mes)
             {
-                // Add bot help
-                foreach (var material in message.Topic.Materials)
-                    messages.Add(new MessageObject(material));
+                WriteMessageToUser(mes.Message);
             }
-
-            AddBotMessages(messages);
         }
 
         /// <summary>
@@ -401,25 +421,32 @@ namespace MathChatBot.Helpers
         /// </summary>
         /// <param name="user">The user object</param>
         /// <param name="message">The message object</param>
-        public void DidNotHelp(MessageObject message)
+        private void DidNotHelp(MessageObject message)
         {
-            var userId = User.Id;
-            var termId = message.Term?.Id;
-            int? materialId = message.Material?.Id;
-            int? materialExampleId = message.MaterialExample?.Id;
-            int? assignmentId = message.Assignment?.Id;
+            try
+            {
+                var userId = User.Id;
+                var termId = message.Term?.Id;
+                int? materialId = message.Material?.Id;
+                int? materialExampleId = message.MaterialExample?.Id;
+                int? assignmentId = message.Assignment?.Id;
 
-            var response = DatabaseUtility.MakeHelpRequest(userId, termId, materialId, materialExampleId, assignmentId);
-            if (response.Success)
-                WriteMessageToUser(Properties.Resources.help_request_has_been_sent_to_your_teacher);
-            else
-                WriteMessageToUser(response.ErrorMessage);
+                var response = DatabaseUtility.MakeHelpRequest(userId, termId, materialId, materialExampleId, assignmentId);
+                if (response.Success)
+                    WriteMessageToUser(Properties.Resources.help_request_has_been_sent_to_your_teacher);
+                else
+                    WriteMessageToUser(response.ErrorMessage);
+            }
+            catch (Exception mes)
+            {
+                WriteMessageToUser(mes.Message);
+            }
         }
 
         /// <summary>
         /// See current assignment
         /// </summary>
-        public void SeeCurrentAssignment()
+        private void SeeCurrentAssignment()
         {
             if (CurrentAssignment == null)
             {
@@ -433,7 +460,7 @@ namespace MathChatBot.Helpers
         /// <summary>
         /// See next assignment
         /// </summary>
-        public void SeeNextAssignment()
+        private void SeeNextAssignment()
         {
             if (CurrentAssignment == null)
             {
@@ -453,7 +480,7 @@ namespace MathChatBot.Helpers
         /// <summary>
         /// See previous assignment
         /// </summary>
-        public void SeePreviousAssignment()
+        private void SeePreviousAssignment()
         {
             if (CurrentAssignment == null)
             {
@@ -474,49 +501,52 @@ namespace MathChatBot.Helpers
         /// See assignments for an topic, term or example
         /// </summary>
         /// <param name="message">The message object</param>
-        public void SeeAssignments(MessageObject message)
+        private void SeeAssignments(MessageObject message)
         {
-            List<Assignment> assignments = null;
-            string text = null;
-
-            if (message.IsTermDefinition || message.IsExample)
+            try
             {
-                assignments = Entity.Assignments.Where(x => x.TermId == message.Term.Id)
-                .OrderBy(x => x.AssignmentNo)
-                .ToList();
+                List<Assignment> assignments = null;
+                string text = null;
 
-                if (assignments.Any())
-                    text = string.Format(Properties.Resources.there_are_for_this_term_this_is_the_first_assignment, assignments.Count);
-            }
-            else if (message.IsTopicDefinition)
-            {
-                assignments = new List<Assignment>();
-                assignments = Entity.Assignments
-                    .Where(x => x.Term.TopicId == message.Topic.Id)
-                    .OrderBy(x => x.Term.Name)
-                    .ToList();
+                // Term definition or example
+                if (message.IsTermDefinition || message.IsExample)
+                {
+                    assignments = DatabaseUtility.GetAssignments(message.Term.Id, null);
+                    if (assignments.Any())
+                        text = string.Format(Properties.Resources.there_are_for_this_term_this_is_the_first_assignment, assignments.Count);
+                }
+                // Topic definition
+                else if (message.IsTopicDefinition)
+                {
+                    assignments = DatabaseUtility.GetAssignments(null, message.Topic.Id);
+                    if (assignments.Any())
+                        text = string.Format(Properties.Resources.there_are_under_this_topic_this_is_the_first_assignment, assignments.Count);
+                }
+                // If none is selected
+                else
+                {
+                    WriteMessageToUser(Properties.Resources.please_select_a_term_or_example_first_before_using_this_command);
+                    return;
+                }
 
-                if (assignments.Any())
-                    text = string.Format(Properties.Resources.there_are_under_this_topic_this_is_the_first_assignment, assignments.Count);
-            }
-            else
-            {
-                WriteMessageToUser(Properties.Resources.please_select_a_term_or_example_first_before_using_this_command);
-                return;
-            }
+                // Check if there are any assignments
+                if (assignments != null && assignments.Any())
+                {
+                    SelectedAssignments = assignments;
+                    CurrentAssignment = SelectedAssignments.FirstOrDefault();
 
-            if (assignments.Any())
-            {
-                SelectedAssignments = assignments;
-                CurrentAssignment = SelectedAssignments.FirstOrDefault();
-
-                AddBotMessages(new MessageObject[]{
+                    AddBotMessages(new MessageObject[]{
                         new MessageObject(text),
                         new MessageObject(CurrentAssignment)
                     }.ToList());
+                }
+                else
+                    WriteMessageToUser(Properties.Resources.there_are_no_assignments_for_this);
             }
-            else
-                WriteMessageToUser(Properties.Resources.there_are_no_assignments_for_this);
+            catch (Exception mes)
+            {
+                WriteMessageToUser(mes.Message);
+            }
         }
 
         /// <summary>
@@ -525,51 +555,58 @@ namespace MathChatBot.Helpers
         /// <param name="message">The message object</param>
         public void SeeAnswers(MessageObject message)
         {
-            // If the message object is not an assignment
-            if (!message.IsAssignment)
+            try
             {
-                WriteMessageToUser(Properties.Resources.please_select_an_assignment_first_before_using_this_command);
-                return;
-            }
-
-            // Get all members from assignment object that starts with "Answer" 
-            var members = typeof(Assignment).GetMembers()
-                .Where(x => x.Name.StartsWith("Answer") && !x.Name.Contains("_"))
-                .ToList();
-
-            var text = string.Empty;
-
-            var values = members.Select(x => message.Assignment.GetPropertyValue(x.Name)).Where(x => x != null).ToList();
-
-            // More than 1 one answer
-            if (values.Count > 1)
-            {
-                // Get all answers for the assignment
-                foreach (var member in members)
+                // If the message object is not an assignment
+                if (!message.IsAssignment)
                 {
-                    var value = message.Assignment.GetPropertyValue(member.Name);
-                    if (value != null)
-                    {
-                        var assignmentLetter = member.Name.ReplaceIgnoreCase("answer", "").ToLower();
-                        var strValue = value.ToString();
+                    WriteMessageToUser(Properties.Resources.please_select_an_assignment_first_before_using_this_command);
+                    return;
+                }
 
-                        text += string.Format("{0}{1}) {2}", text == string.Empty ? string.Empty : "\n", assignmentLetter, strValue);
+                // Get all members from assignment object that starts with "Answer" 
+                var members = typeof(Assignment).GetMembers()
+                    .Where(x => x.Name.StartsWith("Answer") && !x.Name.Contains("_"))
+                    .ToList();
+
+                var text = string.Empty;
+
+                var values = members.Select(x => message.Assignment.GetPropertyValue(x.Name)).Where(x => x != null).ToList();
+
+                // More than 1 one answer
+                if (values.Count > 1)
+                {
+                    // Get all answers for the assignment
+                    foreach (var member in members)
+                    {
+                        var value = message.Assignment.GetPropertyValue(member.Name);
+                        if (value != null)
+                        {
+                            var assignmentLetter = member.Name.ReplaceIgnoreCase("answer", "").ToLower();
+                            var strValue = value.ToString();
+
+                            text += string.Format("{0}{1}) {2}", text == string.Empty ? string.Empty : "\n", assignmentLetter, strValue);
+                        }
                     }
                 }
-            }
-            // Only one answer
-            else if (values.Count == 1)
-            {
-                var member = members[0];
-                var strValue = values[0].ToString();
-                text += string.Format("{0}", strValue);
-            }
+                // Only one answer
+                else if (values.Count == 1)
+                {
+                    var member = members[0];
+                    var strValue = values[0].ToString();
+                    text += string.Format("{0}", strValue);
+                }
 
-            // Check if there are any answers
-            if (text != string.Empty)
-                AddBotMessage(new MessageObject(string.Format(Properties.Resources.this_is_the_answers_for_the_assignment, text)));
-            else
-                WriteMessageToUser(Properties.Resources.this_assignment_has_no_answers);
+                // Check if there are any answers
+                if (text != string.Empty)
+                    AddBotMessage(new MessageObject(string.Format(Properties.Resources.this_is_the_answers_for_the_assignment, text)));
+                else
+                    WriteMessageToUser(Properties.Resources.this_assignment_has_no_answers);
+            }
+            catch (Exception mes)
+            {
+                WriteMessageToUser(mes.Message);
+            }
         }
 
         /// <summary>
@@ -578,7 +615,7 @@ namespace MathChatBot.Helpers
         /// <param name="text">The message text</param>
         public void WriteMessageToBot(string text)
         {
-            if (text == "")
+            if (string.IsNullOrEmpty(text))
                 return;
 
             Messages.Add(new MessageObject(MessageTypes.User, text));
@@ -594,6 +631,9 @@ namespace MathChatBot.Helpers
         /// <param name="message">The message object</param>
         private void AddBotMessage(MessageObject message)
         {
+            if (message == null)
+                return;
+
             AddBotMessages(new MessageObject[] { message }.ToList());
         }
 
@@ -624,98 +664,100 @@ namespace MathChatBot.Helpers
         /// <returns>A message result</returns>
         private MessageResult AnalyzeText(string text)
         {
-            if (string.IsNullOrEmpty(text))
-                return new MessageResult(Properties.Resources.please_write_a_proper_sentence);
-
-            var tempText = text.ToLower();
-
-            PerformanceTester.StartMET("GetSentences");
-            // Get sentences that has been written
-            var sentences = NLPHelper.GetSentences(tempText);
-            PerformanceTester.StopMET("GetSentences");
-
-            // Does not support more than one sentence
-            if (sentences.Count > 1)
-                return new MessageResult(Properties.Resources.i_cannot_process_more_than_one_sentence);
-
-            // Tagging on the given words
-            List<TaggedWord> wordList = null;
-
-            // Function for tagging
-            Action tagging = () =>
+            try
             {
-                PerformanceTester.StartMET("Tagging");
-                // Insert a question mark at the end of a text
-                if (!tempText.EndsWith("?"))
-                    tempText += "?";
-                // Tag the words in the text
-                wordList = NLPHelper.Tag(tempText);
-                PerformanceTester.StopMET("Tagging");
-            };
+                if (string.IsNullOrEmpty(text))
+                    return new MessageResult(Properties.Resources.please_write_a_proper_sentence);
 
-            PerformanceTester.StartMET("Use calculator");
-            // If text has any numbers use the calculator
-            string output;
-            if (SimpleCalculatorHelper.CheckInput(ref tempText, out output))
-            {
-                // If text is not math command
-                if (output == null)
+                var tempText = text.ToLower();
+                
+                // Get sentences that has been written
+                var sentences = NLPHelper.GetSentences(tempText);
+
+                // Does not support more than one sentence
+                if (sentences.Count > 1)
+                    return new MessageResult(Properties.Resources.i_cannot_process_more_than_one_sentence);
+
+                // Tagging on the given words
+                List<TaggedWord> wordList = null;
+
+                // Function for tagging
+                Action tagging = () =>
                 {
-                    var input = tempText;
+                    // Insert a question mark at the end of a text
+                    if (!tempText.EndsWith("?"))
+                        tempText += "?";
+                    // Tag the words in the text
+                    wordList = NLPHelper.Tag(tempText);
+                };
 
-                    tagging();
-
-                    if (wordList.Any(x => x.IsWHWord || x.IsVerb))
+                PerformanceTester.StartMET("Use calculator");
+                // If text has any numbers use the calculator
+                string output;
+                if (SimpleCalculatorHelper.CheckInput(ref tempText, out output))
+                {
+                    // If text is not math command
+                    if (output == null)
                     {
-                        // Skip the WH-words and verbs in the beginning when using calculator
-                        var context = wordList
-                            .SkipWhile(x => x.IsWHWord || x.IsVerb)
-                            .Where(x => x.POSStringIdentifier != ".")
-                            .ToList();
-                        // Get text
-                        var joined = string.Join(string.Empty, context.Select(x => x.OriginalText));
-                        // If sentence starts with a WH word insert an equal sign
-                        if (wordList.FirstOrDefault().IsWHWord)
-                            input = joined.Insert(0, "=");
+                        var input = tempText;
+
+                        tagging();
+
+                        if (wordList.Any(x => x.IsWHWord || x.IsVerb))
+                        {
+                            // Skip the WH-words and verbs in the beginning when using calculator
+                            var context = wordList
+                                .SkipWhile(x => x.IsWHWord || x.IsVerb)
+                                .Where(x => x.POSStringIdentifier != ".")
+                                .ToList();
+                            // Get text
+                            var joined = context.ListToString();
+                            // If sentence starts with a WH word insert an equal sign
+                            if (wordList.FirstOrDefault().IsWHWord)
+                                input = joined.Insert(0, "=");
+                        }
+
+                        // Use calculator
+                        output = SimpleCalculatorHelper.UseCalculator(input);
+                        PerformanceTester.StopMET("Use calculator");
                     }
 
-                    // Use calculator
-                    output = SimpleCalculatorHelper.UseCalculator(input);
-                    PerformanceTester.StopMET("Use calculator");
-                }
-
-                // If output is not null write the calculator result to the user
-                if (output != null)
-                {
-                    return new MessageResult()
+                    // If output is not null write the calculator result to the user
+                    if (output != null)
                     {
-                        Messages = new MessageObject[]{
-                        new MessageObject(output)
+                        return new MessageResult()
+                        {
+                            Messages = new MessageObject[]{new MessageObject(output)}
+                        };
                     }
-                    };
                 }
+                PerformanceTester.StopMET("Use calculator");
+
+                tagging();
+
+                PerformanceTester.StartMET("Analyze word list");
+                // Analyze the input
+                var analyzeResult = AnalyzeWordList(wordList);
+                PerformanceTester.StopMET("Analyze word list");
+
+                // If success
+                if (analyzeResult.IsSuccess)
+                {
+                    // If command has been executed return empty result
+                    if (analyzeResult.IsCommand)
+                        return new MessageResult();
+
+                    // Analyze the search strings
+                    return AnalyzeSearchStrings(analyzeResult.SearchStrings);
+                }
+                // If error
+                else
+                    return new MessageResult(analyzeResult.ErrorMessage);
             }
-
-            tagging();
-
-            PerformanceTester.StartMET("Analyze word list");
-            // Analyze the input
-            var analyzeResult = AnalyzeWordList(wordList);
-            PerformanceTester.StopMET("Analyze word list");
-
-            // If success
-            if (analyzeResult.IsSuccess)
+            catch (Exception mes)
             {
-                // If command has been executed return empty result
-                if (analyzeResult.IsCommand)
-                    return new MessageResult();
-
-                // Analyze the search strings
-                return AnalyzeSearchStrings(analyzeResult.SearchStrings);
+                return new MessageResult(mes.Message);
             }
-            // If error
-            else
-                return new MessageResult(analyzeResult.ErrorMessage);
         }
 
         /// <summary>
@@ -725,114 +767,139 @@ namespace MathChatBot.Helpers
         /// <returns></returns>
         private AnalyzeResult AnalyzeWordList(List<TaggedWord> wordList)
         {
-            var stringList = new List<string>();
-
-            // Get only the words
-            var onlyWordsList = wordList.Where(x => x.POSIdentifier != TaggedWord.POSTag.NONE).ToList();
-            // Get only nouns
-            var onlyNounsList = wordList.Where(x => x.IsNoun).ToList();
-
-            // Check if there has been given a command
-            string joined = onlyWordsList.ListToString();
-            if (IsCommand(joined))
-                return new AnalyzeResult((new string[] { joined }).ToList());
-
-            // No nouns entered by the user
-            if (onlyNounsList.Count == 0)
-                return new AnalyzeResult(Properties.Resources.i_did_not_understand_that_sentence);
-
-            // Using hashset to avoid having search string dublets
-            var hashSet = new HashSet<string>();
-
-            // Index of the first noun or adjective in the phrase
-            var firstIndex = wordList.FindIndex(x => x.IsNoun || x.IsAdjective);
-            // Index of the last noun or adjective in the phrase
-            var lastIndex = wordList.FindLastIndex(x => x.IsNoun || x.IsAdjective);
-            // Get all nouns, adjectives and words inbetween
-            var range = wordList.GetRange(firstIndex, lastIndex - firstIndex + 1).ToList();
-
-            if (range.Any(x => x.IsAdjective))
+            try
             {
-                // Checking range
-                for (int i = 0; i < range.Count; i++)
+                var stringList = new List<string>();
+
+                // Get only the words
+                var onlyWordsList = wordList.Where(x => x.POSIdentifier != TaggedWord.POSTag.NONE).ToList();
+                // Get only nouns
+                var onlyNounsList = wordList.Where(x => x.IsNoun).ToList();
+
+                // Check if there has been given a command
+                string joined = onlyWordsList.ListToString();
+                if (IsCommand(joined))
+                    return new AnalyzeResult((new string[] { joined }).ToList());
+
+                // No nouns entered by the user
+                if (onlyNounsList.Count == 0)
+                    return new AnalyzeResult(Properties.Resources.i_did_not_understand_that_sentence);
+
+                // Using hashset to avoid having search string dublets
+                var hashSet = new HashSet<string>();
+
+                // Index of the first noun or adjective in the phrase
+                var firstIndex = wordList.FindIndex(x => x.IsNoun || x.IsAdjective);
+                // Index of the last noun or adjective in the phrase
+                var lastIndex = wordList.FindLastIndex(x => x.IsNoun || x.IsAdjective);
+                // Get all nouns, adjectives and words inbetween
+                var range = wordList.GetRange(firstIndex, lastIndex - firstIndex + 1).ToList();
+
+                if (range.Any(x => x.IsAdjective))
                 {
-                    if (range[i].IsAdjective)
+                    // Checking range
+                    for (int i = 0; i < range.Count; i++)
                     {
-                        var nextIndex = i + 1;
-                        // If not a noun or an adjective follows an adjective the sentence is not proper
-                        if (nextIndex == range.Count || (!range[nextIndex].IsNoun && !range[nextIndex].IsAdjective))
-                            return new AnalyzeResult(Properties.Resources.please_write_a_proper_sentence);
+                        if (range[i].IsAdjective)
+                        {
+                            var nextIndex = i + 1;
+                            // If not a noun or an adjective follows an adjective the sentence is not proper
+                            if (nextIndex == range.Count || (!range[nextIndex].IsNoun && !range[nextIndex].IsAdjective))
+                                return new AnalyzeResult(Properties.Resources.please_write_a_proper_sentence);
+                        }
                     }
                 }
-            }
 
-            // Flag for proper list representation
-            var properListRepresentation = true;
+                // Flag for proper list representation
+                var properListRepresentation = true;
 
-            // Get indexes of all the commas in the range
-            var indexes = range.Select(x =>
-            {
-                return x.Word == "," ? range.IndexOf(x) : -1;
-            })
-            .Where(x => x != -1)
-            .ToList();
-
-            // Check if any commas are located beside each other
-            for (int i = 0; i < indexes.Count - 1; i++)
-            {
-                // If the index difference is 1 then they are written beside each other
-                if (indexes[i + 1] - indexes[i] == 1)
+                // Get indexes of all the commas in the range
+                var indexes = range.Select(x =>
                 {
-                    properListRepresentation = false;
-                    break;
-                }
-            }
+                    return x.Word == "," ? range.IndexOf(x) : -1;
+                })
+                .Where(x => x != -1)
+                .ToList();
 
-            if (properListRepresentation)
-            {
-                // Check for a proper list representation of nouns
-                // Error if the last word is not "and"
-                if (range.Any(x => x.Word == "," || x.Word == Properties.Resources.and) && range.Last(x => x.Word == "," || x.Word == Properties.Resources.and).Word != Properties.Resources.and)
-                    properListRepresentation = false;
+                // Check if any commas are located beside each other
+                for (int i = 0; i < indexes.Count - 1; i++)
+                {
+                    // If the index difference is 1 then they are written beside each other
+                    if (indexes[i + 1] - indexes[i] == 1)
+                    {
+                        properListRepresentation = false;
+                        break;
+                    }
+                }
 
                 if (properListRepresentation)
                 {
-                    // Join words
-                    var nounCollection = string.Join(string.Empty, range.Select(x => x.OriginalText));
-                    // Remove white space before comma
-                    nounCollection = nounCollection.Replace(" ,", ",");
-                    // Add noun collection search string
-                    hashSet.Add(nounCollection.ToLower());
-                }
-            }
+                    // Check for a proper list representation of nouns
+                    // Error if the last word is not "and"
+                    if (range.Any(x => x.Word == "," || x.Word == Properties.Resources.and) && range.Last(x => x.Word == "," || x.Word == Properties.Resources.and).Word != Properties.Resources.and)
+                        properListRepresentation = false;
 
-            // Get remaining nouns and adjective collections
-            do
-            {
-                // First nouns and adjectives in range
-                var collection = range.TakeWhile(x => x.IsNoun || x.IsAdjective).ToList();
-                // Get count of collection
-                var collectionCount = collection.Count;
-                // Join them
-                var join = collection.ListToString();
-                if (join != string.Empty)
-                {
-                    // Add them list hashset
-                    hashSet.Add(join);
-                    // If the collection consists of several nouns
-                    if (collection.Count > 1)
+                    if (properListRepresentation)
                     {
-                        foreach (var word in collection)
-                            hashSet.Add(collection.Skip(collection.IndexOf(word)).ToList().ListToString());
+                        // Join words
+                        var nounCollection = range.ListToString();
+                        // Remove white space before comma
+                        nounCollection = nounCollection.Replace(" ,", ",");
+                        // Add noun collection search string
+                        hashSet.Add(nounCollection.ToLower());
                     }
                 }
-                // Skip them plus the seperator
-                range = range.Skip(collectionCount + 1).ToList();
-            } while (range.Any());
 
-            stringList = hashSet.OrderByDescending(x => x.Length).ToList();
+                // Get remaining nouns and adjective collections
+                do
+                {
+                    // First nouns and adjectives in range
+                    var collection = range.TakeWhile(x => x.IsNoun || x.IsAdjective).ToList();
+                    // Get count of collection
+                    var collectionCount = collection.Count;
+                    // Join them
+                    var join = collection.ListToString();
+                    if (join != string.Empty)
+                    {
+                        // Add them list hashset
+                        hashSet.Add(join);
 
-            return new AnalyzeResult(stringList);
+                        // Function to add subsets of collection
+                        Action AddSubSets = () =>
+                        {
+                            foreach (var word in collection)
+                                hashSet.Add(collection.Skip(collection.IndexOf(word)).ToList().ListToString());
+                        };
+
+                        // If the collection consists of several nouns
+                        if (collection.Count > 1)
+                        {
+                            if (collection.Count(x => x.IsNoun) > 1)
+                            {
+                                AddSubSets();
+
+                                do
+                                {
+                                    collection.Reverse();
+                                    collection = collection.Skip(1).ToList();
+                                    collection.Reverse();
+                                    AddSubSets();
+                                } while (collection.Count(x => x.IsNoun) > 1);
+                            }
+                        }
+                    }
+                    // Skip them plus the seperator
+                    range = range.Skip(collectionCount + 1).ToList();
+                } while (range.Any());
+
+                stringList = hashSet.OrderByDescending(x => x.Length).ToList();
+
+                return new AnalyzeResult(stringList);
+            }
+            catch (Exception mes)
+            {
+                return new AnalyzeResult(mes.Message);
+            }
         }
 
         /// <summary>
@@ -842,73 +909,68 @@ namespace MathChatBot.Helpers
         /// <returns>A message result</returns>
         private MessageResult AnalyzeSearchStrings(List<string> list)
         {
-            PerformanceTester.StartMET("Analyze search strings");
+            List<MessageObject> messages = new List<MessageObject>();
+            List<Material> materials = null;
 
-            foreach (var str in list)
+            try
             {
-                // Checking for bot command
-                if (RunCommand(str))
-                    return new MessageResult();
+                PerformanceTester.StartMET("Analyze search strings");
 
-                PerformanceTester.StartMET("Term");
-                Term term = Entity.Terms.FirstOrDefault(x => x.Name.ToLower() == str);
-                PerformanceTester.StopMET("Term");
-                PerformanceTester.StartMET("Topic");
-                Topic topic = Entity.Topics.FirstOrDefault(x => x.Name.ToLower() == str);
-                PerformanceTester.StopMET("Topic");
-                if (topic == null && term == null)
-                    continue;
-
-                List<MessageObject> messages = new List<MessageObject>();
-                List<Material> materials = null;
-
-                PerformanceTester.StartMET("Get materials");
-                // A term and a topic has the same name
-                if (term != null && topic != null)
-                    messages.Add(new MessageObject(term, topic));
-                // Get materials for the topic
-                else if (term == null)
+                foreach (var str in list)
                 {
-                    materials = Entity.Materials
-                        .Where(x => x.TopicId == topic.Id)
-                        .ToList()
-                        .OrderBy(x => x.ShowOrderId)
-                        .ToList();
-                }
-                // Get materials for the term
-                else
-                {
-                    materials = Entity.Materials
-                        .Where(x => x.TermId == term.Id)
-                        .ToList()
-                        .OrderBy(x => x.ShowOrderId)
-                        .ToList();
-                }
-                PerformanceTester.StopMET("Get materials");
+                    // Checking for bot command
+                    if (RunCommand(str))
+                        return new MessageResult();
 
-                if (materials != null)
-                {
+                    // Search for term and topic
+                    Term term = null; Topic topic = null;
+                    DatabaseUtility.GetTermAndTopic(out term, out topic, str);
+
+                    if (topic == null && term == null)
+                        continue;
+
+                    // Get materials
+                    // A term and a topic has the same name
+                    if (term != null && topic != null)
+                    {
+                        PerformanceTester.StopMET("Analyze search strings");
+                        messages.Add(new MessageObject(term, topic));
+                        return new MessageResult(messages.ToArray());
+                    }
+                    // Get materials for a topic
+                    else if (topic != null)
+                        materials = DatabaseUtility.GetMaterials(topicId: topic.Id);
+                    // Get materials for a term
+                    else
+                        materials = DatabaseUtility.GetMaterials(term.Id);
+
+                    PerformanceTester.StopMET("Analyze search strings");
+
+                    if (materials == null)
+                        return new MessageResult(Properties.Resources.no_materials_found);
+
                     // Add bot message
                     messages.Add(new MessageObject(string.Format(Properties.Resources.this_is_what_i_found_about, term != null ? term.Name.ToLower() : topic.Name.ToLower())));
                     // Add materials            
                     foreach (var material in materials)
                         messages.Add(new MessageObject(material));
+
+                    return new MessageResult(messages.ToArray());
                 }
 
                 PerformanceTester.StopMET("Analyze search strings");
 
-                return new MessageResult(messages.ToArray());
+                // One noun
+                if (list.Count == 1)
+                    return new MessageResult(string.Format(Properties.Resources.i_do_not_know_anything_about_that_noun, list[0], GetTopics()));
+                // More nouns
+                else
+                    return new MessageResult(string.Format(Properties.Resources.i_do_not_know_anything_about_those_nouns, GetTopics()));
             }
-
-            PerformanceTester.StopMET("Analyze search strings");
-
-            // One noun
-            if (list.Count == 1)
-                return new MessageResult(string.Format(Properties.Resources.i_do_not_know_anything_about_that_noun, list[0], GetTopics()));
-            // More nouns
-            else
-                return new MessageResult(string.Format(Properties.Resources.i_do_not_know_anything_about_those_nouns, GetTopics()));
-
+            catch (Exception mes)
+            {
+                return new MessageResult(mes.Message);
+            }
         }
 
         /// <summary>

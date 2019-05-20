@@ -1,12 +1,8 @@
-﻿using Effort;
-using Effort.DataLoaders;
-using MathChatBot.Models;
+﻿using MathChatBot.Models;
 using MathChatBot.Objects;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using static MathChatBot.Models.Role;
 using Entity = MathChatBot.Models.MathChatBotEntities;
 
@@ -78,8 +74,8 @@ namespace MathChatBot.Utilities
         #region Variables
 
         private static CustomEntity _mathChatBotEntities;
-        private const string PassPhrase = "MathChatBot";
-        private static bool RunningTest;
+        public const string PassPhrase = "MathChatBot";
+
 
         #endregion
 
@@ -88,13 +84,15 @@ namespace MathChatBot.Utilities
         //*************************************************/
         #region Properties
 
+        public static bool TestMode { get; set; }
+
         public static Entity Entity
         {
             get
             {
                 if (_mathChatBotEntities == null || _mathChatBotEntities.IsDisposed)
                 {
-                    if (RunningTest)
+                    if (TestMode)
                         _mathChatBotEntities = (CustomEntity)TestUtility.GetInMemoryContext();
                     else
                         _mathChatBotEntities = new CustomEntity();
@@ -112,14 +110,6 @@ namespace MathChatBot.Utilities
         #region Methods
 
         /// <summary>
-        /// Set the utility into test state
-        /// </summary>
-        public static void RunTest()
-        {
-            RunningTest = true;
-        }
-
-        /// <summary>
         /// Dispose entity
         /// </summary>
         public static void DisposeEntity()
@@ -131,13 +121,31 @@ namespace MathChatBot.Utilities
             }
         }
 
+        private static DatabaseResponse RunDatabaseFunction(Func<object> func)
+        {
+            try
+            {
+                var result = func();
+                if (result == null)
+                    return new DatabaseResponse();
+                else if (result is string)
+                    return new DatabaseResponse(errorMessage: (string)result);
+                else
+                    return new DatabaseResponse(result);
+            }
+            catch (Exception mes)
+            {
+                return new DatabaseResponse(mes.Message);
+            }
+        }
+
         /// <summary>
         /// Get users from database
         /// </summary>
         /// <returns>A list of user objects</returns>
         public static List<User> GetUsers()
         {
-            return Entity.Users.ToList();
+            return Entity.Users.Where(x => x.FirstName == "John").ToList();
         }
 
         /// <summary>
@@ -740,6 +748,24 @@ namespace MathChatBot.Utilities
         }
 
         /// <summary>
+        /// Get help requests from the given users (SLOW)
+        /// </summary>
+        /// <param name="users">The users list</param>
+        /// <param name="topicName">If specified help requests only for this topic will be retrieved from the database</param>
+        /// <returns></returns>
+        public static List<IGrouping<Topic, HelpRequest>> GetHelpRequestsFromUsersSlow(List<User> users, string topicName = null)
+        {
+            PerformanceTester.StartMET("GetHelpRequestsFromUsers");
+
+            var ids = users.Select(x2 => x2.Id).ToList();
+            var groups = users.SelectMany(x => x.HelpRequests.Where(x2 => topicName == null || (x2.Term.Topic.Name == topicName))).GroupBy(x => x.Term.Topic).ToList();
+
+            PerformanceTester.StopMET("GetHelpRequestsFromUsers");
+
+            return groups;
+        }
+
+        /// <summary>
         /// Get help requests for a single user
         /// </summary>
         /// <param name="user">User object</param>
@@ -1016,39 +1042,134 @@ namespace MathChatBot.Utilities
         /// <param name="answerE">Answer E for the assignment</param>
         /// <param name="answerF">Answer F for the assignment</param>
         /// <param name="answerG">Answer G for the assignment</param>
-        public static void AddAssignment(Term term, string source, string answerA, string answerB, string answerC, string answerD, string answerE, string answerF, string answerG)
+        public static DatabaseResponse AddAssignment(Term term, string source, string answerA, string answerB, string answerC, string answerD, string answerE, string answerF, string answerG)
         {
-            using (var entity = Entity)
+            return RunDatabaseFunction(() =>
             {
-                Func<string, string> func = (s) =>
+                using (var entity = Entity)
                 {
-                    return string.IsNullOrEmpty(s != null ? s.Trim() : s) ? null : s;
-                };
+                    Func<string, string> func = (s) =>
+                    {
+                        return string.IsNullOrEmpty(s != null ? s.Trim() : s) ? null : s;
+                    };
 
-                answerA = func(answerA);
-                answerB = func(answerB);
-                answerC = func(answerC);
-                answerD = func(answerD);
-                answerE = func(answerE);
-                answerF = func(answerF);
-                answerG = func(answerG);
+                    answerA = func(answerA);
+                    answerB = func(answerB);
+                    answerC = func(answerC);
+                    answerD = func(answerD);
+                    answerE = func(answerE);
+                    answerF = func(answerF);
+                    answerG = func(answerG);
 
-                var assignment = new Assignment()
-                {
-                    AnswerA = answerA,
-                    AnswerB = answerB,
-                    AnswerC = answerC,
-                    AnswerD = answerD,
-                    AnswerE = answerE,
-                    AnswerF = answerF,
-                    AnswerG = answerG,
-                    Source = source,
-                    TermId = term.Id
-                };
+                    var assignment = new Assignment()
+                    {
+                        AnswerA = answerA,
+                        AnswerB = answerB,
+                        AnswerC = answerC,
+                        AnswerD = answerD,
+                        AnswerE = answerE,
+                        AnswerF = answerF,
+                        AnswerG = answerG,
+                        Source = source,
+                        TermId = term.Id
+                    };
 
-                entity.Assignments.Add(assignment);
-                entity.SaveChanges();
+                    entity.Assignments.Add(assignment);
+                    entity.SaveChanges();
+                    return null;
+                }
+            });
+
+        }
+
+        /// <summary>
+        /// Search for term and topic
+        /// </summary>
+        /// <param name="term">Term object</param>
+        /// <param name="topic">Topic object</param>
+        /// <param name="searchString">Search string</param>
+        public static void GetTermAndTopic(out Term term, out Topic topic, string searchString)
+        {
+            searchString = searchString.ToLower();
+            PerformanceTester.StartMET("Term");
+            term = Entity.Terms.FirstOrDefault(x => x.Name.ToLower() == searchString);
+            PerformanceTester.StopMET("Term");
+            PerformanceTester.StartMET("Topic");
+            topic = Entity.Topics.FirstOrDefault(x => x.Name.ToLower() == searchString);
+            PerformanceTester.StopMET("Topic");
+        }
+
+        /// <summary>
+        /// Get examples for a material
+        /// </summary>
+        /// <param name="materialId">Id for a material</param>
+        /// <returns>A list of MaterialExample objects</returns>
+        public static List<MaterialExample> GetExamples(int materialId)
+        {
+            PerformanceTester.StartMET("Get examples");
+            var examples = Entity.MaterialExamples
+                    .Where(x => x.MaterialId == materialId)
+                    .OrderBy(x => x.ShowOrderId)
+                    .ToList();
+            PerformanceTester.StopMET("Get examples");
+            return examples;
+        }
+
+        /// <summary>
+        /// Get materials for a term or a topic
+        /// </summary>
+        /// <param name="termId">Id for a term</param>
+        /// <param name="topicId">Id for a topic</param>
+        /// <returns>A list of Material objects</returns>
+        public static List<Material> GetMaterials(int? termId = null, int? topicId = null)
+        {
+            PerformanceTester.StartMET("Get materials");
+            if (termId != null)
+            {
+                var materials = Entity.Materials
+                                .Where(x => x.TermId == termId)
+                                .OrderBy(x => x.ShowOrderId)
+                                .ToList();
+                PerformanceTester.StopMET("Get materials");
+                return materials;
             }
+            else if (topicId != null)
+            {
+                var materials = Entity.Materials
+                                .Where(x => x.TopicId == topicId)
+                                .OrderBy(x => x.ShowOrderId)
+                                .ToList();
+                PerformanceTester.StopMET("Get materials");
+                return materials;
+            }
+
+            PerformanceTester.StopMET("Get materials");
+            return new List<Material>();
+        }
+
+        /// <summary>
+        /// Get assignments for either term or topic
+        /// </summary>
+        /// <param name="termId">For term</param>
+        /// <param name="topicId">For topic</param>
+        /// <returns></returns>
+        public static List<Assignment> GetAssignments(int? termId, int? topicId = null)
+        {
+            if (termId != null)
+            {
+                return Entity.Assignments.Where(x => x.TermId == termId)
+                .OrderBy(x => x.AssignmentNo)
+                .ToList();
+            }
+            else if (topicId != null)
+            {
+                return Entity.Assignments
+                    .Where(x => x.Term.TopicId == topicId)
+                    .OrderBy(x => x.Term.Name)
+                    .ToList();
+            }
+
+            return new List<Assignment>();
         }
 
         /// <summary>
@@ -1062,42 +1183,46 @@ namespace MathChatBot.Utilities
         /// <returns>A response</returns>
         public static DatabaseResponse MakeHelpRequest(int userId, int? termId, int? materialId, int? materialExampleId, int? assignmentId)
         {
-            using (var entity = Entity)
+            return RunDatabaseFunction(() =>
             {
-                // If you are not a student you cannot make help requests
-                if (!entity.IsStudent(userId))
-                    return new DatabaseResponse(Properties.Resources.you_need_to_be_a_student_to_make_help_requests);
-
-                if (termId == null)
-                    return new DatabaseResponse(Properties.Resources.could_not_make_a_help_request);
-
-                // Create help request
-                var helpRequest = new HelpRequest()
+                using (var entity = Entity)
                 {
-                    UserId = userId,
-                    TermId = termId.Value,
-                    MaterialId = materialId,
-                    MaterialExampleId = materialExampleId,
-                    AssignmentId = assignmentId
-                };
+                    // If you are not a student you cannot make help requests
+                    if (!entity.IsStudent(userId))
+                        return Properties.Resources.you_need_to_be_a_student_to_make_help_requests;
 
-                // Check for existing help requests
-                if (entity.HelpRequests.Any(
-                    x => x.UserId == helpRequest.UserId &&
-                    x.MaterialId == materialId &&
-                    x.MaterialExampleId == materialExampleId &&
-                    x.AssignmentId == assignmentId)
-                    )
-                    return new DatabaseResponse(Properties.Resources.you_have_already_sent_a_help_request_for_this_material);
+                    if (termId == null)
+                        return Properties.Resources.could_not_make_a_help_request;
 
-                // Add help request
-                entity.Entry(helpRequest).State = System.Data.Entity.EntityState.Added;
+                    // Create help request
+                    var helpRequest = new HelpRequest()
+                    {
+                        UserId = userId,
+                        TermId = termId.Value,
+                        MaterialId = materialId,
+                        MaterialExampleId = materialExampleId,
+                        AssignmentId = assignmentId
+                    };
 
-                if (entity.SaveChanges() == 1)
-                    return new DatabaseResponse();
-                else
-                    return new DatabaseResponse(Properties.Resources.could_not_make_a_help_request);
-            }
+                    // Check for existing help requests
+                    if (entity.HelpRequests.Any(
+                        x => x.UserId == helpRequest.UserId &&
+                        x.MaterialId == materialId &&
+                        x.MaterialExampleId == materialExampleId &&
+                        x.AssignmentId == assignmentId)
+                        )
+                        return Properties.Resources.you_have_already_sent_a_help_request_for_this_material;
+
+                    // Add help request
+                    entity.Entry(helpRequest).State = System.Data.Entity.EntityState.Added;
+
+                    if (entity.SaveChanges() == 1)
+                        return null;
+                    else
+                        return Properties.Resources.could_not_make_a_help_request;
+                }
+            });
+
         }
 
         /// <summary>
@@ -1107,7 +1232,7 @@ namespace MathChatBot.Utilities
         /// <returns></returns>
         public static DatabaseResponse GetHelpRequestSources(string termName)
         {
-            try
+            return RunDatabaseFunction(() =>
             {
                 PerformanceTester.StartMET("GetHelpRequestSources");
                 // Get temp objects
@@ -1126,7 +1251,7 @@ namespace MathChatBot.Utilities
 
                 // Were there any help requests for the term
                 if (!tempObjects.Any())
-                    return new DatabaseResponse(Properties.Resources.no_help_requests_for_this_term);
+                    return Properties.Resources.no_help_requests_for_this_term;
 
                 var assignments = tempObjects.Where(x => x.AssignmentId != null).GroupBy(x => x.AssignmentId);
                 var materials = tempObjects.Where(x => x.MaterialId != null).GroupBy(x => x.MaterialId);
@@ -1146,12 +1271,8 @@ namespace MathChatBot.Utilities
                     .Select(x => new SourceObject(x.Count(), x.FirstOrDefault()?.MaterialSource, x.FirstOrDefault()?.ExampleSource, x.FirstOrDefault()?.AssignmentSource))
                     .ToList());
 
-                return new DatabaseResponse(sourceObjects);
-            }
-            catch (Exception mes)
-            {
-                return new DatabaseResponse(mes.Message);
-            }
+                return sourceObjects;
+            });
         }
 
         /// <summary>

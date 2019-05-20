@@ -777,4 +777,7 @@ How to use the calculator:
   <data name="the_class_already_exists" xml:space="preserve">
     <value>The class already exists</value>
   </data>
+  <data name="no_materials_found" xml:space="preserve">
+    <value>No materials found</value>
+  </data>
 </root>
