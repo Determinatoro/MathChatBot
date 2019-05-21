@@ -77,15 +77,15 @@ namespace MathChatBot
     /// </summary>
     public partial class InputWindow : Window
     {
+
         //*************************************************/
         // PROPERTIES
         //*************************************************/
         #region Properties
 
-
         private WindowTypes WindowType { get; set; }
         private MathChatBotEntities Entity { get { return DatabaseUtility.Entity; } }
-        
+
         public User User { get; set; }
         private Topic Topic { get; set; }
         private Term Term { get; set; }
@@ -139,427 +139,437 @@ namespace MathChatBot
 
             this.SetupBorderHeader();
 
-            switch (WindowType)
+            try
             {
-                // Reset password for user
-                case WindowTypes.ResetPassword:
-                    {
-                        User = (User)obj;
-                        GetUser();
-
-                        // Visibility
-                        spResetPassword.Visibility = Visibility.Visible;
-
-                        // Texts
-                        btnOk.Content = Properties.Resources.reset;
-
-                        // Click events
-                        btnUserResetPassword.Click += button_Click;
-
-                        // Set border
-                        this.SetupBorderHeader(Properties.Resources.reset_password);
-                        break;
-                    }
-                // See user information    
-                case WindowTypes.UserInformation:
-                    {
-                        User = (User)obj;
-                        GetUser();
-
-                        // Visibility
-                        spUser.Visibility = Visibility.Visible;
-                        lblUserPassword.Visibility = Visibility.Collapsed;
-                        tbUserPassword.Visibility = Visibility.Collapsed;
-
-                        // Texts
-                        btnOk.Content = Properties.Resources.save;
-                        btnCancel.Content = Properties.Resources.close;
-
-                        // Get roles for user
-                        RolesListForUser = DatabaseUtility.GetRolesListForUser(User.Username);
-                        lbRoles.ItemsSource = RolesListForUser;
-
-                        // Set border
-                        this.SetupBorderHeader(Properties.Resources.user_information);
-                        break;
-                    }
-                // New user
-                case WindowTypes.NewUser:
-                    {
-                        User = new User();
-
-                        // Visibility
-                        spUser.Visibility = Visibility.Visible;
-                        cbUserIsActivated.Visibility = Visibility.Collapsed;
-                        btnUserResetPassword.Visibility = Visibility.Collapsed;
-                        tbUserPassword.Visibility = Visibility.Visible;
-
-                        // TextChanged events
-                        tbUserFirstName.TextChanged += textBox_TextChanged;
-                        tbUserLastName.TextChanged += textBox_TextChanged;
-
-                        // PreviewTextInput events
-                        tbUserFirstName.PreviewTextInput += textBox_PreviewTextInput;
-                        tbUserLastName.PreviewTextInput += textBox_PreviewTextInput;
-
-                        // Get roles for user
-                        RolesListForUser = DatabaseUtility.GetRolesList();
-                        lbRoles.ItemsSource = RolesListForUser;
-
-                        // Texts
-                        btnOk.Content = Properties.Resources.create;
-
-                        // Set border
-                        this.SetupBorderHeader(Properties.Resources.new_user);
-                        break;
-                    }
-                // New topic
-                case WindowTypes.NewTopic:
-                    {
-                        // Visibility
-                        spNewTopic.Visibility = Visibility.Visible;
-
-                        // Texts
-                        btnOk.Content = Properties.Resources.add;
-
-                        // Set border
-                        this.SetupBorderHeader(Properties.Resources.new_topic);
-                        break;
-                    }
-                // New term
-                case WindowTypes.NewTerm:
-                    {
-                        // Visibility
-                        spNewTerm.Visibility = Visibility.Visible;
-
-                        // Texts
-                        btnOk.Content = Properties.Resources.add;
-
-                        // Get all topics in the database
-                        var topics = Entity.Topics.ToList();
-                        cbbNewTermTopics.ItemsSource = topics;
-
-                        // Set border
-                        this.SetupBorderHeader(Properties.Resources.new_term);
-                        break;
-                    }
-                // See class overview
-                case WindowTypes.ClassOverview:
-                    {
-                        Class = (Class)obj;
-                        GetClass();
-
-                        // Visibility
-                        spClassOverview.Visibility = Visibility.Visible;
-
-                        // Texts
-                        btnOk.Content = Properties.Resources.add;
-                        btnCancel.Content = Properties.Resources.close;
-
-                        SeeUsersInClass();
-
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.class_overview, Class.Name));
-                        break;
-                    }
-                // Add users to class
-                case WindowTypes.AddUsersToClass:
-                    {
-                        Class = (Class)obj;
-                        GetClass();
-
-                        // Visibility
-                        spClassOverview.Visibility = Visibility.Visible;
-                        dgtcUsersRemove.Visibility = Visibility.Collapsed;
-
-                        // Texts
-                        btnOk.Content = Properties.Resources.add;
-
-                        dgUsers.SelectionMode = DataGridSelectionMode.Extended;
-
-                        SeeUsersNotInClass();
-
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.add_users_to_class, Class.Name));
-                        break;
-                    }
-                // Add new class
-                case WindowTypes.NewClass:
-                    {
-                        // Visibility
-                        spNewClass.Visibility = Visibility.Visible;
-
-                        // Texts
-                        btnOk.Content = Properties.Resources.add;
-
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.new_class));
-
-                        break;
-                    }
-                // See term definitions and assignments
-                case WindowTypes.SeeTermDefinitionsAndAssignments:
-                    {
-                        Term = (Term)obj;
-                        GetTerm();
-
-                        // Visibility
-                        spMaterial.Visibility = Visibility.Visible;
-                        dgtcSeeExamples.Visibility = Visibility.Visible;
-                        gridMaterialAssignment.Visibility = Visibility.Visible;
-
-                        // Texts
-                        btnOk.Content = Properties.Resources.add;
-                        btnCancel.Content = Properties.Resources.close;
-
-                        // Set combobox items
-                        cbbMaterialAssignment.ItemsSource = new string[] { Properties.Resources.definitions, Properties.Resources.assignments };
-                        cbbMaterialAssignment.SelectedItem = Properties.Resources.definitions;
-                        cbbMaterialAssignment.SelectionChanged += (s, a) =>
+                switch (WindowType)
+                {
+                    // Reset password for user
+                    case WindowTypes.ResetPassword:
                         {
-                            var selection = cbbMaterialAssignment.SelectedItem.ToString();
-                            if (selection == Properties.Resources.definitions)
-                                SeeTermDefinitions();
-                            else if (selection == Properties.Resources.assignments)
-                                SeeAssignments();
-                        };
+                            User = (User)obj;
+                            GetUser();
 
-                        // Show definitions for a term
-                        SeeTermDefinitions();
+                            // Visibility
+                            spResetPassword.Visibility = Visibility.Visible;
 
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.defitions_and_assignments, Term.Name));
-                        break;
-                    }
-                // See topic definitions
-                case WindowTypes.SeeTopicDefinitions:
-                    {
-                        Topic = (Topic)obj;
-                        GetTopic();
+                            // Texts
+                            btnOk.Content = Properties.Resources.reset;
 
-                        // Visibility
-                        spMaterial.Visibility = Visibility.Visible;
-                        dgtcSeeExamples.Visibility = Visibility.Collapsed;
-                        gridMaterialAssignment.Visibility = Visibility.Collapsed;
-                        cbbMaterialAssignment.Visibility = Visibility.Collapsed;
+                            // Click events
+                            btnUserResetPassword.Click += button_Click;
 
-                        // Texts
-                        btnOk.Content = Properties.Resources.add;
-                        btnCancel.Content = Properties.Resources.close;
+                            // Set border
+                            this.SetupBorderHeader(Properties.Resources.reset_password);
+                            break;
+                        }
+                    // See user information    
+                    case WindowTypes.UserInformation:
+                        {
+                            User = (User)obj;
+                            GetUser();
 
-                        // Layout
-                        dgMaterial.Width = 500;
+                            // Visibility
+                            spUser.Visibility = Visibility.Visible;
+                            lblUserPassword.Visibility = Visibility.Collapsed;
+                            tbUserPassword.Visibility = Visibility.Collapsed;
 
-                        // Show definitions for a topic
-                        SeeTopicDefinitions();
+                            // Texts
+                            btnOk.Content = Properties.Resources.save;
+                            btnCancel.Content = Properties.Resources.close;
 
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.topic_definitions, Topic.Name));
-                        break;
-                    }
-                // Add new topic definition
-                case WindowTypes.NewTopicMaterial:
-                    {
-                        Topic = (Topic)obj;
-                        GetTopic();
+                            // Get roles for user
+                            RolesListForUser = DatabaseUtility.GetRolesListForUser(User.Username);
+                            lbRoles.ItemsSource = RolesListForUser;
 
-                        // Visibility
-                        spAddMaterial.Visibility = Visibility.Visible;
+                            // Set border
+                            this.SetupBorderHeader(Properties.Resources.user_information);
+                            break;
+                        }
+                    // New user
+                    case WindowTypes.NewUser:
+                        {
+                            User = new User();
 
-                        // Texts
-                        btnOk.Content = Properties.Resources.add;
-                        lblMaterialName.Content = Topic.Name;
+                            // Visibility
+                            spUser.Visibility = Visibility.Visible;
+                            cbUserIsActivated.Visibility = Visibility.Collapsed;
+                            btnUserResetPassword.Visibility = Visibility.Collapsed;
+                            tbUserPassword.Visibility = Visibility.Visible;
 
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.new_topic_definition, Topic.Name));
-                        break;
-                    }
-                // Add new assignment for a term
-                case WindowTypes.NewAssignment:
-                    {
-                        Term = (Term)obj;
-                        GetTerm();
+                            // TextChanged events
+                            tbUserFirstName.TextChanged += textBox_TextChanged;
+                            tbUserLastName.TextChanged += textBox_TextChanged;
 
-                        // Visibility
-                        spAddAssignment.Visibility = Visibility.Visible;
+                            // PreviewTextInput events
+                            tbUserFirstName.PreviewTextInput += textBox_PreviewTextInput;
+                            tbUserLastName.PreviewTextInput += textBox_PreviewTextInput;
 
-                        // Texts
-                        lblTermName.Content = Term.Name;
-                        btnOk.Content = Properties.Resources.add;
+                            // Get roles for user
+                            RolesListForUser = DatabaseUtility.GetRolesList();
+                            lbRoles.ItemsSource = RolesListForUser;
 
-                        // Click events
-                        btnSelectAssignment.Click += button_Click;
+                            // Texts
+                            btnOk.Content = Properties.Resources.create;
 
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.new_assignment, Term.Name));
-                        break;
-                    }
-                // Add new term material
-                case WindowTypes.NewTermMaterial:
-                    {
-                        Term = (Term)obj;
-                        GetTerm();
+                            // Set border
+                            this.SetupBorderHeader(Properties.Resources.new_user);
+                            break;
+                        }
+                    // New topic
+                    case WindowTypes.NewTopic:
+                        {
+                            // Visibility
+                            spNewTopic.Visibility = Visibility.Visible;
 
-                        // Visibility
-                        spAddMaterial.Visibility = Visibility.Visible;
+                            // Texts
+                            btnOk.Content = Properties.Resources.add;
 
-                        // Texts
-                        lblMaterialName.Content = Term.Name;
-                        btnOk.Content = Properties.Resources.add;
+                            // Set border
+                            this.SetupBorderHeader(Properties.Resources.new_topic);
+                            break;
+                        }
+                    // New term
+                    case WindowTypes.NewTerm:
+                        {
+                            // Visibility
+                            spNewTerm.Visibility = Visibility.Visible;
 
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.new_term_definition, Term.Name));
-                        break;
-                    }
-                // See term material examples
-                case WindowTypes.SeeTermMaterialExamples:
-                    {
-                        Material = (Material)obj;
-                        GetMaterial();
+                            // Texts
+                            btnOk.Content = Properties.Resources.add;
 
-                        // Visibility
-                        spMaterial.Visibility = Visibility.Visible;
-                        dgtcSeeExamples.Visibility = Visibility.Collapsed;
-                        cbbMaterialAssignment.Visibility = Visibility.Collapsed;
+                            // Get all topics in the database
+                            var topics = Entity.Topics.ToList();
+                            cbbNewTermTopics.ItemsSource = topics;
 
-                        // Texts
-                        btnOk.Content = Properties.Resources.add;
-                        btnCancel.Content = Properties.Resources.close;
+                            // Set border
+                            this.SetupBorderHeader(Properties.Resources.new_term);
+                            break;
+                        }
+                    // See class overview
+                    case WindowTypes.ClassOverview:
+                        {
+                            Class = (Class)obj;
+                            GetClass();
 
-                        // Show examples for a definition
-                        SeeExamples();
+                            // Visibility
+                            spClassOverview.Visibility = Visibility.Visible;
 
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.term_defition_examples, DatabaseUtility.GetTermName(material: Material)));
-                        break;
-                    }
-                // Add new term material example
-                case WindowTypes.NewTermMaterialExample:
-                    {
-                        Material = (Material)obj;
-                        GetMaterial();
+                            // Texts
+                            btnOk.Content = Properties.Resources.add;
+                            btnCancel.Content = Properties.Resources.close;
 
-                        // Visibility
-                        spAddMaterial.Visibility = Visibility.Visible;
+                            SeeUsersInClass();
 
-                        // Texts
-                        lblMaterialName.Content = Material.Term.Name;
-                        btnOk.Content = Properties.Resources.add;
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.class_overview, Class.Name));
+                            break;
+                        }
+                    // Add users to class
+                    case WindowTypes.AddUsersToClass:
+                        {
+                            Class = (Class)obj;
+                            GetClass();
 
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.new_term_definition_example, DatabaseUtility.GetTermName(material: Material)));
-                        break;
-                    }
-                // Overwrite assignments
-                case WindowTypes.OverwriteAssignment:
-                    {
-                        Assignment = (Assignment)obj;
-                        GetAssignment();
+                            // Visibility
+                            spClassOverview.Visibility = Visibility.Visible;
+                            dgtcUsersRemove.Visibility = Visibility.Collapsed;
 
-                        // Visibility
-                        spAddMaterial.Visibility = Visibility.Visible;
-                        spOverwriteMaterial.Visibility = Visibility.Visible;
+                            // Texts
+                            btnOk.Content = Properties.Resources.add;
 
-                        // Texts
-                        btnOk.Content = Properties.Resources.overwrite;
-                        lblMaterialName.Content = Properties.Resources.new_image;
-                        lblOverwriteMaterial.Content = Properties.Resources.old_image;
+                            dgUsers.SelectionMode = DataGridSelectionMode.Extended;
 
-                        // Show current image
-                        var currentImage = Utility.Base64ToImage(Assignment.Source);
-                        imgOverwriteMaterial.Source = currentImage;
+                            SeeUsersNotInClass();
 
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_assignment, DatabaseUtility.GetTermName(assignment: Assignment)));
-                        break;
-                    }
-                // Overwrite material    
-                case WindowTypes.OverwriteMaterial:
-                    {
-                        Material = (Material)obj;
-                        GetMaterial();
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.add_users_to_class, Class.Name));
+                            break;
+                        }
+                    // Add new class
+                    case WindowTypes.NewClass:
+                        {
+                            // Visibility
+                            spNewClass.Visibility = Visibility.Visible;
 
-                        // Visibility
-                        spAddMaterial.Visibility = Visibility.Visible;
-                        spOverwriteMaterial.Visibility = Visibility.Visible;
+                            // Texts
+                            btnOk.Content = Properties.Resources.add;
 
-                        // Texts
-                        btnOk.Content = Properties.Resources.overwrite;
-                        lblMaterialName.Content = Properties.Resources.new_image;
-                        lblOverwriteMaterial.Content = Properties.Resources.old_image;
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.new_class));
 
-                        // Show current image
-                        var currentImage = Utility.Base64ToImage(Material.Source);
-                        imgOverwriteMaterial.Source = currentImage;
+                            break;
+                        }
+                    // See term definitions and assignments
+                    case WindowTypes.SeeTermDefinitionsAndAssignments:
+                        {
+                            Term = (Term)obj;
+                            GetTerm();
 
-                        // Set border
-                        if (Material.TermId == null)
-                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_topic_definition, DatabaseUtility.GetTopicName(Material)));
-                        else
-                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition, DatabaseUtility.GetTermName(material: Material)));
-                        break;
-                    }
-                // Overwrite material example
-                case WindowTypes.OverwriteMaterialExample:
-                    {
-                        MaterialExample = (MaterialExample)obj;
-                        GetMaterialExample();
+                            // Visibility
+                            spMaterial.Visibility = Visibility.Visible;
+                            dgtcSeeExamples.Visibility = Visibility.Visible;
+                            gridMaterialAssignment.Visibility = Visibility.Visible;
 
-                        // Visilibity
-                        spAddMaterial.Visibility = Visibility.Visible;
-                        spOverwriteMaterial.Visibility = Visibility.Visible;
+                            // Texts
+                            btnOk.Content = Properties.Resources.add;
+                            btnCancel.Content = Properties.Resources.close;
 
-                        // Texts
-                        btnOk.Content = Properties.Resources.overwrite;
-                        lblMaterialName.Content = Properties.Resources.new_image;
-                        lblOverwriteMaterial.Content = Properties.Resources.old_image;
+                            // Set combobox items
+                            cbbMaterialAssignment.ItemsSource = new string[] { Properties.Resources.definitions, Properties.Resources.assignments };
+                            cbbMaterialAssignment.SelectedItem = Properties.Resources.definitions;
+                            cbbMaterialAssignment.SelectionChanged += (s, a) =>
+                            {
+                                var selection = cbbMaterialAssignment.SelectedItem.ToString();
+                                if (selection == Properties.Resources.definitions)
+                                    SeeTermDefinitions();
+                                else if (selection == Properties.Resources.assignments)
+                                    SeeAssignments();
+                            };
 
-                        // Show current image
-                        var currentImage = Utility.Base64ToImage(MaterialExample.Source);
-                        imgOverwriteMaterial.Source = currentImage;
+                            // Show definitions for a term
+                            SeeTermDefinitions();
 
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition_example, DatabaseUtility.GetTermName(materialExample: MaterialExample)));
-                        break;
-                    }
-                // See source material
-                case WindowTypes.SeeMaterial:
-                    {
-                        Source = (string)obj;
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.defitions_and_assignments, Term.Name));
+                            break;
+                        }
+                    // See topic definitions
+                    case WindowTypes.SeeTopicDefinitions:
+                        {
+                            Topic = (Topic)obj;
+                            GetTopic();
 
-                        // Visibility
-                        spSeeMaterial.Visibility = Visibility.Visible;
-                        btnOk.Visibility = Visibility.Collapsed;
+                            // Visibility
+                            spMaterial.Visibility = Visibility.Visible;
+                            dgtcSeeExamples.Visibility = Visibility.Collapsed;
+                            gridMaterialAssignment.Visibility = Visibility.Collapsed;
+                            cbbMaterialAssignment.Visibility = Visibility.Collapsed;
 
-                        // Texts
-                        btnCancel.Content = Properties.Resources.close;
+                            // Texts
+                            btnOk.Content = Properties.Resources.add;
+                            btnCancel.Content = Properties.Resources.close;
 
-                        // Show image
-                        var image = Utility.Base64ToImage(Source);
-                        imgSeeMaterial.Source = image;
+                            // Layout
+                            dgMaterial.Width = 500;
 
-                        // Set border
-                        this.SetupBorderHeader(Properties.Resources.see_image);
-                        break;
-                    }
-                case WindowTypes.SeeHelpRequestSources:
-                    {
-                        var termName = (string)obj;
-                        Term = Entity.Terms.FirstOrDefault(x => x.Name == termName);
+                            // Show definitions for a topic
+                            SeeTopicDefinitions();
 
-                        // Visibility
-                        spHelpRequestSources.Visibility = Visibility.Visible;
-                        btnOk.Visibility = Visibility.Collapsed;
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.topic_definitions, Topic.Name));
+                            break;
+                        }
+                    // Add new topic definition
+                    case WindowTypes.NewTopicMaterial:
+                        {
+                            Topic = (Topic)obj;
+                            GetTopic();
 
-                        // Texts
-                        btnCancel.Content = Properties.Resources.close;
+                            // Visibility
+                            spAddMaterial.Visibility = Visibility.Visible;
 
-                        SeeHelpRequestSources();
+                            // Texts
+                            btnOk.Content = Properties.Resources.add;
+                            lblMaterialName.Content = Topic.Name;
 
-                        // Set border
-                        this.SetupBorderHeader(string.Format(Properties.Resources.term_help_request_sources, termName));
-                        break;
-                    }
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.new_topic_definition, Topic.Name));
+                            break;
+                        }
+                    // Add new assignment for a term
+                    case WindowTypes.NewAssignment:
+                        {
+                            Term = (Term)obj;
+                            GetTerm();
+
+                            // Visibility
+                            spAddAssignment.Visibility = Visibility.Visible;
+
+                            // Texts
+                            lblTermName.Content = Term.Name;
+                            btnOk.Content = Properties.Resources.add;
+
+                            // Click events
+                            btnSelectAssignment.Click += button_Click;
+
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.new_assignment, Term.Name));
+                            break;
+                        }
+                    // Add new term material
+                    case WindowTypes.NewTermMaterial:
+                        {
+                            Term = (Term)obj;
+                            GetTerm();
+
+                            // Visibility
+                            spAddMaterial.Visibility = Visibility.Visible;
+
+                            // Texts
+                            lblMaterialName.Content = Term.Name;
+                            btnOk.Content = Properties.Resources.add;
+
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.new_term_definition, Term.Name));
+                            break;
+                        }
+                    // See term material examples
+                    case WindowTypes.SeeTermMaterialExamples:
+                        {
+                            Material = (Material)obj;
+                            GetMaterial();
+
+                            // Visibility
+                            spMaterial.Visibility = Visibility.Visible;
+                            dgtcSeeExamples.Visibility = Visibility.Collapsed;
+                            cbbMaterialAssignment.Visibility = Visibility.Collapsed;
+
+                            // Texts
+                            btnOk.Content = Properties.Resources.add;
+                            btnCancel.Content = Properties.Resources.close;
+
+                            // Show examples for a definition
+                            SeeExamples();
+
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.term_defition_examples, DatabaseUtility.GetTermName(material: Material)));
+                            break;
+                        }
+                    // Add new term material example
+                    case WindowTypes.NewTermMaterialExample:
+                        {
+                            Material = (Material)obj;
+                            GetMaterial();
+
+                            // Visibility
+                            spAddMaterial.Visibility = Visibility.Visible;
+
+                            // Texts
+                            lblMaterialName.Content = Material.Term.Name;
+                            btnOk.Content = Properties.Resources.add;
+
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.new_term_definition_example, DatabaseUtility.GetTermName(material: Material)));
+                            break;
+                        }
+                    // Overwrite assignments
+                    case WindowTypes.OverwriteAssignment:
+                        {
+                            Assignment = (Assignment)obj;
+                            GetAssignment();
+
+                            // Visibility
+                            spAddMaterial.Visibility = Visibility.Visible;
+                            spOverwriteMaterial.Visibility = Visibility.Visible;
+
+                            // Texts
+                            btnOk.Content = Properties.Resources.overwrite;
+                            lblMaterialName.Content = Properties.Resources.new_image;
+                            lblOverwriteMaterial.Content = Properties.Resources.old_image;
+
+                            // Show current image
+                            var currentImage = Utility.Base64ToImage(Assignment.Source);
+                            imgOverwriteMaterial.Source = currentImage;
+
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_assignment, DatabaseUtility.GetTermName(assignment: Assignment)));
+                            break;
+                        }
+                    // Overwrite material    
+                    case WindowTypes.OverwriteMaterial:
+                        {
+                            Material = (Material)obj;
+                            GetMaterial();
+
+                            // Visibility
+                            spAddMaterial.Visibility = Visibility.Visible;
+                            spOverwriteMaterial.Visibility = Visibility.Visible;
+
+                            // Texts
+                            btnOk.Content = Properties.Resources.overwrite;
+                            lblMaterialName.Content = Properties.Resources.new_image;
+                            lblOverwriteMaterial.Content = Properties.Resources.old_image;
+
+                            // Show current image
+                            var currentImage = Utility.Base64ToImage(Material.Source);
+                            imgOverwriteMaterial.Source = currentImage;
+
+                            // Set border
+                            if (Material.TermId == null)
+                                this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_topic_definition, DatabaseUtility.GetTopicName(Material)));
+                            else
+                                this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition, DatabaseUtility.GetTermName(material: Material)));
+                            break;
+                        }
+                    // Overwrite material example
+                    case WindowTypes.OverwriteMaterialExample:
+                        {
+                            MaterialExample = (MaterialExample)obj;
+                            GetMaterialExample();
+
+                            // Visilibity
+                            spAddMaterial.Visibility = Visibility.Visible;
+                            spOverwriteMaterial.Visibility = Visibility.Visible;
+
+                            // Texts
+                            btnOk.Content = Properties.Resources.overwrite;
+                            lblMaterialName.Content = Properties.Resources.new_image;
+                            lblOverwriteMaterial.Content = Properties.Resources.old_image;
+
+                            // Show current image
+                            var currentImage = Utility.Base64ToImage(MaterialExample.Source);
+                            imgOverwriteMaterial.Source = currentImage;
+
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition_example, DatabaseUtility.GetTermName(materialExample: MaterialExample)));
+                            break;
+                        }
+                    // See source material
+                    case WindowTypes.SeeMaterial:
+                        {
+                            Source = (string)obj;
+
+                            // Visibility
+                            spSeeMaterial.Visibility = Visibility.Visible;
+                            btnOk.Visibility = Visibility.Collapsed;
+
+                            // Texts
+                            btnCancel.Content = Properties.Resources.close;
+
+                            // Show image
+                            var image = Utility.Base64ToImage(Source);
+                            imgSeeMaterial.Source = image;
+
+                            // Set border
+                            this.SetupBorderHeader(Properties.Resources.see_image);
+                            break;
+                        }
+                    case WindowTypes.SeeHelpRequestSources:
+                        {
+                            var termName = (string)obj;
+                            Term = Entity.Terms.FirstOrDefault(x => x.Name == termName);
+
+                            // Visibility
+                            spHelpRequestSources.Visibility = Visibility.Visible;
+                            btnOk.Visibility = Visibility.Collapsed;
+
+                            // Texts
+                            btnCancel.Content = Properties.Resources.close;
+
+                            SeeHelpRequestSources();
+
+                            // Set border
+                            this.SetupBorderHeader(string.Format(Properties.Resources.term_help_request_sources, termName));
+                            break;
+                        }
+                }
+            }
+            catch (Exception mes)
+            {
+                CustomDialog.Show(mes.Message, (sender, args) =>
+                {
+                    Close();
+                });
             }
         }
 
@@ -570,36 +580,57 @@ namespace MathChatBot
         //*************************************************/
         #region Methods
 
+        /// <summary>
+        /// Get term
+        /// </summary>
         private void GetTerm()
         {
             Term = Entity.Terms.FirstOrDefault(x => x.Id == Term.Id);
         }
 
+        /// <summary>
+        /// Get topic
+        /// </summary>
         private void GetTopic()
         {
             Topic = Entity.Topics.FirstOrDefault(x => x.Id == Topic.Id);
         }
 
+        /// <summary>
+        /// Get user
+        /// </summary>
         private void GetUser()
         {
             User = Entity.Users.FirstOrDefault(x => x.Id == User.Id);
         }
 
+        /// <summary>
+        /// Get class
+        /// </summary>
         private void GetClass()
         {
             Class = Entity.Classes.FirstOrDefault(x => x.Id == Class.Id);
         }
 
+        /// <summary>
+        /// Get material
+        /// </summary>
         private void GetMaterial()
         {
             Material = Entity.Materials.FirstOrDefault(x => x.Id == Material.Id);
         }
 
+        /// <summary>
+        /// Get example
+        /// </summary>
         private void GetMaterialExample()
         {
             MaterialExample = Entity.MaterialExamples.FirstOrDefault(x => x.Id == MaterialExample.Id);
         }
 
+        /// <summary>
+        /// Get assignment
+        /// </summary>
         private void GetAssignment()
         {
             Assignment = Entity.Assignments.FirstOrDefault(x => x.Id == Assignment.Id);
@@ -676,6 +707,8 @@ namespace MathChatBot
             var response = DatabaseUtility.GetHelpRequestSources(Term.Name);
             if (response.Success)
                 dgHelpRequestSources.ItemsSource = (List<SourceObject>)response.Data;
+            else
+                CustomDialog.Show(response.ErrorMessage);
         }
 
         /// <summary>

@@ -742,7 +742,10 @@ namespace MathChatBot.Utilities
             PerformanceTester.StartMET("GetHelpRequestsFromUsers");
 
             var ids = users.Select(x2 => x2.Id).ToList();
-            var groups = Entity.HelpRequests.Where(x => ids.Contains(x.UserId) && (topicName == null || (x.Term.Topic.Name == topicName))).GroupBy(x => x.Term.Topic).ToList();
+            var groups = Entity.HelpRequests
+                               .Where(x => ids.Contains(x.UserId) && (topicName == null || (x.Term.Topic.Name == topicName)))
+                               .GroupBy(x => x.Term.Topic)
+                               .ToList();
 
             PerformanceTester.StopMET("GetHelpRequestsFromUsers");
 
@@ -759,8 +762,12 @@ namespace MathChatBot.Utilities
         {
             PerformanceTester.StartMET("GetHelpRequestsFromUsers");
 
-            var ids = users.Select(x2 => x2.Id).ToList();
-            var groups = users.SelectMany(x => x.HelpRequests.Where(x2 => topicName == null || (x2.Term.Topic.Name == topicName))).GroupBy(x => x.Term.Topic).ToList();
+            var ids = users.Select(x2 => x2.Id)
+                           .ToList();
+            var groups = users.SelectMany(x => x.HelpRequests
+                              .Where(x2 => topicName == null || (x2.Term.Topic.Name == topicName)))
+                              .GroupBy(x => x.Term.Topic)
+                              .ToList();
 
             PerformanceTester.StopMET("GetHelpRequestsFromUsers");
 

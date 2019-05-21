@@ -50,8 +50,10 @@ namespace MathChatBot.Test
 
         #region Entity
 
+        // User
+
         [TestMethod]
-        public void Entity_RemoveUserAndRelations()
+        public void Entity_RemoveUser()
         {
             using (var entity = DatabaseUtility.Entity)
             {
@@ -97,18 +99,125 @@ namespace MathChatBot.Test
                 Assert.IsTrue(entity.Users.FirstOrDefault(x => x.FirstName == "Test" && x.Username == "tete") != null);
             }
         }
-
         [TestMethod]
         public void Entity_EditUser()
         {
             using (var entity = DatabaseUtility.Entity)
             {
-                var user = entity.Users.FirstOrDefault(x => x.FirstName.ToLower() == "jakob");
-                user.FirstName = "test";
+                var user = entity.Users.FirstOrDefault(x => x.Username == "japr");
+                user.FirstName = "Hans";
                 entity.SaveChanges();
-                Assert.IsTrue(entity.Users.FirstOrDefault(x => x.FirstName.ToLower() == "jakob") == null);
+                Assert.IsTrue(entity.Users.FirstOrDefault(x => x.Username == "japr").FirstName == "Hans");
             }
         }
+
+        // Class
+
+        [TestMethod]
+        public void Entity_AddClass()
+        {
+            using (var entity = DatabaseUtility.Entity)
+            {
+                var @class = entity.Classes.Add(new Models.Class()
+                {
+                    Name = "B999"
+                });
+                entity.SaveChanges();
+                
+                Assert.IsTrue(@class.Id != 0);
+            }
+        }
+        [TestMethod]
+        public void Entity_RemoveClassShouldCastExceptionBecauseTheClassHasRelationsToOtherTables()
+        {
+            using (var entity = DatabaseUtility.Entity)
+            {
+                Assert.ThrowsException<DbUpdateException>(() =>
+                {
+                    var @class = entity.Classes.FirstOrDefault(x => x.Name == "B100");
+                    entity.Entry(@class).State = System.Data.Entity.EntityState.Deleted;
+                    entity.SaveChanges();
+                });
+            }
+        }
+        [TestMethod]
+        public void Entity_RemoveClass()
+        {
+            using (var entity = DatabaseUtility.Entity)
+            {
+                var @class = entity.Classes.FirstOrDefault(x => x.Name == "B100");
+                var relations = entity.UserClassRelations.Where(x => x.ClassId == @class.Id).ToList();
+                relations.ForEach(x => entity.Entry(x).State = System.Data.Entity.EntityState.Deleted);
+                entity.SaveChanges();
+                entity.Entry(@class).State = System.Data.Entity.EntityState.Deleted;
+                entity.SaveChanges();
+            }
+        }
+        [TestMethod]
+        public void Entity_EditClass()
+        {
+            using (var entity = DatabaseUtility.Entity)
+            {
+                var @class = entity.Classes.FirstOrDefault(x => x.Name == "B100");
+                @class.Name = "B999";
+                entity.SaveChanges();
+                Assert.IsTrue(entity.Classes.FirstOrDefault(x => x.Name == "B999") != null);
+            }
+        }
+
+        // Role
+
+        [TestMethod]
+        public void Entity_AddRole()
+        {
+            using (var entity = DatabaseUtility.Entity)
+            {
+                var role = entity.Roles.Add(new Models.Role()
+                {
+                    Name = "Test"
+                });
+                entity.SaveChanges();
+                Assert.IsTrue(role.Id != 0);
+            }
+        }
+        [TestMethod]
+        public void Entity_EditRole()
+        {
+            using (var entity = DatabaseUtility.Entity)
+            {
+                var role = entity.Roles.FirstOrDefault(x => x.Name == "Student");
+                role.Name = "Officer";
+                entity.SaveChanges();
+                Assert.IsTrue(entity.Roles.FirstOrDefault(x => x.Name == "Student") == null);
+            }
+        }
+        [TestMethod]
+        public void Entity_RemoveRoleShouldCastExceptionAsItHasRelationsToOtherTables()
+        {
+            using (var entity = DatabaseUtility.Entity)
+            {
+                Assert.ThrowsException<DbUpdateException>(() =>
+                {
+                    var role = entity.Roles.FirstOrDefault(x => x.Name == "Student");
+                    entity.Entry(role).State = System.Data.Entity.EntityState.Deleted;
+                    entity.SaveChanges();
+                });
+            }
+        }
+        [TestMethod]
+        public void Entity_RemoveRole()
+        {
+            using (var entity = DatabaseUtility.Entity)
+            {
+                var role = entity.Roles.FirstOrDefault(x => x.Name == "Student");
+                var relations = entity.UserRoleRelations.Where(x => x.RoleId == role.Id).ToList();
+                //relations.ForEach(x => )
+                
+                entity.Entry(role).State = System.Data.Entity.EntityState.Deleted;
+                entity.SaveChanges();
+            }
+        }
+
 
         #endregion
 

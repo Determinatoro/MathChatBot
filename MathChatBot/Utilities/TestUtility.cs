@@ -11,12 +11,22 @@ namespace MathChatBot.Utilities
 {
     public class TestUtility
     {
+
+        /// <summary>
+        /// Get folder with test data
+        /// </summary>
+        /// <param name="testDataFolder"></param>
+        /// <returns></returns>
         private static string GetTestDataFolder(string testDataFolder)
         {
             var projectFolder = Utility.GetProjectFolder();
             return Path.Combine(projectFolder, "test_data", testDataFolder);
         }
 
+        /// <summary>
+        /// Get in in-memory context of entity instance loaded with static data
+        /// </summary>
+        /// <returns></returns>
         public static MathChatBotEntities GetInMemoryContext()
         {
             var test_data_folder = GetTestDataFolder("database_mock_data");
@@ -26,6 +36,9 @@ namespace MathChatBot.Utilities
             return inMemoryContext;
         }
 
+        /// <summary>
+        /// Create test help requests
+        /// </summary>
         public static void CreateHelpRequests()
         {
             var @class = DatabaseUtility.Entity.Classes.FirstOrDefault(x => x.Name == "B100");
