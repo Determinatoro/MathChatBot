@@ -63,6 +63,9 @@ namespace MathChatBot.Helpers
         public bool IsCommand { get { return SearchStrings == null; } }
     }
 
+    /// <summary>
+    /// Class for chatbot commands
+    /// </summary>
     public class ChatBotCommand
     {
         public string[] CommandTexts { get; set; }
@@ -97,7 +100,15 @@ namespace MathChatBot.Helpers
     /// </summary>
     public class MathChatBotHelper
     {
+
+        //*************************************************/
+        // VARIABLES
+        //*************************************************/
+        #region Variables
+
         private MessageObject _lastBotMessage;
+
+        #endregion
 
         //*************************************************/
         // PROPERTIES
@@ -155,6 +166,19 @@ namespace MathChatBot.Helpers
         #region Methods
 
         /// <summary>
+        /// Reset chatbot cache
+        /// </summary>
+        public void Reset()
+        {
+            Messages.Clear();
+            SelectedAssignments = null;
+            LastBotMessagesAdded = null;
+            SelectedMessage = null;
+            CurrentAssignment = null;
+            LastBotMessage = null;
+        }
+
+        /// <summary>
         /// Get commands for the chatbot
         /// </summary>
         private void GetCommands()
@@ -207,6 +231,8 @@ namespace MathChatBot.Helpers
                 {
                     if (LastBotMessage != null && LastBotMessage.IsSelection)
                         SeeDefinitions(LastBotMessage, false);
+                    else if (LastBotMessage != null && LastBotMessage.IsTopicDefinition)
+                        SeeTerms(LastBotMessage);
                     else
                         AddBotMessage(new MessageObject(string.Format(Properties.Resources.please_select_one_of_these_topics_first, GetTopics())));
                 }
@@ -300,7 +326,7 @@ namespace MathChatBot.Helpers
         {
             try
             {
-                if (!message.IsTopicDefinition)
+                if (message == null || !message.IsTopicDefinition)
                 {
                     WriteMessageToUser(Properties.Resources.please_select_a_topic_first_before_using_this_command);
                     return;
@@ -308,7 +334,7 @@ namespace MathChatBot.Helpers
 
                 WriteMessageToUser(string.Format(
                     Properties.Resources.these_are_the_terms_under, message.Topic.Name.ToLower(),
-                    string.Join("\n", DatabaseUtility.GetTermNames(message.Topic.Name))));
+                    string.Join("\n", Entity.GetTermNames(message.Topic.Name))));
             }
             catch (Exception mes)
             {
@@ -324,13 +350,13 @@ namespace MathChatBot.Helpers
         {
             try
             {
-                if (message == null || !message.IsMaterial)
+                if (message == null || !message.IsTermDefinition)
                 {
                     WriteMessageToUser(Properties.Resources.please_select_a_term_first_before_using_this_command);
                     return;
                 }
 
-                var examples = DatabaseUtility.GetExamples(message.Material.Id);
+                var examples = Entity.GetExamples(message.Material.Id);
                 if (!examples.Any())
                 {
                     WriteMessageToUser(Properties.Resources.this_term_has_no_examples);
@@ -360,7 +386,7 @@ namespace MathChatBot.Helpers
         {
             try
             {
-                if (!message.IsExample)
+                if (message == null || !message.IsExample)
                 {
                     WriteMessageToUser(Properties.Resources.please_select_an_example_first_before_using_this_command);
                     return;
@@ -370,8 +396,8 @@ namespace MathChatBot.Helpers
 
                 AddBotMessages(new MessageObject[]
                 {
-                new MessageObject(text),
-                new MessageObject(message.MaterialExample.Material)
+                    new MessageObject(text),
+                    new MessageObject(message.MaterialExample.Material)
                 }.ToList());
             }
             catch (Exception mes)
@@ -389,7 +415,7 @@ namespace MathChatBot.Helpers
         {
             try
             {
-                if (!message.IsSelection)
+                if (message == null || !message.IsSelection)
                 {
                     WriteMessageToUser(Properties.Resources.you_can_only_use_this_command_when_having_a_selection);
                     return;
@@ -398,9 +424,9 @@ namespace MathChatBot.Helpers
                 // Get materials for term or topic
                 var materials = new List<Material>();
                 if (!selectedTopic)
-                    materials = DatabaseUtility.GetMaterials(message.Term.Id);
+                    materials = Entity.GetMaterials(message.Term.Id);
                 else
-                    materials = DatabaseUtility.GetMaterials(topicId: message.Topic.Id);
+                    materials = Entity.GetMaterials(topicId: message.Topic.Id);
 
                 var messages = new List<MessageObject>();
                 // Add bot message
@@ -425,13 +451,16 @@ namespace MathChatBot.Helpers
         {
             try
             {
+                if (message == null)
+                    return;
+
                 var userId = User.Id;
                 var termId = message.Term?.Id;
                 int? materialId = message.Material?.Id;
                 int? materialExampleId = message.MaterialExample?.Id;
                 int? assignmentId = message.Assignment?.Id;
 
-                var response = DatabaseUtility.MakeHelpRequest(userId, termId, materialId, materialExampleId, assignmentId);
+                var response = Entity.MakeHelpRequest(userId, termId, materialId, materialExampleId, assignmentId);
                 if (response.Success)
                     WriteMessageToUser(Properties.Resources.help_request_has_been_sent_to_your_teacher);
                 else
@@ -505,28 +534,28 @@ namespace MathChatBot.Helpers
         {
             try
             {
+                if (message == null || (!message.IsTermDefinition && !message.IsTopicDefinition && !message.IsExample))
+                {
+                    WriteMessageToUser(Properties.Resources.please_select_a_term_or_example_first_before_using_this_command);
+                    return;
+                }
+
                 List<Assignment> assignments = null;
                 string text = null;
 
                 // Term definition or example
                 if (message.IsTermDefinition || message.IsExample)
                 {
-                    assignments = DatabaseUtility.GetAssignments(message.Term.Id, null);
+                    assignments = Entity.GetAssignments(message.Term.Id, null);
                     if (assignments.Any())
                         text = string.Format(Properties.Resources.there_are_for_this_term_this_is_the_first_assignment, assignments.Count);
                 }
                 // Topic definition
-                else if (message.IsTopicDefinition)
-                {
-                    assignments = DatabaseUtility.GetAssignments(null, message.Topic.Id);
-                    if (assignments.Any())
-                        text = string.Format(Properties.Resources.there_are_under_this_topic_this_is_the_first_assignment, assignments.Count);
-                }
-                // If none is selected
                 else
                 {
-                    WriteMessageToUser(Properties.Resources.please_select_a_term_or_example_first_before_using_this_command);
-                    return;
+                    assignments = Entity.GetAssignments(null, message.Topic.Id);
+                    if (assignments.Any())
+                        text = string.Format(Properties.Resources.there_are_under_this_topic_this_is_the_first_assignment, assignments.Count);
                 }
 
                 // Check if there are any assignments
@@ -553,12 +582,12 @@ namespace MathChatBot.Helpers
         /// See answers for an assignment
         /// </summary>
         /// <param name="message">The message object</param>
-        public void SeeAnswers(MessageObject message)
+        private void SeeAnswers(MessageObject message)
         {
             try
             {
                 // If the message object is not an assignment
-                if (!message.IsAssignment)
+                if (message == null || !message.IsAssignment)
                 {
                     WriteMessageToUser(Properties.Resources.please_select_an_assignment_first_before_using_this_command);
                     return;
@@ -571,6 +600,7 @@ namespace MathChatBot.Helpers
 
                 var text = string.Empty;
 
+                // Get answers
                 var values = members.Select(x => message.Assignment.GetPropertyValue(x.Name)).Where(x => x != null).ToList();
 
                 // More than 1 one answer
@@ -666,11 +696,8 @@ namespace MathChatBot.Helpers
         {
             try
             {
-                if (string.IsNullOrEmpty(text))
-                    return new MessageResult(Properties.Resources.please_write_a_proper_sentence);
-
                 var tempText = text.ToLower();
-                
+
                 // Get sentences that has been written
                 var sentences = NLPHelper.GetSentences(tempText);
 
@@ -682,13 +709,13 @@ namespace MathChatBot.Helpers
                 List<TaggedWord> wordList = null;
 
                 // Function for tagging
-                Action tagging = () =>
+                Action<bool> tagging = (useSavedSentences) =>
                 {
                     // Insert a question mark at the end of a text
                     if (!tempText.EndsWith("?"))
                         tempText += "?";
                     // Tag the words in the text
-                    wordList = NLPHelper.Tag(tempText);
+                    wordList = NLPHelper.Tag(tempText, useSavedSentences);
                 };
 
                 PerformanceTester.StartMET("Use calculator");
@@ -701,7 +728,7 @@ namespace MathChatBot.Helpers
                     {
                         var input = tempText;
 
-                        tagging();
+                        tagging(false);
 
                         if (wordList.Any(x => x.IsWHWord || x.IsVerb))
                         {
@@ -727,13 +754,13 @@ namespace MathChatBot.Helpers
                     {
                         return new MessageResult()
                         {
-                            Messages = new MessageObject[]{new MessageObject(output)}
+                            Messages = new MessageObject[] { new MessageObject(output) }
                         };
                     }
                 }
                 PerformanceTester.StopMET("Use calculator");
 
-                tagging();
+                tagging(true);
 
                 PerformanceTester.StartMET("Analyze word list");
                 // Analyze the input
@@ -743,10 +770,6 @@ namespace MathChatBot.Helpers
                 // If success
                 if (analyzeResult.IsSuccess)
                 {
-                    // If command has been executed return empty result
-                    if (analyzeResult.IsCommand)
-                        return new MessageResult();
-
                     // Analyze the search strings
                     return AnalyzeSearchStrings(analyzeResult.SearchStrings);
                 }
@@ -861,7 +884,7 @@ namespace MathChatBot.Helpers
                     var join = collection.ListToString();
                     if (join != string.Empty)
                     {
-                        // Add them list hashset
+                        // Add the list hashset
                         hashSet.Add(join);
 
                         // Function to add subsets of collection
@@ -882,9 +905,7 @@ namespace MathChatBot.Helpers
 
                                 do
                                 {
-                                    collection.Reverse();
-                                    collection = collection.Skip(1).ToList();
-                                    collection.Reverse();
+                                    collection = collection.Take(collection.Count - 1).ToList();
                                     AddSubSets();
                                 } while (collection.Count(x => x.IsNoun) > 1);
                             }
@@ -926,7 +947,7 @@ namespace MathChatBot.Helpers
 
                     // Search for term and topic
                     Term term = null; Topic topic = null;
-                    DatabaseUtility.GetTermAndTopic(out term, out topic, str);
+                    Entity.GetTermAndTopic(out term, out topic, str);
 
                     if (topic == null && term == null)
                         continue;
@@ -941,14 +962,14 @@ namespace MathChatBot.Helpers
                     }
                     // Get materials for a topic
                     else if (topic != null)
-                        materials = DatabaseUtility.GetMaterials(topicId: topic.Id);
+                        materials = Entity.GetMaterials(topicId: topic.Id);
                     // Get materials for a term
                     else
-                        materials = DatabaseUtility.GetMaterials(term.Id);
+                        materials = Entity.GetMaterials(term.Id);
 
                     PerformanceTester.StopMET("Analyze search strings");
 
-                    if (materials == null)
+                    if (materials.Count == 0)
                         return new MessageResult(Properties.Resources.no_materials_found);
 
                     // Add bot message
@@ -1017,7 +1038,7 @@ namespace MathChatBot.Helpers
         /// <returns>A string presentation of the topics</returns>
         private string GetTopics()
         {
-            var topics = DatabaseUtility.GetTopicNames();
+            var topics = Entity.GetTopicNames();
             return string.Join("\n", topics);
         }
 

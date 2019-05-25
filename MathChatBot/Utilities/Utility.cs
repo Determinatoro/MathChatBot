@@ -21,16 +21,36 @@ namespace MathChatBot.Utilities
         //*************************************************/
         #region Methods
 
+        /// <summary>
+        /// Get project folder
+        /// </summary>
+        /// <returns>Path to project folder</returns>
         public static string GetProjectFolder()
         {
             string startupPath = AppDomain.CurrentDomain.BaseDirectory;
-            var pathItems = startupPath.Split(Path.DirectorySeparatorChar);
+            string[] pathItems = startupPath.Split(Path.DirectorySeparatorChar)
+                                            .Where(x => x != string.Empty)
+                                            .ToArray();
             Assembly assy = typeof(App).Assembly;
-            var pos = pathItems.Reverse().ToList().FindIndex(x => x == "bin");
-            string projectPath = string.Join(Path.DirectorySeparatorChar.ToString(), pathItems.Take(pathItems.Count() - pos - 2));
-            return projectPath;
+            do
+            {
+                var tempPath = string.Join(Path.DirectorySeparatorChar.ToString(), pathItems);
+
+                var files = Directory.GetFiles(tempPath, "*.sln")
+                                     .Select(Path.GetFileName)
+                                     .ToArray();
+                if (files.Any(x => x.StartsWith(assy.GetName().Name)))
+                    return tempPath;
+
+                pathItems = pathItems.Take(pathItems.Length - 1).ToArray();
+            } while (pathItems.Length >= 1);
+            return string.Empty;
         }
 
+        /// <summary>
+        /// Get resources folder
+        /// </summary>
+        /// <returns>Path to resources folder</returns>
         public static string GetResourcesFolder()
         {
             Assembly assy = typeof(App).Assembly;
@@ -121,6 +141,12 @@ namespace MathChatBot.Utilities
             return (T)Enum.Parse(typeof(T), value, true);
         }
 
+        /// <summary>
+        /// Get name of enum
+        /// </summary>
+        /// <typeparam name="T">Generic type</typeparam>
+        /// <param name="enum">The enum</param>
+        /// <returns></returns>
         public static string GetName<T>(this T @enum)
         {
             if (!typeof(T).IsEnum)
@@ -170,6 +196,11 @@ namespace MathChatBot.Utilities
                 element.RemoveHandler(routedEvent, routedEventHandler.Handler);
         }
 
+        /// <summary>
+        /// Start thread in a window
+        /// </summary>
+        /// <param name="window">Window</param>
+        /// <param name="action">Action to run on thread</param>
         public static void StartThread(this Window window, Action action)
         {
             new Thread(new ThreadStart(action)).Start();
@@ -185,6 +216,10 @@ namespace MathChatBot.Utilities
             RunOnUIThread(action);
         }
 
+        /// <summary>
+        /// Thread safe run on UI
+        /// </summary>
+        /// <param name="action"></param>
         public static void RunOnUIThread(Action action)
         {
             // Are we on the UI thread

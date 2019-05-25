@@ -47,7 +47,7 @@ namespace MathChatBot
         //*************************************************/
         #region Constructor
 
-        public MainWindow()
+       public MainWindow()
         {
             InitializeComponent();
 

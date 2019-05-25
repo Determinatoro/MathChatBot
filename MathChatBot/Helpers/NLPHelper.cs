@@ -66,7 +66,7 @@ namespace MathChatBot.Helpers
             get
             {
                 if (Original == null || WhiteSpaceCharacterBefore == null)
-                    return null;
+                    return "";
                 else
                     return WhiteSpaceCharacterBefore + Original;
             }
@@ -154,19 +154,6 @@ namespace MathChatBot.Helpers
                 return false;
             }
         }
-
-        public static TaggedWord ParseFromNLP(string nlp)
-        {
-            var splitted = Regex.Split(nlp, "/");
-            if (splitted.Length != 2)
-                return null;
-
-            return new TaggedWord()
-            {
-                Word = splitted[0],
-                POSStringIdentifier = splitted[1]
-            };
-        }
     }
 
     public static class NLPUtility
@@ -182,16 +169,6 @@ namespace MathChatBot.Helpers
     /// </summary>
     public class NLPHelper
     {
-
-        //*************************************************/
-        // VARIABLES
-        //*************************************************/
-        #region Variables
-
-        //private static string AppFolderPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-        //private static string ResourcesFolderPath = Path.Combine(Directory.GetParent(AppFolderPath).Parent.FullName, "Resources\\{0}");
-
-        #endregion
 
         //*************************************************/
         // PROPERTIES

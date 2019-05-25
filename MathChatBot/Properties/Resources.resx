@@ -333,15 +333,20 @@ Write “help” to get more information.</value>
     <value>You cannot take square root of a negative number.</value>
   </data>
   <data name="help_message" xml:space="preserve">
-    <value>Help:
+    <value>Using the chatbot:
+1. To get a list of all topics that I know something about type in “topics”.
+2. For elaboration on a topic or term, type in the topic or term name.
+3. After having selected a topic you can either choose to get an assignment for that topic or see what terms I am familiar about for that topic. Either of these can be selected by pressing the buttons shown or typing in the button names. Typing in button names works for all buttons.
+4. When having selected an assignment you can use the following keywords to navigate to new assignments
+    - Next          -&gt;    Gets the next assignment for that topic or term.
+    - Previous    -&gt;    Gets the previous assignment for that topic or term.
+    - Current      -&gt;    Will show the current assignment at the bottom of the feed.
 
-Formulating a question:
-1. Your question needs to consist of a wh-question word, such as what, for the chatbot to understand what to search for.
-2. You can ask “What topics do you know?” to get a list of all the topics available.
-
-How to use the calculator:
-1. Ask the chatbot what numbers you want to add(+), substract(-), divide(/) or multiply(*) with each other for example “What is 5 * 5 / 5”.
-2. The mathbot will use the result of the previous calculation unless you write “clear result”.</value>
+Using the calculator:
+1. By entering a calculation I will solve it for you.
+2. To start a new calculation start the calculation with a “=”.
+3. If a calculation is not started with “=” I will assume that you want to add the calculation to the previous result.
+3. Instead of having to type out everything from your previous calculation you can use the keyword “value” which has the result of your previous calculation stored.</value>
   </data>
   <data name="see_terms" xml:space="preserve">
     <value>See terms</value>
@@ -779,5 +784,14 @@ How to use the calculator:
   </data>
   <data name="no_materials_found" xml:space="preserve">
     <value>No materials found</value>
+  </data>
+  <data name="reset_help_requests" xml:space="preserve">
+    <value>Reset help requests?</value>
+  </data>
+  <data name="could_not_reset_password" xml:space="preserve">
+    <value>Could not reset password.</value>
+  </data>
+  <data name="user_not_found" xml:space="preserve">
+    <value>User not found.</value>
   </data>
 </root>

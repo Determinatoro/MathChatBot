@@ -46,7 +46,7 @@ namespace MathChatBot
             ShowTopics();
 
             // Get topics
-            var topics = DatabaseUtility.GetTopicNames().ToList();
+            var topics = Entity.GetTopicNames().ToList();
             // Insert a selection for all topics
             topics.Insert(0, Properties.Resources.all_topics);
             cbbTopics.ItemsSource = topics;
@@ -161,7 +161,7 @@ namespace MathChatBot
         /// </summary>
         private void ShowTopics()
         {
-            YAxis.ItemsSource = DatabaseUtility
+            YAxis.ItemsSource = Entity
                 .GetTopicNames()
                 .OrderByDescending(x => x)
                 .ToList();
@@ -174,7 +174,7 @@ namespace MathChatBot
         /// <param name="topicName">Name of the topic</param>
         private void ShowTerms(string topicName)
         {
-            YAxis.ItemsSource = DatabaseUtility
+            YAxis.ItemsSource = Entity
                 .GetTermNames(topicName)
                 .OrderByDescending(x => x)
                 .ToList();
@@ -218,23 +218,23 @@ namespace MathChatBot
                         else
                         {
                             users = isShowingAllTopics ?
-                            DatabaseUtility.GetUsersWithHelpRequests(@class) :
-                            DatabaseUtility.GetUsersWithHelpRequests(@class, topicName);
+                            Entity.GetUsersWithHelpRequests(@class) :
+                            Entity.GetUsersWithHelpRequests(@class, topicName);
                         }
                     }
                     else if (users == null)
-                        users = DatabaseUtility.GetUsersInClass(@class, new Role.RoleTypes[] { Role.RoleTypes.Student }, false);
+                        users = Entity.GetUsersInClass(@class, new Role.RoleTypes[] { Role.RoleTypes.Student }, false);
 
                     // Get help requests
                     if (keepUserSelected && selectedUser != null && users.Any(x => x == selectedUser))
-                        groups = DatabaseUtility.GetHelpRequestsFromUser(selectedUser, isShowingAllTopics ? null : topicName);
+                        groups = Entity.GetHelpRequestsFromUser(selectedUser, isShowingAllTopics ? null : topicName);
                     else
-                        groups = DatabaseUtility.GetHelpRequestsFromUsers(users, isShowingAllTopics ? null : topicName);
+                        groups = Entity.GetHelpRequestsFromUsers(users, isShowingAllTopics ? null : topicName);
                     
                     if (isShowingAllTopics)
                     {
                         // Get topics from database
-                        var topics = DatabaseUtility.GetTopicNames();
+                        var topics = Entity.GetTopicNames();
 
                         foreach (var name in topics)
                         {
@@ -253,7 +253,7 @@ namespace MathChatBot
                     else
                     {
                         // Get all terms for the specific topic
-                        var terms = DatabaseUtility.GetTermNames(topicName);
+                        var terms = Entity.GetTermNames(topicName);
                         var helpRequests = groups.FirstOrDefault(x => x.Key.Name == topicName);
                         foreach (var term in terms)
                         {
@@ -335,14 +335,19 @@ namespace MathChatBot
                     }
                 case nameof(btnResetRequests):
                     {
-                        if (cbbClasses.SelectedItem == null)
-                            return;
-                        var @class = cbbClasses.SelectedItem as Class;
-                        var response = DatabaseUtility.ResetHelpRequests(@class);
-                        if (!response.Success)
-                            CustomDialog.Show(response.ErrorMessage);
-                        else
-                            SetData(@class);
+                        if (CustomDialog.ShowQuestion(Properties.Resources.reset_help_requests, CustomDialogQuestionTypes.YesNo) == CustomDialogQuestionResult.Yes)
+                        {
+                            if (cbbClasses.SelectedItem == null)
+                                return;
+                            // Get selected class
+                            var @class = cbbClasses.SelectedItem as Class;
+                            // Reset help requests
+                            var response = Entity.ResetHelpRequests(@class);
+                            if (!response.Success)
+                                CustomDialog.Show(response.ErrorMessage);
+                            else
+                                SetData(@class);
+                        }
 
                         break;
                     }

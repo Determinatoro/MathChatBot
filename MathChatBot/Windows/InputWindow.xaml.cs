@@ -178,7 +178,7 @@ namespace MathChatBot
                             btnCancel.Content = Properties.Resources.close;
 
                             // Get roles for user
-                            RolesListForUser = DatabaseUtility.GetRolesListForUser(User.Username);
+                            RolesListForUser = Entity.GetRolesListForUser(User.Username);
                             lbRoles.ItemsSource = RolesListForUser;
 
                             // Set border
@@ -205,7 +205,7 @@ namespace MathChatBot
                             tbUserLastName.PreviewTextInput += textBox_PreviewTextInput;
 
                             // Get roles for user
-                            RolesListForUser = DatabaseUtility.GetRolesList();
+                            RolesListForUser = Entity.Roles.ToList();
                             lbRoles.ItemsSource = RolesListForUser;
 
                             // Texts
@@ -432,7 +432,7 @@ namespace MathChatBot
                             SeeExamples();
 
                             // Set border
-                            this.SetupBorderHeader(string.Format(Properties.Resources.term_defition_examples, DatabaseUtility.GetTermName(material: Material)));
+                            this.SetupBorderHeader(string.Format(Properties.Resources.term_defition_examples, Entity.GetTermName(material: Material)));
                             break;
                         }
                     // Add new term material example
@@ -449,7 +449,7 @@ namespace MathChatBot
                             btnOk.Content = Properties.Resources.add;
 
                             // Set border
-                            this.SetupBorderHeader(string.Format(Properties.Resources.new_term_definition_example, DatabaseUtility.GetTermName(material: Material)));
+                            this.SetupBorderHeader(string.Format(Properties.Resources.new_term_definition_example, Entity.GetTermName(material: Material)));
                             break;
                         }
                     // Overwrite assignments
@@ -472,7 +472,7 @@ namespace MathChatBot
                             imgOverwriteMaterial.Source = currentImage;
 
                             // Set border
-                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_assignment, DatabaseUtility.GetTermName(assignment: Assignment)));
+                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_assignment, Entity.GetTermName(assignment: Assignment)));
                             break;
                         }
                     // Overwrite material    
@@ -496,9 +496,9 @@ namespace MathChatBot
 
                             // Set border
                             if (Material.TermId == null)
-                                this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_topic_definition, DatabaseUtility.GetTopicName(Material)));
+                                this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_topic_definition, Entity.GetTopicName(Material)));
                             else
-                                this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition, DatabaseUtility.GetTermName(material: Material)));
+                                this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition, Entity.GetTermName(material: Material)));
                             break;
                         }
                     // Overwrite material example
@@ -521,7 +521,7 @@ namespace MathChatBot
                             imgOverwriteMaterial.Source = currentImage;
 
                             // Set border
-                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition_example, DatabaseUtility.GetTermName(materialExample: MaterialExample)));
+                            this.SetupBorderHeader(string.Format(Properties.Resources.overwrite_term_definition_example, Entity.GetTermName(materialExample: MaterialExample)));
                             break;
                         }
                     // See source material
@@ -704,7 +704,7 @@ namespace MathChatBot
         /// </summary>
         private void SeeHelpRequestSources()
         {
-            var response = DatabaseUtility.GetHelpRequestSources(Term.Name);
+            var response = Entity.GetHelpRequestSources(Term.Name);
             if (response.Success)
                 dgHelpRequestSources.ItemsSource = (List<SourceObject>)response.Data;
             else
@@ -716,7 +716,7 @@ namespace MathChatBot
         /// </summary>
         private void SeeUsersInClass()
         {
-            var users = DatabaseUtility.GetUsersInClass(Class, new Role.RoleTypes[] { Role.RoleTypes.Student, Role.RoleTypes.Teacher }, true);
+            var users = Entity.GetUsersInClass(Class, new Role.RoleTypes[] { Role.RoleTypes.Student, Role.RoleTypes.Teacher }, true);
             // Show users
             dgUsers.ItemsSource = users;
         }
@@ -727,7 +727,7 @@ namespace MathChatBot
         private void SeeUsersNotInClass()
         {
             // Get users not in class
-            var users = DatabaseUtility.GetUsersNotInClass(Class);
+            var users = Entity.GetUsersNotInClass(Class);
             // Show users
             dgUsers.ItemsSource = users;
         }
@@ -826,7 +826,7 @@ namespace MathChatBot
                         else
                         {
                             if (User.Username == null || User.Username == string.Empty)
-                                tbUserUsername.Text = DatabaseUtility.GenerateUsername(User.FirstName, User.LastName);
+                                tbUserUsername.Text = Entity.GenerateUsername(User.FirstName, User.LastName);
                         }
 
                         break;
@@ -863,7 +863,7 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        DatabaseUtility.CreateUser(User, RolesListForUser);
+                                        Entity.CreateUser(User, RolesListForUser);
                                         break;
                                     }
                                 // Reset        
@@ -877,18 +877,20 @@ namespace MathChatBot
                                             CustomDialog.Show(Properties.Resources.the_passwords_need_to_match);
                                             return;
                                         }
-
-                                        string errorMessage = "";
-                                        DatabaseUtility.ResetUserPassword(ref errorMessage, newPassword, User.Username);
-                                        if (errorMessage != string.Empty)
-                                            CustomDialog.Show(errorMessage);
+                                        
+                                        var response = Entity.ResetUserPassword(newPassword, User.Username);
+                                        if (!response.Success)
+                                        {
+                                            CustomDialog.Show(response.ErrorMessage);
+                                            return;
+                                        }
 
                                         break;
                                     }
                                 // Save
                                 case WindowTypes.UserInformation:
                                     {
-                                        DatabaseUtility.UpdateUserInformation(User, RolesListForUser);
+                                        Entity.UpdateUserInformation(User, RolesListForUser);
                                         break;
                                     }
                                 // Add
@@ -905,7 +907,7 @@ namespace MathChatBot
                                 case WindowTypes.AddUsersToClass:
                                     {
                                         var users = dgUsers.SelectedItems.OfType<User>().ToList();
-                                        DatabaseUtility.AddUsersToClass(Class, users);
+                                        Entity.AddUsersToClass(Class, users);
                                         break;
                                     }
                                 // Add
@@ -917,12 +919,11 @@ namespace MathChatBot
                                             CustomDialog.Show(Properties.Resources.please_fill_out_all_fields);
                                             return;
                                         }
-
-                                        string errorMessage = string.Empty;
-                                        DatabaseUtility.AddClass(ref errorMessage, className);
-                                        if (errorMessage != string.Empty)
+                                        
+                                        var response = Entity.AddClass(className);
+                                        if (!response.Success)
                                         {
-                                            CustomDialog.Show(errorMessage);
+                                            CustomDialog.Show(response.ErrorMessage);
                                             return;
                                         }
 
@@ -937,7 +938,7 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        DatabaseUtility.AddTopicMaterial(Topic, SelectedSource);
+                                        Entity.AddTopicMaterial(Topic, SelectedSource);
                                         break;
                                     }
                                 // Add
@@ -949,7 +950,7 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        DatabaseUtility.AddTermMaterial(Term, SelectedSource);
+                                        Entity.AddTermMaterial(Term, SelectedSource);
                                         break;
                                     }
                                 // Add
@@ -961,7 +962,7 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        DatabaseUtility.AddTermMaterialExample(Material, SelectedSource);
+                                        Entity.AddTermMaterialExample(Material, SelectedSource);
                                         break;
                                     }
                                 // Add
@@ -973,7 +974,7 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        DatabaseUtility.AddAssignment(Term,
+                                        Entity.AddAssignment(Term,
                                             SelectedSource,
                                             tbAssignmentAnswerA.Text,
                                             tbAssignmentAnswerB.Text,
@@ -1034,7 +1035,7 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        if (!DatabaseUtility.AddNewTopic(topicName))
+                                        if (!Entity.AddNewTopic(topicName))
                                         {
                                             CustomDialog.Show(Properties.Resources.could_not_add_the_topic);
                                             return;
@@ -1053,7 +1054,7 @@ namespace MathChatBot
                                             return;
                                         }
 
-                                        if (!DatabaseUtility.AddNewTerm(topic, termName))
+                                        if (!Entity.AddNewTerm(topic, termName))
                                         {
                                             CustomDialog.Show(Properties.Resources.could_not_add_the_term);
                                             return;

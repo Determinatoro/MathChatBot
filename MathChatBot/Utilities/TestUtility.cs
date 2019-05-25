@@ -31,7 +31,8 @@ namespace MathChatBot.Utilities
         {
             var test_data_folder = GetTestDataFolder("database_mock_data");
             var dataLoader = new CsvDataLoader(test_data_folder);
-            var inMemoryConnection = Effort.EntityConnectionFactory.CreateTransient("name=MathChatBotEntitiesTest", dataLoader);
+            var cacheLoader = new CachingDataLoader(dataLoader, false);
+            var inMemoryConnection = Effort.EntityConnectionFactory.CreateTransient("name=MathChatBotEntitiesTest", cacheLoader);
             var inMemoryContext = new CustomEntity(inMemoryConnection, false);
             return inMemoryContext;
         }
@@ -43,7 +44,7 @@ namespace MathChatBot.Utilities
         {
             var @class = DatabaseUtility.Entity.Classes.FirstOrDefault(x => x.Name == "B100");
 
-            var users = DatabaseUtility.GetUsersInClass(@class, new Role.RoleTypes[] { Role.RoleTypes.Student }, false);
+            var users = DatabaseUtility.Entity.GetUsersInClass(@class, new Role.RoleTypes[] { Role.RoleTypes.Student }, false);
             var materials = DatabaseUtility.Entity.Materials.ToList();
 
             for (int i = 0; i < users.Count; i++)
@@ -51,7 +52,7 @@ namespace MathChatBot.Utilities
                 var user = users[i];
                 var material = materials[(i + 3) % materials.Count];
 
-                DatabaseUtility.MakeHelpRequest(user.Id, material.TermId, material.Id, null, null);
+                DatabaseUtility.Entity.MakeHelpRequest(user.Id, material.TermId, material.Id, null, null);
             }
         }
 

@@ -340,6 +340,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not reset password..
+        /// </summary>
+        public static string could_not_reset_password {
+            get {
+                return ResourceManager.GetString("could_not_reset_password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create.
         /// </summary>
         public static string create {
@@ -523,15 +532,11 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Help:
-        ///
-        ///Formulating a question:
-        ///1. Your question needs to consist of a wh-question word, such as what, for the chatbot to understand what to search for.
-        ///2. You can ask “What topics do you know?” to get a list of all the topics available.
-        ///
-        ///How to use the calculator:
-        ///1. Ask the chatbot what numbers you want to add(+), substract(-), divide(/) or multiply(*) with each other for example “What is 5 * 5 / 5”.
-        ///2. The mathbot will use the result of the previous calculation unless you write “clear result”..
+        ///   Looks up a localized string similar to Using the chatbot:
+        ///1. To get a list of all topics that I know something about type in “topics”.
+        ///2. For elaboration on a topic or term, type in the topic or term name.
+        ///3. After having selected a topic you can either choose to get an assignment for that topic or see what terms I am familiar about for that topic. Either of these can be selected by pressing the buttons shown or typing in the button names. Typing in button names works for all buttons.
+        ///4. When having selected an assignment you can use the fol [rest of string was truncated]&quot;;.
         /// </summary>
         public static string help_message {
             get {
@@ -1265,6 +1270,15 @@ namespace MathChatBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset help requests?.
+        /// </summary>
+        public static string reset_help_requests {
+            get {
+                return ResourceManager.GetString("reset_help_requests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reset password.
         /// </summary>
         public static string reset_password {
@@ -1807,6 +1821,15 @@ namespace MathChatBot.Properties {
         public static string user_is_deactivated_contact_your_administrator {
             get {
                 return ResourceManager.GetString("user_is_deactivated_contact_your_administrator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User not found..
+        /// </summary>
+        public static string user_not_found {
+            get {
+                return ResourceManager.GetString("user_not_found", resourceCulture);
             }
         }
         

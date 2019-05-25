@@ -122,7 +122,7 @@ namespace MathChatBot
         /// </summary>
         private void GetUsers()
         {
-            Users = DatabaseUtility.GetUsersOrderedAlphabetically();
+            Users = Entity.GetUsersOrderedAlphabetically();
             dgUsers.ItemsSource = Users;
             // Do filtering
             textBox_TextChanged(tbSearchForUsers, null);
@@ -133,7 +133,7 @@ namespace MathChatBot
         /// </summary>
         private void GetClasses()
         {
-            Classes = DatabaseUtility.GetClassesOrderedAlphabetically();
+            Classes = Entity.GetClassesOrderedAlphabetically();
             dgClasses.ItemsSource = Classes;
             // Do filtering
             textBox_TextChanged(tbSearchForClasses, null);
@@ -167,7 +167,7 @@ namespace MathChatBot
         {
             this.StartThread(() =>
             {
-                Terms = DatabaseUtility.GetTermInformations(topicName);
+                Terms = Entity.GetTermInformations(topicName);
 
                 this.RunOnUIThread(() =>
                 {
@@ -213,9 +213,9 @@ namespace MathChatBot
                     CSVUtility.SetObjectValues(dictionary, tempUser);
                     // Generate username
                     if (tempUser.Username == null)
-                        tempUser.Username = DatabaseUtility.GenerateUsername(tempUser.FirstName, tempUser.LastName);
+                        tempUser.Username = Entity.GenerateUsername(tempUser.FirstName, tempUser.LastName);
                     // Create the user and get the user
-                    var user = DatabaseUtility.CreateUser(tempUser);
+                    var user = Entity.CreateUser(tempUser);
 
                     // Check if we have a user
                     if (!(user is User))
@@ -231,7 +231,7 @@ namespace MathChatBot
                         // Get roles from file entry
                         var roles = Regex.Split(dictionary[nameof(Entity.Roles)], ",");
                         // Add roles for the user
-                        if (!DatabaseUtility.AssignRolesByName(user, new HashSet<string>(roles)))
+                        if (!Entity.AssignRolesByName(user, new HashSet<string>(roles)))
                             break;
                     }
 
@@ -241,7 +241,7 @@ namespace MathChatBot
                         // Get roles from file entry
                         var classes = Regex.Split(dictionary[nameof(Entity.Classes)], ",");
                         // Add roles for the user
-                        if (!DatabaseUtility.AddToClassesByName(user, new HashSet<string>(classes)))
+                        if (!Entity.AddToClassesByName(user, new HashSet<string>(classes)))
                             break;
                     }
 
@@ -319,153 +319,159 @@ namespace MathChatBot
         // Button - Click
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            var btn = sender as Button;
-
-            switch (btn.Name)
+            try
             {
-                // New user
-                case nameof(btnNewUser):
-                    {
-                        this.ShowInputWindow(WindowTypes.NewUser, action: () =>
-                        {
-                            GetData();
-                        });
-                        break;
-                    }
-                // Add users from file
-                case nameof(btnAddUsersFromFile):
-                    {
-                        // Open a file dialog to select a CSV file
-                        OpenFileDialog openFileDialog = new OpenFileDialog();
-                        openFileDialog.Filter = "CSV files (*.csv)|*.csv";
-                        if (openFileDialog.ShowDialog() == true)
-                        {
-                            this.StartThread(() =>
-                            {
-                                AddUsersFromFile(openFileDialog.FileName);
-                            });
-                        }
+                var btn = sender as Button;
 
-                        break;
-                    }
-                // New topic
-                case nameof(btnNewTopic):
-                    {
-                        this.ShowInputWindow(WindowTypes.NewTopic, action: () =>
+                switch (btn.Name)
+                {
+                    // New user
+                    case nameof(btnNewUser):
                         {
-                            GetData();
-                        });
-
-                        break;
-                    }
-                // New term
-                case nameof(btnNewTerm):
-                    {
-                        this.ShowInputWindow(WindowTypes.NewTerm, action: () =>
-                        {
-                            GetData();
-                        });
-
-                        break;
-                    }
-                // New class
-                case nameof(btnNewClass):
-                    {
-                        this.ShowInputWindow(WindowTypes.NewClass, action: () =>
-                        {
-                            GetData();
-                        });
-
-                        break;
-                    }
-                // More button for each user object in the datagrid
-                case "btnMore":
-                    {
-                        // Get the associated object
-                        User user = ((FrameworkElement)sender).DataContext as User;
-
-                        this.ShowInputWindow(WindowTypes.UserInformation, user, () =>
-                        {
-                            GetData();
-                        });
-                        break;
-                    }
-                // Class object "See users"
-                case "btnSeeUsers":
-                    {
-                        // Get the associated object
-                        Class @class = ((FrameworkElement)sender).DataContext as Class;
-                        this.ShowInputWindow(WindowTypes.ClassOverview, @class, () =>
-                        {
-                            GetData();
-                        });
-                        break;
-                    }
-                // Term and Topic object "Edit"
-                case "btnEdit":
-                    {
-                        var listObject = btn.DataContext;
-
-                        var selectedItem = cbbTopics.SelectedItem.ToString();
-
-                        if (listObject is Topic)
-                        {
-                            Topic topic = listObject as Topic;
-                            this.ShowInputWindow(WindowTypes.SeeTopicDefinitions, topic, () =>
+                            this.ShowInputWindow(WindowTypes.NewUser, action: () =>
                             {
                                 GetData();
                             });
+                            break;
                         }
-                        else if (listObject is Term)
+                    // Add users from file
+                    case nameof(btnAddUsersFromFile):
                         {
-                            Term term = listObject as Term;
-                            this.ShowInputWindow(WindowTypes.SeeTermDefinitionsAndAssignments, term, () =>
+                            // Open a file dialog to select a CSV file
+                            OpenFileDialog openFileDialog = new OpenFileDialog();
+                            openFileDialog.Filter = "CSV files (*.csv)|*.csv";
+                            if (openFileDialog.ShowDialog() == true)
+                            {
+                                this.StartThread(() =>
+                                {
+                                    AddUsersFromFile(openFileDialog.FileName);
+                                });
+                            }
+
+                            break;
+                        }
+                    // New topic
+                    case nameof(btnNewTopic):
+                        {
+                            this.ShowInputWindow(WindowTypes.NewTopic, action: () =>
                             {
                                 GetData();
                             });
+
+                            break;
                         }
-
-                        break;
-                    }
-                // Term and Topic object "Remove"
-                case "btnRemove":
-                    {
-                        // Get the object the user want to remove
-                        var listObject = btn.DataContext;
-
-                        // Get combobox selection
-                        var selectedItem = cbbTopics.SelectedItem.ToString();
-
-                        if (listObject is Topic)
+                    // New term
+                    case nameof(btnNewTerm):
                         {
-                            var topic = listObject as Topic;
-
-                            // Ask user if they want to remove topic
-                            if (CustomDialog.ShowQuestion(string.Format(Properties.Resources.do_you_want_to_delete, topic.Name), CustomDialogQuestionTypes.YesNo) == CustomDialogQuestionResult.Yes)
+                            this.ShowInputWindow(WindowTypes.NewTerm, action: () =>
                             {
-                                if (!DatabaseUtility.DeleteTopic(topic))
-                                    CustomDialog.Show(Properties.Resources.could_not_remove_the_topic);
-                                else
-                                    GetTopics();
-                            }
+                                GetData();
+                            });
+
+                            break;
                         }
-                        else if (listObject is Term)
+                    // New class
+                    case nameof(btnNewClass):
                         {
-                            var term = listObject as Term;
-
-                            // Ask user if they want to remove term
-                            if (CustomDialog.ShowQuestion(string.Format(Properties.Resources.do_you_want_to_delete, term.Name), CustomDialogQuestionTypes.YesNo) == CustomDialogQuestionResult.Yes)
+                            this.ShowInputWindow(WindowTypes.NewClass, action: () =>
                             {
-                                if (!DatabaseUtility.DeleteTerm(term))
-                                    CustomDialog.Show(Properties.Resources.could_not_remove_the_term);
-                                else
-                                    GetTerms(selectedItem);
-                            }
+                                GetData();
+                            });
+
+                            break;
                         }
+                    // More button for each user object in the datagrid
+                    case "btnMore":
+                        {
+                            // Get the associated object
+                            User user = ((FrameworkElement)sender).DataContext as User;
 
-                        break;
-                    }
+                            this.ShowInputWindow(WindowTypes.UserInformation, user, () =>
+                            {
+                                GetData();
+                            });
+                            break;
+                        }
+                    // Class object "See users"
+                    case "btnSeeUsers":
+                        {
+                            // Get the associated object
+                            Class @class = ((FrameworkElement)sender).DataContext as Class;
+                            this.ShowInputWindow(WindowTypes.ClassOverview, @class, () =>
+                            {
+                                GetData();
+                            });
+                            break;
+                        }
+                    // Term and Topic object "Edit"
+                    case "btnEdit":
+                        {
+                            var listObject = btn.DataContext;
 
+                            var selectedItem = cbbTopics.SelectedItem.ToString();
+
+                            if (listObject is Topic)
+                            {
+                                Topic topic = listObject as Topic;
+                                this.ShowInputWindow(WindowTypes.SeeTopicDefinitions, topic, () =>
+                                {
+                                    GetData();
+                                });
+                            }
+                            else if (listObject is Term)
+                            {
+                                Term term = listObject as Term;
+                                this.ShowInputWindow(WindowTypes.SeeTermDefinitionsAndAssignments, term, () =>
+                                {
+                                    GetData();
+                                });
+                            }
+
+                            break;
+                        }
+                    // Term and Topic object "Remove"
+                    case "btnRemove":
+                        {
+                            // Get the object the user want to remove
+                            var listObject = btn.DataContext;
+
+                            // Get combobox selection
+                            var selectedItem = cbbTopics.SelectedItem.ToString();
+
+                            if (listObject is Topic)
+                            {
+                                var topic = listObject as Topic;
+
+                                // Ask user if they want to remove topic
+                                if (CustomDialog.ShowQuestion(string.Format(Properties.Resources.do_you_want_to_delete, topic.Name), CustomDialogQuestionTypes.YesNo) == CustomDialogQuestionResult.Yes)
+                                {
+                                    if (!Entity.DeleteTopic(topic))
+                                        CustomDialog.Show(Properties.Resources.could_not_remove_the_topic);
+                                    else
+                                        GetTopics();
+                                }
+                            }
+                            else if (listObject is Term)
+                            {
+                                var term = listObject as Term;
+
+                                // Ask user if they want to remove term
+                                if (CustomDialog.ShowQuestion(string.Format(Properties.Resources.do_you_want_to_delete, term.Name), CustomDialogQuestionTypes.YesNo) == CustomDialogQuestionResult.Yes)
+                                {
+                                    if (!Entity.DeleteTerm(term))
+                                        CustomDialog.Show(Properties.Resources.could_not_remove_the_term);
+                                    else
+                                        GetTerms(selectedItem);
+                                }
+                            }
+
+                            break;
+                        }
+                }
+            }
+            catch (Exception mes)
+            {
+                CustomDialog.Show(mes.Message);
             }
         }
 

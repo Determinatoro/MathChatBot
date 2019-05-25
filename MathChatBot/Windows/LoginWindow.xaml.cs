@@ -20,6 +20,7 @@ namespace MathChatBot
         #region Properties
 
         public User User { get; private set; }
+        private MathChatBotEntities Entity { get { return DatabaseUtility.Entity; } }
 
         #endregion
 
@@ -42,8 +43,6 @@ namespace MathChatBot
             // KeyDown events
             tbPassword.KeyDown += textBox_KeyDown;
             tbUsername.KeyDown += textBox_KeyDown;
-
-            DatabaseUtility.GetUsers();
 
             // Set border
             this.SetupBorderHeader(Properties.Resources.login);
@@ -88,7 +87,7 @@ namespace MathChatBot
             {
                 try
                 {
-                    var response = DatabaseUtility.CheckLogin(username, password);
+                    var response = Entity.CheckLogin(username, password);
                     if (response.Success)
                     {
                         if (saveCredentials)

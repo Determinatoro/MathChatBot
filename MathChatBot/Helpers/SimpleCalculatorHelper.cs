@@ -101,7 +101,7 @@ namespace MathChatBot.Helpers
                             case "sin":
                                 {
                                     // Get method for the function
-                                    var methodInfo = typeof(Math).GetMethods().FirstOrDefault(x => !x.Name.Contains("_") && x.Name.ToLower() == functionName);
+                                    var methodInfo = typeof(Math).GetMethods().FirstOrDefault(x => x.Name.ToLower() == functionName);
                                     // Get input
                                     var input = args.Parameters[0].Evaluate();
 
@@ -126,7 +126,7 @@ namespace MathChatBot.Helpers
                             case "atan":
                                 {
                                     // Get method for the function
-                                    var methodInfo = typeof(Math).GetMethods().FirstOrDefault(x => !x.Name.Contains("_") && x.Name.ToLower() == functionName);
+                                    var methodInfo = typeof(Math).GetMethods().FirstOrDefault(x => x.Name.ToLower() == functionName);
                                     // Get input
                                     var input = args.Parameters[0].Evaluate();
 
@@ -155,19 +155,17 @@ namespace MathChatBot.Helpers
                 // Checking for wrongful math and throws exceptions accordingly
                 if (res is double && double.IsInfinity((double)res))
                     throw new DivideByZeroException();
-                if (res is double && double.IsNaN((double)res) && value.ToLower().Contains("sqrt(-"))
-                    throw new NegativeSqrtException();
-                else if (res is double && (double.IsNaN((double)res) || double.IsInfinity((double)res)))
+                else if (res is double && double.IsNaN((double)res))
                 {
                     if (value.ToLower().Contains("acos("))
                         throw new AcosWrongValueException();
-
                     else if (value.ToLower().Contains("asin("))
                         throw new AsinWrongValueException();
-
+                    else if (value.ToLower().Contains("sqrt(-"))
+                        throw new NegativeSqrtException();
+                    // Last resort if something is wrong
                     else
                         throw new IllegalMathException();
-
                 }
                 // The final result is calculated and stored
                 _result = e.Evaluate().ToString().Replace(",", ".");
@@ -195,6 +193,9 @@ namespace MathChatBot.Helpers
 
         #endregion
 
+        //*************************************************/
+        // CONSTRUCTOR
+        //*************************************************/
         #region Contructor
 
         public SimpleCalculatorHelper()

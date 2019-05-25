@@ -79,6 +79,10 @@ namespace MathChatBot.Objects
                 return Term != null && IsMaterial;
             }
         }
+        public bool IsMessage
+        {
+            get { return !IsSelection && Text != null; }
+        }
         public bool IsAssignment
         {
             get
