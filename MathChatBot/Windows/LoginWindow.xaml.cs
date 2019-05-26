@@ -33,7 +33,7 @@ namespace MathChatBot
         {
             InitializeComponent();
 
-            DatabaseUtility.DisposeEntity();
+            Entity.DisposeEntity();
 
             // Get saved login information
             GetSavedLogin();

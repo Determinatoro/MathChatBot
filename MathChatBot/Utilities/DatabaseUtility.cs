@@ -112,7 +112,7 @@ namespace MathChatBot.Utilities
         /// <summary>
         /// Dispose entity
         /// </summary>
-        public static void DisposeEntity()
+        public static void DisposeEntity(this Entity entity)
         {
             if (_mathChatBotEntities != null)
             {
@@ -121,6 +121,12 @@ namespace MathChatBot.Utilities
             }
         }
 
+        /// <summary>
+        /// Run function with return value
+        /// </summary>
+        /// <param name="func"></param>
+        /// <param name="disposeAfterwards"></param>
+        /// <returns></returns>
         private static object RunFunction(Func<object> func, bool disposeAfterwards)
         {
             if (disposeAfterwards)
@@ -131,6 +137,12 @@ namespace MathChatBot.Utilities
             else
                 return func();
         }
+
+        /// <summary>
+        /// Run function with no return value
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="disposeAfterwards"></param>
         private static void RunFunction(Action action, bool disposeAfterwards)
         {
             if (disposeAfterwards)

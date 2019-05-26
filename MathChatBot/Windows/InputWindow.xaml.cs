@@ -54,7 +54,7 @@ namespace MathChatBot
                 window.IsEnabled = true;
                 window.BringIntoView();
                 window.Focus();
-                DatabaseUtility.DisposeEntity();
+                DatabaseUtility.Entity.DisposeEntity();
                 action?.Invoke();
             };
             inputWindow.Show();
@@ -110,7 +110,7 @@ namespace MathChatBot
             InitializeComponent();
 
             // Refresh entity framework
-            DatabaseUtility.DisposeEntity();
+            Entity.DisposeEntity();
 
             // Visibility
             spResetPassword.Visibility = Visibility.Collapsed;

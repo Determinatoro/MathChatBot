@@ -127,7 +127,7 @@ namespace MathChatBot
                     btnSeeRequests.Visibility = Visibility.Collapsed;
                 }
 
-                DatabaseUtility.DisposeEntity();
+                DatabaseUtility.Entity.DisposeEntity();
                 Show();
                 CustomDialog.Dismiss();
             }
@@ -174,7 +174,7 @@ namespace MathChatBot
                         IsEnabled = false;
                         adminControlsWindow.Closing += (s, a) =>
                         {
-                            DatabaseUtility.DisposeEntity();
+                            DatabaseUtility.Entity.DisposeEntity();
                             IsEnabled = true;
                         };
                         adminControlsWindow.Show();
@@ -194,7 +194,7 @@ namespace MathChatBot
                         IsEnabled = false;
                         helpRequestsWindow.Closing += (s, a) =>
                         {
-                            DatabaseUtility.DisposeEntity();
+                            DatabaseUtility.Entity.DisposeEntity();
                             IsEnabled = true;
                         };
                         helpRequestsWindow.Show();

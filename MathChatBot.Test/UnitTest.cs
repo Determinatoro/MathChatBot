@@ -562,6 +562,19 @@ namespace MathChatBot.Test
         #region DatabaseUtility
 
         [TestMethod]
+        public void DatabaseUtility_DisposeEntity()
+        {
+            var user = Entity.GetUserFromUsername("japr");
+            user.FirstName = "Test";
+            Entity.SaveChanges();
+            Entity.DisposeEntity();
+            using (Entity)
+            {
+                user = Entity.GetUserFromUsername("japr");
+            }
+            Assert.AreNotEqual("Test", user.FirstName);
+        }
+        [TestMethod]
         public void DatabaseUtility_GenerateUsername()
         {
             using (Entity)
@@ -1329,7 +1342,7 @@ namespace MathChatBot.Test
         // MATHCHATBOT HELPER
         //*************************************************/
         #region MathChatBotHelper
-
+        
         [TestMethod]
         public void MathChatBotHelper_TermWhichIsInTheDatabase()
         {
@@ -1802,6 +1815,12 @@ namespace MathChatBot.Test
             MathChatBotHelper.WriteMessageToBot("=6");
             MathChatBotHelper.WriteMessageToBot("=value");
             Assert.AreEqual("6", MathChatBotHelper.LastBotMessage.Text);
+        }
+        [TestMethod]
+        public void MathChatBotHelper_SimpleCalculator_ClearResult()
+        {
+            MathChatBotHelper.WriteMessageToBot(Properties.Resources.clear_result);
+            Assert.AreEqual(Properties.Resources.your_total_value_has_been_set_to_0, MathChatBotHelper.LastBotMessage.Text);
         }
 
         #endregion
