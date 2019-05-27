@@ -72,7 +72,7 @@ namespace MathChatBot
             if (roles.Any(x => x == Role.RoleTypes.Administrator))
                 classes = Entity.Classes.ToList();
             else if (roles.Any(x => x == Role.RoleTypes.Teacher))
-                classes = user.UserClassRelations.Select(x => x.Class).ToList();
+                classes = Entity.UserClassRelations.Where(x => x.UserId == user.Id).Select(x => x.Class).ToList();
             cbbClasses.ItemsSource = classes;
 
             // Set border
